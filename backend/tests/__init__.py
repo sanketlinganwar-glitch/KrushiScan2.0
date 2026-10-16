@@ -1,0 +1,1 @@
+# KrushiScan AI Tests
