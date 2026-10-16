@@ -36,6 +36,39 @@ KrushiScan AI is a full-stack, enterprise-grade agricultural intelligence and co
 
 ---
 
+## 🌐 1-Click Production Deployment
+
+### Option A: Deploy Frontend to Vercel (Recommended)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsanketlinganwar-glitch%2FKrushiScan2.0.git)
+
+1. Click the button above to import this repository into your Vercel account.
+2. Vercel automatically detects Vite and reads [`vercel.json`](./vercel.json).
+3. Under **Environment Variables**, add:
+   - `VITE_API_BASE_URL` = Your backend URL (e.g. `https://krushiscan-backend.onrender.com/api` or `http://localhost:8000/api`)
+   - `VITE_SUPABASE_URL` = (Optional) Your Supabase Project URL
+   - `VITE_SUPABASE_ANON_KEY` = (Optional) Your Supabase Anon Key
+4. Click **Deploy**. Your frontend is live in < 1 minute!
+
+---
+
+### Option B: Deploy Backend Microservice to Render
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sanketlinganwar-glitch/KrushiScan2.0)
+
+1. Click the button above to provision the Python FastAPI microservice via [`render.yaml`](./render.yaml).
+2. Render provisions Python 3.11, installs `backend/requirements.txt`, and launches `uvicorn backend.main:app`.
+3. Add your environment secrets (`GEMINI_API_KEY`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`).
+4. Your API is live at `https://your-service.onrender.com/api`.
+
+---
+
+### Option C: GitHub Pages (Automatic via GitHub Actions)
+1. In your GitHub repository, navigate to **Settings** > **Pages**.
+2. Under **Build and deployment** > **Source**, select **GitHub Actions**.
+3. Any push to `main` automatically triggers `.github/workflows/deploy-pages.yml` and publishes to:
+   `https://sanketlinganwar-glitch.github.io/KrushiScan2.0/`
+
+---
+
 ## 🚀 Quick Start Guide
 
 ### Prerequisites

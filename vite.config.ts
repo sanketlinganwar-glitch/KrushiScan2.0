@@ -4,4 +4,5 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: process.env.VITE_BASE_PATH || (process.env.GITHUB_PAGES ? '/KrushiScan2.0/' : '/'),
 })
