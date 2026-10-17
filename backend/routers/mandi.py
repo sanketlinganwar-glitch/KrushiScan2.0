@@ -42,7 +42,7 @@ async def get_mandi_rates(
             "source": "APMC Vidarbha / Agmarknet Directorate of Marketing & Inspection"
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch market rates: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch APMC market rates at this time.")
 
 @router.post("/calculate-net-return")
 def post_calculate_net_return(payload: NetReturnRequest):

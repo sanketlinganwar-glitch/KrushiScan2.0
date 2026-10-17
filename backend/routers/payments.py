@@ -47,13 +47,18 @@ def get_payment_system_status():
         )
     }
 
+from backend.routers.auth import get_current_user_and_role
+
 @router.post("/create-order")
-def create_payment_order(payload: CreatePaymentOrderRequest):
+def create_payment_order(
+    payload: CreatePaymentOrderRequest,
+    current_user: dict = Depends(get_current_user_and_role)
+):
     """
     Creates an official Razorpay order with server-side validation.
+    Requires authenticated farmer user.
     """
     if not is_razorpay_configured():
-        # Inform client accurately
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=(
@@ -67,8 +72,9 @@ def create_payment_order(payload: CreatePaymentOrderRequest):
             amount_inr=payload.amountInr,
             receipt_id=payload.orderId,
             notes={
-                "customerName": payload.customerName or "Farmer",
+                "customerName": current_user.get("name") or payload.customerName or "Farmer",
                 "customerPhone": payload.customerPhone or "",
+                "userId": current_user["id"],
                 "internalOrderId": payload.orderId
             }
         )
@@ -81,13 +87,17 @@ def create_payment_order(payload: CreatePaymentOrderRequest):
         }
     except Exception as e:
         logger.error(f"Failed to create Razorpay order: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to create payment order. Please try again.")
 
 @router.post("/verify")
-def verify_payment(payload: VerifyPaymentRequest):
+def verify_payment(
+    payload: VerifyPaymentRequest,
+    current_user: dict = Depends(get_current_user_and_role)
+):
     """
     Cryptographically verifies Razorpay payment signature server-side.
     Marks internal order as confirmed in Supabase database upon successful verification.
+    Enforces user ownership to prevent broken object level authorization (IDOR).
     """
     if not is_razorpay_configured():
         raise HTTPException(
@@ -107,10 +117,16 @@ def verify_payment(payload: VerifyPaymentRequest):
             detail="Invalid payment signature. Payment could not be verified."
         )
 
-    # Update order in Supabase
+    # Update order in Supabase enforcing user ownership
     supabase = get_supabase_admin()
     if supabase:
         try:
+            # Check that the order belongs to the authenticated user
+            existing = supabase.table("orders").select("user_id").eq("id", payload.internalOrderId).single().execute()
+            if existing.data and existing.data.get("user_id") != current_user["id"]:
+                logger.warning(f"IDOR attempt: User {current_user['id']} tried to confirm order {payload.internalOrderId} owned by {existing.data.get('user_id')}")
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this order.")
+
             supabase.table("orders").update({
                 "status": "confirmed",
                 "payment_details": {
@@ -119,6 +135,8 @@ def verify_payment(payload: VerifyPaymentRequest):
                     "verified": True
                 }
             }).eq("id", payload.internalOrderId).execute()
+        except HTTPException:
+            raise
         except Exception as e:
             logger.warning(f"Could not update order status in Supabase: {e}")
 

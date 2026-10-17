@@ -52,7 +52,7 @@ STORE_CATALOG: List[Dict[str, Any]] = [
         "rating": 4.9,
         "reviews_count": 89,
         "image_url": "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?auto=format&fit=crop&w=600&q=80",
-        "description": "तुरीवरील मर (Wilt) आणि कपाशीवरील मूळकुज रोगावर अत्यंत गुणकारी १००% सेंद्रिय व जैविक बुरशीनाशक.",
+        "description": "तुरीवरील मर (Wilt) आणि कपाशीवरील मूळकुज रोगावर उपयुक्त प्रमाणित सेंद्रिय व जैविक बुरशीनाशक. (टीप: परिणाम हवामान व जमिनीनुसार बदलू शकतात).",
         "dosage_or_usage": "बियाणे प्रक्रिया: ५ ग्रॅम प्रति किलो बियाणे; जमिनीतून: १ किलो प्रति एकर शेणखतात मिसळून.",
         "seller_name": "PDKV अकोला कृषी विज्ञान केंद्र",
         "is_verified_seller": True,
@@ -191,4 +191,4 @@ def get_user_orders(current_user: dict = Depends(get_current_user_and_role)):
         return res.data or []
     except Exception as e:
         logger.error(f"Failed to fetch user orders: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to retrieve order history.")

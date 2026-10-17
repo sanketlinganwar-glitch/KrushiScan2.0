@@ -12,12 +12,13 @@ router = APIRouter(prefix="/api/expert", tags=["Expert Support & Ticketing"])
 class InquiryCreateRequest(BaseModel):
     cropName: str
     issueCategory: str = "Disease/Pest"
-    description: str = Field(..., min_length=10)
+    description: str = Field(..., min_length=10, max_length=2000)
     imageUrl: Optional[str] = None
 
 class ExpertReplyRequest(BaseModel):
     inquiryId: str
-    responseHtml: str = Field(..., min_length=10)
+    responseText: Optional[str] = Field(None, min_length=10, max_length=5000)
+    responseHtml: Optional[str] = None
     suggestedProducts: Optional[List[str]] = None
 
 @router.get("/inquiries")
@@ -41,7 +42,7 @@ def list_inquiries(current_user: dict = Depends(get_current_user_and_role)):
         return res.data or []
     except Exception as e:
         logger.error(f"Failed to fetch inquiries: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to fetch inquiries.")
 
 @router.post("/inquiries", status_code=status.HTTP_201_CREATED)
 def submit_inquiry(
@@ -76,7 +77,7 @@ def submit_inquiry(
         return res.data[0] if res.data else new_inquiry
     except Exception as e:
         logger.error(f"Failed to submit inquiry: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to submit inquiry.")
 
 @router.post("/reply", dependencies=[Depends(require_role("expert", "admin"))])
 def submit_expert_reply(
@@ -91,11 +92,16 @@ def submit_expert_reply(
     if not supabase:
         return {"success": True, "message": "Reply saved (mock)."}
 
+    # Sanitize and prefer clean text
+    clean_answer = (payload.responseText or payload.responseHtml or "").strip()
+    if not clean_answer:
+        raise HTTPException(status_code=400, detail="Reply text cannot be empty.")
+
     try:
         reply_payload = {
             "expert_name": current_user["name"],
             "expert_id": current_user["id"],
-            "answer": payload.responseHtml,
+            "answer": clean_answer,
             "suggested_products": payload.suggestedProducts or [],
             "replied_at": "now()"
         }
@@ -108,4 +114,4 @@ def submit_expert_reply(
         return {"success": True, "data": res.data}
     except Exception as e:
         logger.error(f"Failed to submit expert reply: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to submit expert reply.")

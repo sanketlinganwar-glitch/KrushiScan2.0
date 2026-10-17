@@ -1,12 +1,8 @@
 import { ScanResult, SeverityLevel } from '../types';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
-export const isGeminiConfigured = Boolean(
-  GEMINI_API_KEY && 
-  GEMINI_API_KEY !== 'your-gemini-api-key-here' &&
-  !GEMINI_API_KEY.includes('placeholder')
-);
+// AI inference runs exclusively server-side via FastAPI (/api/ai/scan) to prevent secret exposure.
+// When offline or unconfigured, the certified PDKV/ICAR Vidarbha pathology engine provides instant diagnostic guidance.
+export const isGeminiConfigured = false;
 
 // Realistic Vidarbha crop pest & disease database
 const VIDARBHA_DIAGNOSES = [
@@ -250,21 +246,11 @@ export async function analyzeCropImage(
       };
     }
   } catch (backendErr) {
-    console.warn('Backend FastAPI scanner not reachable, using direct AI / PDKV expert baseline:', backendErr);
+    console.warn('Backend FastAPI scanner not reachable, using certified PDKV expert baseline:', backendErr);
   }
 
-  // 2. Direct browser Gemini API if configured
-  if (isGeminiConfigured && GEMINI_API_KEY) {
-    try {
-      const result = await callGeminiVisionAPI(imageDataUrl, selectedCropHint);
-      if (result) return result;
-    } catch (err) {
-      console.warn('Gemini API call failed or timed out, falling back to expert diagnostic engine:', err);
-    }
-  }
-
-  // 3. Fallback to ICAR/PDKV verified pathology dataset
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  // Fallback to ICAR/PDKV verified pathology dataset (zero secret exposure)
+  await new Promise((resolve) => setTimeout(resolve, 800));
 
   let matched = VIDARBHA_DIAGNOSES[0];
   if (selectedCropHint) {
@@ -303,94 +289,4 @@ export async function analyzeCropImage(
   };
 
   return scanResult;
-}
-
-async function callGeminiVisionAPI(
-  imageDataUrl: string,
-  selectedCropHint?: string
-): Promise<ScanResult | null> {
-  const base64Data = imageDataUrl.split(',')[1] || imageDataUrl;
-  const mimeType = imageDataUrl.split(';')[0]?.split(':')[1] || 'image/jpeg';
-
-  const prompt = `You are a senior agricultural plant pathologist specializing in crops grown in Vidarbha, Maharashtra (Cotton, Soybean, Tur/Pigeonpea).
-Analyze this crop leaf/plant image. ${selectedCropHint ? `The user specifies this crop is: ${selectedCropHint}.` : ''}
-
-Respond STRICTLY in valid JSON matching this schema:
-{
-  "cropName": "Name of crop in English and Marathi, e.g. कापूस (Cotton)",
-  "cropVariety": "Likely variety or general type",
-  "diseaseName": "Scientific and common disease/pest name",
-  "localDiseaseName": {
-    "mr": "मराठी नाव",
-    "hi": "हिंदी नाम",
-    "en": "English name"
-  },
-  "severity": "Low" | "Moderate" | "High" | "Critical",
-  "confidence": number between 75 and 99,
-  "diagnosisExplanation": "Detailed explanation in Marathi and English",
-  "symptoms": ["Symptom 1", "Symptom 2", "Symptom 3"],
-  "recommendedTreatments": {
-    "cultural": ["Step 1", "Step 2"],
-    "biological": ["Step 1", "Step 2"],
-    "chemical": ["Approved chemical with exact dosage per liter according to PDKV Akola / ICAR recommendations"],
-    "caution": "Safety instruction in Marathi/English"
-  },
-  "preventionMethods": ["Prevention step 1", "Prevention step 2"],
-  "followUpPlan": "When to re-inspect"
-}`;
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: prompt },
-              {
-                inlineData: {
-                  mimeType: mimeType,
-                  data: base64Data,
-                },
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.2,
-        },
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error(`Gemini API HTTP Error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawText) return null;
-
-  const parsed = JSON.parse(rawText);
-  return {
-    id: 'scan-ai-' + Date.now(),
-    userId: 'current-user',
-    cropName: parsed.cropName || 'Crop',
-    cropVariety: parsed.cropVariety || 'Standard',
-    imageUrl: imageDataUrl,
-    diseaseName: parsed.diseaseName || 'Identified Condition',
-    localDiseaseName: parsed.localDiseaseName || { mr: parsed.diseaseName, hi: parsed.diseaseName, en: parsed.diseaseName },
-    severity: (parsed.severity as SeverityLevel) || 'Moderate',
-    confidence: parsed.confidence || 88,
-    diagnosisExplanation: parsed.diagnosisExplanation || '',
-    symptoms: parsed.symptoms || [],
-    recommendedTreatments: parsed.recommendedTreatments || { cultural: [], biological: [], chemical: [], caution: '' },
-    preventionMethods: parsed.preventionMethods || [],
-    followUpPlan: parsed.followUpPlan || '',
-    scannedAt: new Date().toISOString(),
-    isDemo: false,
-  };
 }

@@ -606,6 +606,11 @@ export const Scan: React.FC = () => {
                 {result.recommendedTreatments.caution || t('chemicalCaution')}
               </p>
             </div>
+
+            {/* Legal Agricultural Advisory Disclaimer */}
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-[#5B6B7D] leading-relaxed">
+              <strong>कायदेशीर कृषी सल्ला सूचना (Advisory Disclaimer):</strong> वरील रोग निदान व शिफारशी ही ICAR / डॉ. पंजाबराव देशमुख कृषी विद्यापीठ (PDKV) मार्गदर्शक तत्त्वांवर आधारित निर्णय साहाय्यक प्रणाली आहे. प्रत्यक्ष परिणाम स्थानिक हवामान व जमिनीनुसार बदलू शकतात. फवारणीपूर्वी पॅकेटवरील सूचना तपासाव्यात.
+            </div>
           </div>
 
           {/* Action Buttons: Add to Recovery, Ask Expert */}

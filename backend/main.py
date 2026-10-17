@@ -1,5 +1,9 @@
 import logging
-from fastapi import FastAPI
+import time
+from collections import defaultdict
+from typing import Dict, List
+from fastapi import FastAPI, Request, HTTPException, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
 from backend.routers import auth, ai, weather, mandi, crops, expert, store, payments
@@ -16,6 +20,8 @@ logger = logging.getLogger("krushiscan-backend")
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="2.0.0",
+    docs_url="/docs" if settings.DEBUG else None,
+    redoc_url="/redoc" if settings.DEBUG else None,
     description=(
         "Production-ready backend API for KrushiScan AI (कृषीस्कॅन AI) — "
         "AI Crop Disease Vision Inference, Open-Meteo Weather Integration, "
@@ -24,12 +30,105 @@ app = FastAPI(
     )
 )
 
-# CORS Middleware
+# ------------------------------------------------------------------------------
+# 1. Block Sensitive Files / Hidden Paths (.env, .git, .sql, .bak)
+# ------------------------------------------------------------------------------
+BLOCKED_PATTERNS = [".env", ".git", ".bak", ".sql", ".pyc", ".aws", "credentials", "id_rsa"]
+
+@app.middleware("http")
+async def block_sensitive_paths_middleware(request: Request, call_next):
+    path = request.url.path.lower()
+    for pattern in BLOCKED_PATTERNS:
+        if pattern in path:
+            client_host = request.client.host if request.client else "unknown"
+            logger.warning(f"Blocked suspicious access attempt to '{request.url.path}' from {client_host}")
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={"detail": "Access to this resource is prohibited."}
+            )
+    return await call_next(request)
+
+# ------------------------------------------------------------------------------
+# 2. In-Memory Sliding-Window Rate Limiter Middleware
+# ------------------------------------------------------------------------------
+rate_limit_records: Dict[str, List[float]] = defaultdict(list)
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    now = time.time()
+    path = request.url.path
+
+    # Determine threshold based on endpoint sensitivity
+    if path.startswith("/api/ai"):
+        limit = settings.RATE_LIMIT_AI_PER_MINUTE
+        window_key = f"{client_ip}:ai"
+    elif path.startswith("/api/payments") or path.startswith("/api/auth"):
+        limit = settings.RATE_LIMIT_AUTH_PER_MINUTE
+        window_key = f"{client_ip}:auth_pay"
+    else:
+        limit = settings.RATE_LIMIT_DEFAULT_PER_MINUTE
+        window_key = f"{client_ip}:general"
+
+    # Purge timestamps older than 60 seconds
+    timestamps = [ts for ts in rate_limit_records[window_key] if now - ts < 60.0]
+    rate_limit_records[window_key] = timestamps
+
+    if len(timestamps) >= limit:
+        logger.warning(f"Rate limit exceeded for IP {client_ip} on {path} ({len(timestamps)}/{limit} req/min)")
+        return JSONResponse(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            content={
+                "detail": "Rate limit exceeded. Please wait a minute before making more requests.",
+                "retryAfterSeconds": 60
+            },
+            headers={"Retry-After": "60"}
+        )
+
+    rate_limit_records[window_key].append(now)
+    return await call_next(request)
+
+# ------------------------------------------------------------------------------
+# 3. Security Headers Middleware
+# ------------------------------------------------------------------------------
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), camera=(self), microphone=(self)"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: blob: https:; "
+        "connect-src 'self' https: http:; "
+        "frame-src https://api.razorpay.com https://checkout.razorpay.com;"
+    )
+    return response
+
+# ------------------------------------------------------------------------------
+# 4. Global Unhandled Exception Handler (No Stack Traces / Leakage to Clients)
+# ------------------------------------------------------------------------------
+@app.exception_handler(Exception)
+async def global_unhandled_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled server exception on {request.method} {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "An internal server error occurred. Please try again later."}
+    )
+
+# ------------------------------------------------------------------------------
+# 5. CORS Middleware (Explicit whitelist without wildcard credentials)
+# ------------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

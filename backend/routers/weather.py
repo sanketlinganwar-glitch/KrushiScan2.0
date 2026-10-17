@@ -20,7 +20,7 @@ async def get_district_weather(
     except Exception as e:
         raise HTTPException(
             status_code=502,
-            detail=f"Unable to fetch live meteorological data from Open-Meteo: {str(e)}"
+            detail="Unable to fetch live meteorological data from Open-Meteo at this time."
         )
 
 @router.get("/districts")

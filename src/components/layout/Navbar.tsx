@@ -69,8 +69,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenVoiceAssistant }) => {
               onClick={onOpenVoiceAssistant}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#13243A] hover:bg-[#1f3757] text-white border border-white/20 transition shadow-xs group font-semibold"
               title="बोलून प्रश्न विचारा (Voice AI)"
+              aria-label="बोलून प्रश्न विचारा (Voice AI)"
             >
-              <Mic className="w-4 h-4 text-[#3B6EA5] group-hover:text-white animate-pulse" />
+              <Mic className="w-4 h-4 text-[#3B6EA5] group-hover:text-white animate-pulse" aria-hidden="true" />
               <span className="text-xs hidden sm:inline">
                 {t('navVoiceAssistant')}
               </span>

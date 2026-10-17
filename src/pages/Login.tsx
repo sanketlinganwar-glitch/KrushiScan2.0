@@ -70,12 +70,13 @@ export const Login: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#0A2540] mb-1">
+              <label htmlFor="login-identifier" className="block text-xs font-bold text-[#0A2540] mb-1">
                 मोबाईल नंबर किंवा ईमेल
               </label>
               <div className="relative">
-                <Phone className="w-4 h-4 text-[#5B6B7D] absolute left-3 top-1/2 -translate-y-1/2" />
+                <Phone className="w-4 h-4 text-[#5B6B7D] absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
                 <input
+                  id="login-identifier"
                   type="text"
                   required
                   value={phoneOrEmail}
@@ -88,7 +89,7 @@ export const Login: React.FC = () => {
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold text-[#0A2540]">
+                <label htmlFor="login-password" className="text-xs font-bold text-[#0A2540]">
                   पासवर्ड / पिन
                 </label>
                 <Link
@@ -99,8 +100,9 @@ export const Login: React.FC = () => {
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-[#5B6B7D] absolute left-3 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-[#5B6B7D] absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
                 <input
+                  id="login-password"
                   type="password"
                   required
                   value={password}

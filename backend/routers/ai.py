@@ -1,11 +1,11 @@
 import logging
 import uuid
 from typing import Optional, List, Dict
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Header, status
+from pydantic import BaseModel, Field
 from backend.services.ai_vision_service import analyze_crop_image
 from backend.services.voice_assistant_service import process_agricultural_chat
-from backend.services.supabase_client import get_supabase_admin
+from backend.services.supabase_client import get_supabase_admin, get_supabase_anon
 from backend.config import settings
 
 logger = logging.getLogger(__name__)
@@ -13,22 +13,34 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/ai", tags=["AI Diagnosis & Voice Assistant"])
 
 class ChatRequest(BaseModel):
-    message: str
-    language: str = "mr"
-    district: str = "Yavatmal"
+    message: str = Field(..., min_length=1, max_length=1000, description="Farmer query max 1000 characters")
+    language: str = Field(default="mr", max_length=5)
+    district: str = Field(default="Yavatmal", max_length=50)
     active_crops: Optional[List[str]] = None
     conversation_history: Optional[List[Dict[str, str]]] = None
+
+def is_valid_image_magic(data: bytes, content_type: str) -> bool:
+    """Verifies that uploaded file binary header matches stated image MIME type."""
+    if len(data) < 12:
+        return False
+    if content_type in ["image/jpeg", "image/jpg"] and data[:3] == b"\xff\xd8\xff":
+        return True
+    if content_type == "image/png" and data[:8] == b"\x89PNG\r\n\x1a\n":
+        return True
+    if content_type == "image/webp" and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return True
+    return False
 
 @router.post("/scan")
 async def scan_crop_disease(
     file: UploadFile = File(...),
     crop_hint: Optional[str] = Form(None),
-    user_id: Optional[str] = Form(None)
+    authorization: Optional[str] = Header(None)
 ):
     """
     Submits a crop leaf or pest image to the AI vision pipeline.
-    Validates MIME type, file size, stores to Supabase Storage if configured,
-    and returns structured diagnosis conforming to PDKV / ICAR pathology.
+    Validates MIME type, magic bytes, file size, prevents path traversal,
+    and only associates scan records with cryptographically verified auth tokens.
     """
     valid_mimes = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
     content_type = file.content_type or "image/jpeg"
@@ -45,6 +57,13 @@ async def scan_crop_disease(
             detail=f"File exceeds 10MB limit. Uploaded size: {len(image_bytes) / (1024*1024):.2f}MB."
         )
 
+    # Magic byte verification (Check 8: Validate file uploads)
+    if not is_valid_image_magic(image_bytes, content_type):
+        raise HTTPException(
+            status_code=400,
+            detail="File content does not match expected image signature (corrupted or spoofed binary)."
+        )
+
     # Run AI inference
     diagnosis = await analyze_crop_image(
         image_bytes=image_bytes,
@@ -52,12 +71,28 @@ async def scan_crop_disease(
         crop_hint=crop_hint
     )
 
-    # Optional: Save to Supabase Storage and database if user_id and Supabase are present
+    # Extract verified user_id strictly from Bearer token if present (prevent IDOR)
+    verified_user_id = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split("Bearer ")[1].strip()
+        supabase = get_supabase_admin() or get_supabase_anon()
+        if supabase:
+            try:
+                user_res = supabase.auth.get_user(token)
+                if user_res and user_res.user:
+                    verified_user_id = user_res.user.id
+            except Exception as e:
+                logger.debug(f"Scan token check error: {e}")
+
+    # Optional: Save to Supabase Storage and database only for verified authenticated users
     supabase = get_supabase_admin()
     image_url = None
-    if supabase and user_id:
+    if supabase and verified_user_id:
         try:
-            filename = f"{user_id}/{uuid.uuid4()}.jpg"
+            # Safe sanitized path using strictly UUIDs to prevent directory traversal
+            clean_user_prefix = str(uuid.UUID(verified_user_id))
+            filename = f"{clean_user_prefix}/{uuid.uuid4().hex}.jpg"
+            
             supabase.storage.from_("crop-scans").upload(
                 path=filename,
                 file=image_bytes,
@@ -67,7 +102,7 @@ async def scan_crop_disease(
             
             # Record in crop_scans table
             supabase.table("crop_scans").insert({
-                "user_id": user_id,
+                "user_id": str(clean_user_prefix),
                 "crop_name": diagnosis.get("crop_name", "Cotton"),
                 "crop_variety": diagnosis.get("crop_variety"),
                 "image_url": image_url,

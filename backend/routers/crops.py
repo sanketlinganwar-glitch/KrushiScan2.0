@@ -37,7 +37,7 @@ def get_user_crops(current_user: dict = Depends(get_current_user_and_role)):
         return res.data or []
     except Exception as e:
         logger.error(f"Error fetching user crops: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Unable to retrieve crop records at this time.")
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_crop(
@@ -80,7 +80,7 @@ def create_crop(
         return res.data[0] if res.data else new_record
     except Exception as e:
         logger.error(f"Failed to create crop: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to create crop record.")
 
 @router.put("/{crop_id}")
 def update_crop(
@@ -120,7 +120,7 @@ def update_crop(
         raise
     except Exception as e:
         logger.error(f"Failed to update crop {crop_id}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to update crop record.")
 
 @router.delete("/{crop_id}")
 def delete_crop(
@@ -146,4 +146,4 @@ def delete_crop(
         raise
     except Exception as e:
         logger.error(f"Failed to delete crop {crop_id}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Failed to delete crop record.")

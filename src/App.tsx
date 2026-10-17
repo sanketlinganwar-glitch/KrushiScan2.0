@@ -22,6 +22,10 @@ import { Profile } from './pages/Profile';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
 import { ForgotPassword } from './pages/ForgotPassword';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { TermsConditions } from './pages/TermsConditions';
+import { CookiePolicy } from './pages/CookiePolicy';
+import { RefundPolicy } from './pages/RefundPolicy';
 
 export const App: React.FC = () => {
   return (
@@ -46,6 +50,12 @@ export const App: React.FC = () => {
                   <Route path="/expert" element={<ExpertSupport />} />
                   <Route path="/alerts" element={<Alerts />} />
                   <Route path="/profile" element={<Profile />} />
+
+                  {/* Mandatory Legal & Compliance Pages */}
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsConditions />} />
+                  <Route path="/cookies" element={<CookiePolicy />} />
+                  <Route path="/refund-policy" element={<RefundPolicy />} />
                 </Route>
 
                 {/* Standalone Auth Routes */}

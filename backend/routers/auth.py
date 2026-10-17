@@ -2,6 +2,7 @@ import logging
 from typing import List, Optional
 from fastapi import APIRouter, Header, HTTPException, Depends, status
 from pydantic import BaseModel
+from backend.config import settings
 from backend.services.supabase_client import get_supabase_admin, get_supabase_anon
 
 logger = logging.getLogger(__name__)
@@ -34,14 +35,20 @@ async def get_current_user_and_role(
     supabase = get_supabase_admin() or get_supabase_anon()
 
     if not supabase:
-        # Development bypass mode if supabase credentials not yet configured
-        return {
-            "id": "dev-user-id",
-            "email": "farmer@krushiscan.ai",
-            "role": "farmer",
-            "name": "Dev Farmer",
-            "district": "Yavatmal"
-        }
+        # Development bypass ONLY in non-production debug environments
+        if settings.ENVIRONMENT != "production" and settings.DEBUG:
+            logger.warning("Supabase unconfigured; using local dev mock farmer credentials.")
+            return {
+                "id": "dev-user-id",
+                "email": "farmer@krushiscan.ai",
+                "role": "farmer",
+                "name": "Dev Farmer",
+                "district": "Yavatmal"
+            }
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Authentication service is currently unavailable. Supabase credentials are not configured on the server."
+        )
 
     try:
         user_res = supabase.auth.get_user(token)
@@ -70,11 +77,13 @@ async def get_current_user_and_role(
             "village": profile_data.get("village"),
             "activeCrops": profile_data.get("active_crops", [])
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error authenticating user token: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Token verification failed: {str(e)}"
+            detail="Token verification failed."
         )
 
 def require_role(*allowed_roles: str):

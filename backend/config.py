@@ -7,19 +7,24 @@ class Settings(BaseSettings):
 
     # App
     PROJECT_NAME: str = "KrushiScan AI API"
-    ENVIRONMENT: str = "development"
-    DEBUG: bool = True
+    ENVIRONMENT: str = "production"
+    DEBUG: bool = False
     PORT: int = 8000
     HOST: str = "0.0.0.0"
     
-    # CORS
+    # CORS (Strict whitelist; wildcard '*' is explicitly forbidden when credentials=True)
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "*"
+        "https://sanketlinganwar-glitch.github.io",
     ]
+    
+    # Rate Limiting
+    RATE_LIMIT_AI_PER_MINUTE: int = 20
+    RATE_LIMIT_DEFAULT_PER_MINUTE: int = 100
+    RATE_LIMIT_AUTH_PER_MINUTE: int = 15
     
     # Supabase (PostgreSQL + Auth + Storage)
     SUPABASE_URL: str = ""
