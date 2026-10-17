@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
   Search, 
@@ -11,7 +12,8 @@ import {
   ExternalLink, 
   CheckCircle2, 
   ArrowLeft,
-  Sparkles
+  Sparkles,
+  FlaskConical
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { GuidanceArticle } from '../types';
@@ -263,6 +265,36 @@ export const Guidance: React.FC = () => {
           <Bookmark className="w-4 h-4 text-[#FF9933]" />
           <span>जतन केलेले लेख ({bookmarks.length})</span>
         </button>
+      </div>
+
+      {/* Featured Tank-Mix Compatibility Banner */}
+      <div className="bg-gradient-to-r from-teal-900 to-[#0A2540] text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-teal-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center shrink-0">
+            <FlaskConical className="w-6 h-6 text-teal-300" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-white">
+                {language === 'mr' ? 'रासायनिक टँक-मिक्स सुसंगतता कॅल्क्युलेटर' : language === 'hi' ? 'टैंक-मिक्स रासायनिक अनुकूलता कैलकुलेटर' : 'Tank-Mix Chemical Compatibility Tool'}
+              </h3>
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-400/40">
+                PDKV / CIBRC
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5">
+              {language === 'mr' 
+                ? 'कीटकनाशक, बुरशीनाशक व विद्राव्य खत एकत्र मिसळण्यापूर्वी सुसंगतता व W.A.L.E.S. फवारणी क्रम तपासा.'
+                : 'Check if your tank-mix will curdle or burn crops before mixing, with verified W.A.L.E.S. mixing sequences.'}
+            </p>
+          </div>
+        </div>
+
+        <Link to="/tank-mix" className="shrink-0">
+          <Button variant="primary" size="sm" className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs">
+            {language === 'mr' ? 'कॅल्क्युलेटर उघडा' : 'Launch Calculator'}
+          </Button>
+        </Link>
       </div>
 
       {/* Search & Category Pills */}

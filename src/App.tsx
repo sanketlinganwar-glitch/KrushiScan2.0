@@ -12,6 +12,7 @@ import { MyCrops } from './pages/MyCrops';
 import { RecoveryTracker } from './pages/RecoveryTracker';
 import { ScanHistory } from './pages/ScanHistory';
 import { Guidance } from './pages/Guidance';
+import { TankMix } from './pages/TankMix';
 import { MandiRates } from './pages/MandiRates';
 import { AgriStore } from './pages/AgriStore';
 import { Checkout } from './pages/Checkout';
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
                   <Route path="/recovery" element={<RecoveryTracker />} />
                   <Route path="/history" element={<ScanHistory />} />
                   <Route path="/guidance" element={<Guidance />} />
+                  <Route path="/tank-mix" element={<TankMix />} />
                   <Route path="/mandi" element={<MandiRates />} />
                   <Route path="/store" element={<AgriStore />} />
                   <Route path="/checkout" element={<Checkout />} />

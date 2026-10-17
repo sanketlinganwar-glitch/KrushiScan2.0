@@ -11,7 +11,8 @@ import {
   ShoppingBag, 
   MessageSquare, 
   Bell, 
-  User 
+  User,
+  FlaskConical 
 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -27,6 +28,7 @@ export const DesktopSidebar: React.FC = () => {
     { to: '/recovery', label: t('navRecovery'), icon: Activity },
     { to: '/history', label: t('navHistory'), icon: History },
     { to: '/guidance', label: t('navGuidance'), icon: BookOpen },
+    { to: '/tank-mix', label: t('navTankMix'), icon: FlaskConical },
     { to: '/mandi', label: t('navMandi'), icon: TrendingUp },
     { to: '/store', label: t('navStore'), icon: ShoppingBag },
     { to: '/expert', label: t('navExpert'), icon: MessageSquare },

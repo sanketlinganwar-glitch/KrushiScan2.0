@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Bell, 
   MapPin, 
   Globe, 
   ShoppingCart, 
-  Mic 
+  Mic,
+  WifiOff
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { useCart } from '../../contexts/CartContext';
+import { subscribeToOnlineStatus } from '../../lib/pwa';
 
 interface NavbarProps {
   onOpenVoiceAssistant?: () => void;
@@ -23,6 +25,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenVoiceAssistant }) => {
   const { itemCount } = useCart();
 
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  useEffect(() => {
+    return subscribeToOnlineStatus((online) => setIsOnline(online));
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -64,6 +71,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenVoiceAssistant }) => {
 
           {/* Center / Right: Farmer Info & Interactive Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Offline Mode Indicator */}
+            {!isOnline && (
+              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-bold animate-pulse">
+                <WifiOff className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">ऑफलाइन मोड (Offline)</span>
+                <span className="sm:hidden">ऑफलाइन</span>
+              </span>
+            )}
+
             {/* Voice Assistant quick launcher button */}
             <button
               onClick={onOpenVoiceAssistant}

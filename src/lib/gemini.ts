@@ -46,6 +46,10 @@ const VIDARBHA_DIAGNOSES = [
       'शेतात प्रकाश सापळे (Light Traps) वापरा.',
     ],
     followUpPlan: 'फवारणीनंतर ७ दिवसांनी कामगंध सापळ्यातील पतंगांची संख्या पुन्हा नोंदवा व सुधारणा ट्रॅकरमध्ये फोटो अपलोड करा.',
+    symptomBoxes: [
+      { id: 'sb-1', label: 'गुळबेंद फूल (Rosette Flower)', x: 42, y: 38, width: 26, height: 24, description: 'गुलाबी बोंडअळीच्या प्रादुर्भावामुळे पाकळ्या एकमेकांना चिकटून तयार झालेले गुळबेंद फूल.' },
+      { id: 'sb-2', label: 'अळीचे प्रवेश छिद्र (Borehole)', x: 68, y: 62, width: 18, height: 18, description: 'अळी बोंडात शिरताना पाडलेले बारीक छिद्र व विष्ठा.' },
+    ],
   },
   {
     cropName: 'कापूस (Cotton)',
@@ -84,6 +88,10 @@ const VIDARBHA_DIAGNOSES = [
       'मित्रकिडी (लेडीबर्ड बीटल) चे संवर्धन करा.',
     ],
     followUpPlan: '५ दिवसांनी नवीन फुटव्यांची तपासणी करा.',
+    symptomBoxes: [
+      { id: 'sb-wf-1', label: 'पांढरी माशी थवे (Whitefly Colony)', x: 45, y: 48, width: 25, height: 22, description: 'पानाच्या पाठीमागे रस शोषणारे पांढऱ्या माशीचे पिले व प्रौढ.' },
+      { id: 'sb-wf-2', label: 'काजळी बुरशी थर (Sooty Mold)', x: 25, y: 30, width: 28, height: 25, description: 'डिंकासारख्या स्त्रावावर वाढलेली काळी काजळी बुरशी.' },
+    ],
   },
   {
     cropName: 'सोयाबीन (Soybean)',
@@ -120,6 +128,10 @@ const VIDARBHA_DIAGNOSES = [
       'पेरणीपूर्वी थायामेथोक्सामने बीजप्रक्रिया करा.',
     ],
     followUpPlan: 'उपाययोजना केल्यानंतर शेतातील नवीन पानांवर पिवळेपणा थांबला आहे का ते तपासा.',
+    symptomBoxes: [
+      { id: 'sb-ym-1', label: 'पिवळे चट्टे (Chlorosis Patches)', x: 42, y: 35, width: 26, height: 24, description: 'विषाणूमुळे हरितद्रव्य नष्ट होऊन पानावर उमटलेले पिवळसर अनियमित डाग.' },
+      { id: 'sb-ym-2', label: 'आकसलेली कडा (Curled Margin)', x: 72, y: 55, width: 20, height: 20, description: 'रोगाच्या तीव्रतेमुळे पानांची कडा वरच्या बाजूला वाकणे.' },
+    ],
   },
   {
     cropName: 'तूर (Pigeonpea)',
@@ -158,6 +170,9 @@ const VIDARBHA_DIAGNOSES = [
       'ज्वारी किंवा बाजरीसोबत आंतरपीक पद्धत अवलंबा.',
     ],
     followUpPlan: 'शेतातील इतर झाडांचे दर ३ दिवसांनी निरीक्षण करा.',
+    symptomBoxes: [
+      { id: 'sb-wilt-1', label: 'वाळलेला शेंडा (Vascular Wilt)', x: 50, y: 35, width: 28, height: 26, description: 'फ्युझॅरियम बुरशीमुळे अन्न व पाणी वाहिन्या बंद होऊन झाडाचा शेंडा सुकणे.' },
+    ],
   },
   {
     cropName: 'सोयाबीन (Soybean)',
@@ -186,6 +201,9 @@ const VIDARBHA_DIAGNOSES = [
     },
     preventionMethods: ['पिकांची फेरपालट करा', 'हवामान अंदाजावर लक्ष ठेवा'],
     followUpPlan: 'फवारणीनंतर ८ दिवसांनी पानांची खालची बाजू तपासा.',
+    symptomBoxes: [
+      { id: 'sb-rust-1', label: 'तांबूस पुरळ (Rust Pustules)', x: 48, y: 42, width: 25, height: 25, description: 'पानाच्या खालच्या बाजूला उमटलेली तांबूस-तपकिरी बुरशीची पुरळ.' },
+    ],
   },
 ];
 
@@ -286,6 +304,7 @@ export async function analyzeCropImage(
     followUpPlan: matched.followUpPlan,
     scannedAt: new Date().toISOString(),
     isDemo: false,
+    symptomBoxes: matched.symptomBoxes,
   };
 
   return scanResult;

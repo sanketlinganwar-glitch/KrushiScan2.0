@@ -15,16 +15,21 @@ import {
   MessageSquare, 
   Bell, 
   ChevronRight, 
-  Sparkles
+  Sparkles,
+  Leaf,
+  FlaskConical
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { fetchLiveWeather, getOfflineWeatherData } from '../lib/weather';
-import { WeatherData, ScanResult } from '../types';
+import { WeatherData, ScanResult, Crop } from '../types';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { LOCAL_STORAGE_KEYS } from '../lib/supabase';
+import { SprayRadarWidget } from '../components/weather/SprayRadarWidget';
+import { CropStageCard } from '../components/agri/CropStageCard';
+import { LalyaDeficiencyGuide } from '../components/agri/LalyaDeficiencyGuide';
 
 const INITIAL_SAMPLE_SCANS: ScanResult[] = [
   {
@@ -102,6 +107,54 @@ export const Home: React.FC = () => {
     return INITIAL_SAMPLE_SCANS;
   });
 
+  const [isLalyaModalOpen, setIsLalyaModalOpen] = useState(false);
+  const [crops] = useState<Crop[]>(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.CROPS);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch {
+        // fallback
+      }
+    }
+    return [
+      {
+        id: 'crop-cotton-1',
+        userId: 'current-user',
+        name: 'कापूस (Cotton)',
+        localName: { mr: 'कापूस', hi: 'कपास', en: 'Cotton' },
+        variety: 'BT Cotton BG-II (राशी ६५९)',
+        areaAcres: 3.5,
+        plotName: 'विहीर लगतचे शेत (Well Plot)',
+        sowingDate: '१५ जून २०२४',
+        soilType: 'black_cotton',
+        irrigationType: 'drip',
+        stage: 'boll_formation',
+        healthStatus: 'attention',
+        latestScanId: 'sample-scan-1',
+        latestScanDate: '२ दिवसांपूर्वी',
+        latestDiseaseName: 'गुलाबी बोंडअळी (Pink Bollworm)',
+        isSample: true,
+      },
+      {
+        id: 'crop-soybean-1',
+        userId: 'current-user',
+        name: 'सोयाबीन (Soybean)',
+        localName: { mr: 'सोयाबीन', hi: 'सोयाबीन', en: 'Soybean' },
+        variety: 'JS-335 (महाबीज प्रमाणित)',
+        areaAcres: 2.0,
+        plotName: 'रस्त्यालगतचे शेत (Roadside Plot)',
+        sowingDate: '२० जून २०२४',
+        soilType: 'black_cotton',
+        irrigationType: 'rainfed',
+        stage: 'harvesting',
+        healthStatus: 'healthy',
+        isSample: true,
+      },
+    ];
+  });
+
   useEffect(() => {
     let isMounted = true;
     fetchLiveWeather().then((data) => {
@@ -140,6 +193,13 @@ export const Home: React.FC = () => {
       icon: BookOpen,
       color: 'text-amber-700 bg-amber-50 border-amber-200',
       to: '/guidance',
+    },
+    {
+      title: t('navTankMix'),
+      sub: t('actionTankMixSub'),
+      icon: FlaskConical,
+      color: 'text-teal-700 bg-teal-50 border-teal-200',
+      to: '/tank-mix',
     },
     {
       title: t('navMandi'),
@@ -275,6 +335,9 @@ export const Home: React.FC = () => {
         </div>
       </Card>
 
+      {/* 2b. Suraksha Spray Radar Widget */}
+      <SprayRadarWidget sprayWindow={weather.sprayWindow} district={weather.location} />
+
       {/* 3. Hero Main Action: Big Navy "SCAN YOUR CROP" Banner with Saffron highlight */}
       <div className="relative overflow-hidden rounded-3xl bg-[#0A2540] p-6 sm:p-8 text-white shadow-md border border-[#0A2540]">
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -308,6 +371,95 @@ export const Home: React.FC = () => {
               कॅमेऱ्यातून थेट फोटो किंवा गॅलरीतून निवडा
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* 3b. Vidarbha Cotton Lalya Advisory Banner */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <Leaf className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h4 className="text-sm font-bold text-amber-950">
+                {language === 'mr' ? 'कपाशीची पाने लाल पडत आहेत का? (लाल्या प्रतिबंध)' : 'Cotton Leaves Turning Red? (Lalya Guide)'}
+              </h4>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-900 font-extrabold uppercase">
+                PDKV अकोला
+              </span>
+            </div>
+            <p className="text-xs text-amber-900 mt-0.5 font-medium">
+              {language === 'mr' 
+                ? 'लाल्या हा बुरशीजन्य रोग नसून मॅग्नेशियम कमतरता आहे. ०.५% MgSO4 + १९:१९:१९ चा फवारणी उपाय पहा.' 
+                : 'Leaf reddening is a magnesium deficiency, not fungal blight. View the verified foliar recipe.'}
+            </p>
+          </div>
+        </div>
+
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => setIsLalyaModalOpen(true)}
+          className="border-amber-400 text-amber-950 hover:bg-amber-100 font-bold text-xs shrink-0"
+        >
+          {language === 'mr' ? 'तपशीलवार उपाय पहा' : 'View Remedy'}
+        </Button>
+      </div>
+
+      {/* 3b-2. Tank-Mix Compatibility Quick Banner */}
+      <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-300 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <FlaskConical className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h4 className="text-sm font-bold text-teal-950">
+                {language === 'mr' ? 'कीटकनाशक व खते एकत्र मिसळणार आहात का?' : language === 'hi' ? 'कीटनाशक व खाद एक साथ मिलाने से पहले जांचें' : 'Mixing Pesticides & Fertilizers in One Tank?'}
+              </h4>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-200 text-teal-900 font-extrabold uppercase">
+                CIBRC / PDKV
+              </span>
+            </div>
+            <p className="text-xs text-teal-900 mt-0.5 font-medium">
+              {language === 'mr' 
+                ? 'औषध फुटणे (साका होणे) किंवा झाडावर करपा येणे टाळण्यासाठी टँक-मिक्स कॅल्क्युलेटरने सुसंगतता तपासा.' 
+                : 'Prevent chemical curdling, nozzle sludge, or crop scorch with the verified tank-mix compatibility tool.'}
+            </p>
+          </div>
+        </div>
+
+        <Link to="/tank-mix">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="border-teal-500 text-teal-950 hover:bg-teal-100 font-bold text-xs shrink-0"
+          >
+            {language === 'mr' ? 'सुसंगतता तपासा' : 'Check Compatibility'}
+          </Button>
+        </Link>
+      </div>
+
+      {/* 3c. My Crops Growth Stage & Preventive Alerts */}
+      <div>
+        <div className="flex items-center justify-between mb-3 px-1">
+          <h4 className="text-base font-bold text-[#0A2540] flex items-center gap-2">
+            <Sprout className="w-4 h-4 text-emerald-600" />
+            <span>
+              {language === 'mr' ? 'माझी पिके व पीक वाढीचा टप्पा' : language === 'hi' ? 'मेरी फसलें व विकास चरण' : 'My Crops & Phenological Growth Stage'}
+            </span>
+          </h4>
+          <Link to="/crops" className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 transition">
+            <span>{language === 'mr' ? 'सर्व पिके पहा' : 'View All'}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {crops.map((crop) => (
+            <CropStageCard key={crop.id} crop={crop} />
+          ))}
         </div>
       </div>
 
@@ -492,6 +644,12 @@ export const Home: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Lalya Diagnostic Guide Modal */}
+      <LalyaDeficiencyGuide 
+        isOpen={isLalyaModalOpen} 
+        onClose={() => setIsLalyaModalOpen(false)} 
+      />
     </div>
   );
 };

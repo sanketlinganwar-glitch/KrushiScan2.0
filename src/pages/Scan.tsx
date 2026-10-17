@@ -15,7 +15,9 @@ import {
   PlusCircle, 
   ArrowLeft,
   RefreshCw,
-  Info
+  Info,
+  Crosshair,
+  Target
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -42,6 +44,8 @@ export const Scan: React.FC = () => {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [addedToRecovery, setAddedToRecovery] = useState<boolean>(false);
+  const [showSymptomBoxes, setShowSymptomBoxes] = useState<boolean>(true);
+  const [selectedSymptomBox, setSelectedSymptomBox] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -448,32 +452,78 @@ export const Scan: React.FC = () => {
           {/* Top Diagnosis Summary Card (High-Contrast White Card) */}
           <Card variant="white" className="p-6 border-[#D5DEE8] shadow-sm">
             <div className="flex flex-col md:flex-row gap-6 items-start">
-              {/* Photo with Severity & Confidence Overlays */}
-              <div className="w-full md:w-56 shrink-0 rounded-2xl overflow-hidden bg-[#0B1626] border border-[#D5DEE8] shadow-sm relative">
-                <img
-                  src={result.imageUrl}
-                  alt={result.diseaseName}
-                  className="w-full aspect-[4/3] md:aspect-square object-cover"
-                />
-                <div className="absolute top-2.5 left-2.5">
-                  <Badge
-                    variant={
-                      result.severity === 'Critical' || result.severity === 'High'
-                        ? 'danger'
-                        : result.severity === 'Moderate'
-                        ? 'warning'
-                        : 'success'
-                    }
-                    size="md"
-                    dot
+              {/* Photo with Severity & Confidence Overlays + Interactive Symptom Boxes */}
+              <div className="w-full md:w-64 shrink-0 space-y-2">
+                <div className="rounded-2xl overflow-hidden bg-[#0B1626] border border-[#D5DEE8] shadow-sm relative aspect-[4/3] md:aspect-square">
+                  <img
+                    src={result.imageUrl}
+                    alt={result.diseaseName}
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Symptom Bounding Boxes and Pinpoints */}
+                  {showSymptomBoxes && result.symptomBoxes?.map((box) => (
+                    <div
+                      key={box.id}
+                      onClick={() => setSelectedSymptomBox(selectedSymptomBox === box.id ? null : box.id)}
+                      style={{
+                        left: `${box.x}%`,
+                        top: `${box.y}%`,
+                        width: box.width ? `${box.width}%` : '24%',
+                        height: box.height ? `${box.height}%` : '24%',
+                      }}
+                      className={`absolute border-2 rounded-xl cursor-pointer transition-all duration-200 z-10 ${
+                        selectedSymptomBox === box.id
+                          ? 'border-amber-400 bg-amber-400/25 ring-4 ring-amber-400/40 shadow-lg'
+                          : 'border-rose-500 bg-rose-500/20 hover:bg-rose-500/35 hover:scale-105'
+                      }`}
+                      title={box.label}
+                    >
+                      <div className="absolute -top-2.5 -left-2.5 w-6 h-6 rounded-full bg-rose-600 border-2 border-white text-white text-[10px] font-black flex items-center justify-center shadow-md animate-pulse">
+                        <Target className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="absolute -bottom-5 left-0 whitespace-nowrap bg-black/85 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm border border-white/20">
+                        {box.label}
+                      </span>
+                    </div>
+                  ))}
+
+                  <div className="absolute top-2.5 left-2.5 z-20">
+                    <Badge
+                      variant={
+                        result.severity === 'Critical' || result.severity === 'High'
+                          ? 'danger'
+                          : result.severity === 'Moderate'
+                          ? 'warning'
+                          : 'success'
+                      }
+                      size="md"
+                      dot
+                    >
+                      {t('severityLabel')} {result.severity}
+                    </Badge>
+                  </div>
+                  <div className="absolute bottom-2.5 right-2.5 bg-[#138808] px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1 z-20">
+                    <Sparkles className="w-3.5 h-3.5 text-white" />
+                    <span>{result.confidence}% उच्च अचूकता</span>
+                  </div>
+                </div>
+
+                {/* Symptom Boxes Toggle Button */}
+                {result.symptomBoxes && result.symptomBoxes.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSymptomBoxes(!showSymptomBoxes)}
+                    className="w-full py-1.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 transition-colors bg-[#EEF3F8] text-[#0A2540] hover:bg-[#D5DEE8]"
                   >
-                    {t('severityLabel')} {result.severity}
-                  </Badge>
-                </div>
-                <div className="absolute bottom-2.5 right-2.5 bg-[#138808] px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-white" />
-                  <span>{result.confidence}% उच्च अचूकता</span>
-                </div>
+                    <Crosshair className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>
+                      {showSymptomBoxes
+                        ? (language === 'mr' ? 'लक्षणे लपवा (Hide Pins)' : 'Hide Symptom Pins')
+                        : (language === 'mr' ? 'रोगट भाग चिन्हांकित करा (Highlight Pins)' : 'Show Symptom Pins')}
+                    </span>
+                  </button>
+                )}
               </div>
 
               {/* Disease Details & Voice Reader */}
@@ -511,6 +561,32 @@ export const Scan: React.FC = () => {
                 <p className="text-sm text-[#0A2540] leading-relaxed font-medium">
                   {result.diagnosisExplanation}
                 </p>
+
+                {/* Interactive Selected Symptom Inspector Card */}
+                {selectedSymptomBox && (() => {
+                  const activeBox = result.symptomBoxes?.find(b => b.id === selectedSymptomBox);
+                  if (!activeBox) return null;
+                  return (
+                    <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 space-y-1 animate-in fade-in duration-200 shadow-2xs">
+                      <div className="flex items-center justify-between font-bold">
+                        <span className="flex items-center gap-1.5 text-amber-900 text-sm">
+                          <Target className="w-4 h-4 text-rose-600 shrink-0" />
+                          <span>{activeBox.label}</span>
+                        </span>
+                        <button 
+                          type="button" 
+                          onClick={() => setSelectedSymptomBox(null)}
+                          className="text-amber-800 hover:text-amber-950 text-[11px] underline"
+                        >
+                          बंद करा (Close)
+                        </button>
+                      </div>
+                      <p className="text-slate-800 font-medium leading-relaxed pt-0.5">
+                        {activeBox.description}
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 {/* Symptoms Checklist */}
                 <div className="pt-2">

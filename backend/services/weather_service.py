@@ -34,6 +34,8 @@ async def get_live_weather(district: str = DEFAULT_DISTRICT, lat: Optional[float
         f"?latitude={target_lat}&longitude={target_lon}"
         f"&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m"
         f"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"
+        f"&hourly=temperature_2m,precipitation_probability,wind_speed_10m"
+        f"&forecast_days=2"
         f"&timezone=Asia%2FKolkata"
     )
 
@@ -46,6 +48,7 @@ async def get_live_weather(district: str = DEFAULT_DISTRICT, lat: Optional[float
         
     current = data.get("current", {})
     daily = data.get("daily", {})
+    hourly = data.get("hourly", {})
     
     temp = round(current.get("temperature_2m", 0.0))
     humidity = round(current.get("relative_humidity_2m", 0.0))
@@ -57,6 +60,7 @@ async def get_live_weather(district: str = DEFAULT_DISTRICT, lat: Optional[float
     
     condition_text = map_weather_code_to_text(weather_code)
     advisory = generate_pdkv_weather_advisory(temp, humidity, rain_prob)
+    spray_window = generate_spray_window_analysis(hourly, wind_speed, rain_prob)
     
     # Format 7-day forecast
     forecast_days = []
@@ -85,9 +89,50 @@ async def get_live_weather(district: str = DEFAULT_DISTRICT, lat: Optional[float
         "condition": condition_text,
         "weatherCode": weather_code,
         "advisory": advisory,
+        "sprayWindow": spray_window,
         "forecast": forecast_days,
         "isLive": True,
         "dataSource": "Open-Meteo High-Resolution Numerical Weather Prediction"
+    }
+
+def generate_spray_window_analysis(hourly: Dict[str, Any], wind_speed: int, rain_prob: int) -> Dict[str, Any]:
+    times = hourly.get("time", [])
+    rains = hourly.get("precipitation_probability", [])
+    winds = hourly.get("wind_speed_10m", [])
+    temps = hourly.get("temperature_2m", [])
+
+    hours_list = []
+    for i in range(min(12, len(times))):
+        h_rain = round(rains[i]) if i < len(rains) else rain_prob
+        h_wind = round(winds[i]) if i < len(winds) else wind_speed
+        h_temp = round(temps[i]) if i < len(temps) else 30
+        t_str = times[i].split("T")[1][:5] if "T" in times[i] else f"{i:02d}:00"
+
+        status = "safe"
+        if h_rain >= 40 or h_wind >= 18:
+            status = "danger"
+        elif h_rain >= 20 or h_wind >= 14:
+            status = "caution"
+
+        hours_list.append({
+            "timeStr": t_str,
+            "temp": h_temp,
+            "rainProb": h_rain,
+            "windSpeed": h_wind,
+            "status": status,
+            "reason": {
+                "mr": "फवारणीसाठी अनुकूल वेळ" if status == "safe" else "पाऊस किंवा वाऱ्याचा धोका",
+                "hi": "छिड़काव के लिए अनुकूल समय" if status == "safe" else "हवा या बारिश का खतरा",
+                "en": "Favorable spray conditions" if status == "safe" else "High drift or wash-off risk"
+            }
+        })
+
+    current_status = hours_list[0]["status"] if hours_list else ("danger" if rain_prob > 35 else "safe")
+    return {
+        "currentStatus": current_status,
+        "washOffRiskPercentage": min(100, max(5, round(rain_prob * 1.3))),
+        "bestSpraySlot": "सकाळी ०६:३० ते ०९:३० वाजता",
+        "hourlyRadar": hours_list
     }
 
 def map_weather_code_to_text(code: int) -> str:

@@ -25,6 +25,7 @@ import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { ConfirmationDialog } from '../components/ui/ConfirmationDialog';
 import { LOCAL_STORAGE_KEYS } from '../lib/supabase';
+import { calculateCropStage } from '../lib/cropStages';
 
 const INITIAL_CROPS: Crop[] = [
   {
@@ -345,21 +346,36 @@ export const MyCrops: React.FC = () => {
                 </div>
               </div>
 
-              {/* Growth Stage Progress */}
-              <div className="py-2.5 border-t border-[#D5DEE8]">
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-[#5B6B7D] font-medium">वाढीचा टप्पा:</span>
-                  <span className="font-bold text-[#0A2540]">
-                    {getStageLabel(crop.stage)}
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-[#EEF3F8] overflow-hidden">
-                  <div
-                    className="h-full bg-[#138808] rounded-full transition-all duration-500"
-                    style={{ width: `${getStagePercent(crop.stage)}%` }}
-                  />
-                </div>
-              </div>
+              {/* Growth Stage Progress with Proactive Agronomic Alert */}
+              {(() => {
+                const stageInfo = calculateCropStage(crop);
+                return (
+                  <div className="py-2.5 border-t border-[#D5DEE8] space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-[#0A2540] font-bold flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-[#138808]" />
+                        {stageInfo.stageName[language]}
+                      </span>
+                      <span className="text-[11px] text-[#5B6B7D] font-medium">
+                        दिवस {stageInfo.daysAfterSowing} ({stageInfo.progressPercent}%)
+                      </span>
+                    </div>
+
+                    <div className="w-full h-2 rounded-full bg-[#EEF3F8] overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full transition-all duration-500"
+                        style={{ width: `${stageInfo.progressPercent}%` }}
+                      />
+                    </div>
+
+                    {stageInfo.urgentAlert && (
+                      <div className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-[11px] font-semibold text-amber-900 leading-tight">
+                        ⚠️ {stageInfo.urgentAlert[language]}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Latest Scan Link */}
               {crop.latestDiseaseName && (

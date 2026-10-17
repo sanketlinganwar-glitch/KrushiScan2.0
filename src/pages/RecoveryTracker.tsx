@@ -11,7 +11,9 @@ import {
   Clock, 
   ChevronRight,
   TrendingUp,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { RecoveryLog, SeverityLevel } from '../types';
@@ -20,6 +22,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { LOCAL_STORAGE_KEYS } from '../lib/supabase';
+import { analyzeRecoveryDelta } from '../lib/recoveryAnalysis';
 
 const INITIAL_RECOVERY_LOGS: RecoveryLog[] = [
   {
@@ -318,6 +321,94 @@ export const RecoveryTracker: React.FC = () => {
                 </span>
               </div>
             </Card>
+
+            {/* AI Before/After Comparative Vision Analysis Card */}
+            {(() => {
+              const delta = analyzeRecoveryDelta(
+                selectedLog.originalDisease,
+                selectedLog.initialSeverity,
+                selectedLog.currentStatus === 'recovered' ? 12 : 7
+              );
+
+              return (
+                <Card variant="white" className="p-5 border-emerald-300 shadow-md bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/30">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-emerald-100 mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="p-1.5 rounded-lg bg-emerald-600 text-white shadow-xs">
+                        <Sparkles className="w-4 h-4" />
+                      </span>
+                      <div>
+                        <h4 className="text-sm font-bold text-[#0A2540]">
+                          {language === 'mr' ? 'AI तुलनात्मक सुधारणा विश्लेषण (Recovery Delta)' : 'AI Comparative Recovery Delta Analysis'}
+                        </h4>
+                        <span className="text-[11px] text-[#5B6B7D]">
+                          {language === 'mr' ? 'मूळ फोटो विरुद्ध नवीन फोटो संगणकीय तपासणी' : 'Computer vision differential analysis between Day 1 & follow-up'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Badge variant="success" size="sm" className="font-bold text-xs">
+                      {delta.healingStatusText[language]}
+                    </Badge>
+                  </div>
+
+                  {/* Recovery Metric Gauges */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-2xs">
+                      <div className="flex justify-between items-center text-xs mb-1">
+                        <span className="font-bold text-[#0A2540]">
+                          {language === 'mr' ? 'एकूण सुधारणा प्रमाण (Healing Progress):' : 'Overall Healing Score:'}
+                        </span>
+                        <span className="text-emerald-700 font-extrabold text-sm">{delta.recoveryScorePercent}%</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
+                          style={{ width: `${delta.recoveryScorePercent}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-2xs">
+                      <div className="flex justify-between items-center text-xs mb-1">
+                        <span className="font-bold text-[#0A2540]">
+                          {language === 'mr' ? 'रोगट डागांचे प्रमाण घटले (Lesion Reduction):' : 'Lesion Desiccation:'}
+                        </span>
+                        <span className="text-[#3B6EA5] font-extrabold text-sm">{delta.lesionReductionPercent}%</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500"
+                          style={{ width: `${delta.lesionReductionPercent}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* AI Clinical Observations & Agronomic Advice */}
+                  <div className="space-y-2 text-xs">
+                    <div className="p-3 rounded-xl bg-white border border-emerald-100">
+                      <span className="font-bold text-emerald-950 block mb-1">
+                        🔬 {language === 'mr' ? 'AI निरीक्षण:' : 'AI Vision Finding:'}
+                      </span>
+                      <p className="text-slate-700 leading-relaxed font-medium">
+                        {delta.observations[language]}
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200">
+                      <span className="font-bold text-emerald-950 flex items-center gap-1 mb-1">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>{language === 'mr' ? 'पुढील शिफारस (Next Agronomic Action):' : 'Agronomic Action:'}</span>
+                      </span>
+                      <p className="text-emerald-900 leading-relaxed font-semibold">
+                        {delta.nextStepRecommendation[language]}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })()}
 
             {/* Recovery Timeline */}
             <Card variant="white" className="p-5 border-[#D5DEE8]">

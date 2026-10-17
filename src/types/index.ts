@@ -49,6 +49,15 @@ export interface ScanResult {
   scannedAt: string;
   isDemo?: boolean;
   qualityWarning?: string;
+  symptomBoxes?: {
+    id: string;
+    label: string;
+    x: number; // percentage (0-100)
+    y: number; // percentage (0-100)
+    width?: number; // percentage
+    height?: number; // percentage
+    description: string;
+  }[];
 }
 
 export interface Crop {
@@ -88,6 +97,13 @@ export interface RecoveryLog {
   initialImageUrl: string;
   latestImageUrl?: string;
   observations: string[];
+  recoveryScorePercent?: number; // 0 - 100% healing progress
+  aiComparisonAnalysis?: {
+    healingStatus: 'exceptional' | 'good' | 'moderate' | 'deteriorated';
+    lesionReductionPercent: number;
+    observations: { mr: string; hi: string; en: string };
+    nextStepRecommendation: { mr: string; hi: string; en: string };
+  };
   timeline: {
     date: string;
     note: string;
@@ -209,6 +225,28 @@ export interface AppNotification {
   severity?: 'info' | 'warning' | 'alert';
 }
 
+export interface SprayRadarHour {
+  timeStr: string; // e.g. "10:00"
+  temp: number;
+  rainProb: number; // 0-100%
+  windSpeed: number; // km/h
+  status: 'safe' | 'caution' | 'danger'; // safe (green), caution (yellow), danger (red)
+  reason: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+}
+
+export interface SprayWindowAdvisory {
+  currentStatus: 'safe' | 'caution' | 'danger';
+  headline: { mr: string; hi: string; en: string };
+  recommendation: { mr: string; hi: string; en: string };
+  washOffRiskPercentage: number;
+  bestSpraySlot: string; // e.g., "सकाळी ६:३० ते ९:३०"
+  hourlyRadar: SprayRadarHour[];
+}
+
 export interface WeatherData {
   temp: number;
   condition: string;
@@ -222,4 +260,111 @@ export interface WeatherData {
     en: string;
   };
   isLive: boolean;
+  sprayWindow?: SprayWindowAdvisory;
+}
+export type ChemicalCategory = 'insecticide' | 'fungicide' | 'fertilizer' | 'biocontrol' | 'adjuvant';
+
+export type FormulationCode = 'WP' | 'WDG' | 'SG' | 'SC' | 'EC' | 'SL' | 'SP' | 'WSF' | 'BIO' | 'ADJ';
+
+export interface ChemicalItem {
+  id: string;
+  name: string;
+  tradeNameExample: string;
+  category: ChemicalCategory;
+  formulation: FormulationCode;
+  formulationFullName: string;
+  activeIngredient: string;
+  commonTarget: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+}
+
+export type CompatibilityStatus = 'verified_compatible' | 'incompatible' | 'caution_jar_test' | 'unverified';
+
+export interface VerifiedCompatibilityRule {
+  id: string;
+  chemicalAId: string;
+  chemicalBId: string;
+  status: CompatibilityStatus;
+  primaryRisk?: 'phytotoxicity' | 'chemical_neutralization' | 'precipitation_curdling' | 'biocide_inactivation' | 'none';
+  headline: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  explanation: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  sourceAuthority: string;
+  documentTitle: string;
+  issuingAuthority: string;
+  publicationDate?: string;
+  sectionOrPage?: string;
+  evidenceType: 'university_recommendation' | 'statutory_label_leaflet' | 'incompatibility_science' | 'conditional_field_practice' | 'insufficient_evidence';
+  applicableConditions: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  verificationStatus: 'verified_university_label' | 'statutory_incompatibility' | 'unverified_field_practice';
+}
+
+export interface WalesMixingStep {
+  stepNumber: number;
+  walesCategory: 'W' | 'A' | 'L' | 'E' | 'S' | 'Water';
+  title: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  instruction: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  chemicalNames: string[];
+}
+
+export interface TankMixEvaluationResult {
+  selectedChemicals: ChemicalItem[];
+  overallStatus: CompatibilityStatus;
+  statusHeadline: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  detailedExplanation: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  highestRisk?: string;
+  isMultiProductCaution: boolean;
+  mixingOrder: WalesMixingStep[];
+  rulesTriggered: VerifiedCompatibilityRule[];
+  jarTestMandatory: boolean;
+  labelPrecedenceNotice: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  waterQualityNotice: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
+  safetyCautions: {
+    mr: string[];
+    hi: string[];
+    en: string[];
+  };
+  disclaimer: {
+    mr: string;
+    hi: string;
+    en: string;
+  };
 }
