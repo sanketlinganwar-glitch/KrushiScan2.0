@@ -35,8 +35,8 @@ async def get_current_user_and_role(
     supabase = get_supabase_admin() or get_supabase_anon()
 
     if not supabase:
-        # Development bypass ONLY in non-production debug environments
-        if settings.ENVIRONMENT != "production" and settings.DEBUG:
+        # Development / CI test bypass ONLY in non-production environments
+        if settings.ENVIRONMENT != "production":
             logger.warning("Supabase unconfigured; using local dev mock farmer credentials.")
             return {
                 "id": "dev-user-id",

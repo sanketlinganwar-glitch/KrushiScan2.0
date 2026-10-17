@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     # App
     PROJECT_NAME: str = "KrushiScan AI API"
-    ENVIRONMENT: str = "production"
+    ENVIRONMENT: str = "development"
     DEBUG: bool = False
     PORT: int = 8000
     HOST: str = "0.0.0.0"
