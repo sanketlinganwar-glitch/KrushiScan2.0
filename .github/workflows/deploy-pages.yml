@@ -31,10 +31,13 @@ jobs:
       - name: Build frontend for GitHub Pages
         env:
           GITHUB_PAGES: 'true'
+          VITE_BASE_PATH: '/KrushiScan2.0/'
         run: npm run build
 
-      - name: SPA 404 Fallback for client-side routing
-        run: cp dist/index.html dist/404.html
+      - name: Ensure .nojekyll and SPA 404 Fallback
+        run: |
+          touch dist/.nojekyll
+          test -f dist/404.html || cp dist/index.html dist/404.html
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4

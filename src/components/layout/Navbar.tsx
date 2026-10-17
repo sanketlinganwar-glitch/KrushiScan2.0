@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenVoiceAssistant }) => {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-xs shrink-0 backdrop-blur-xs">
-                <img src="/logo.svg" alt="KrushiScan" className="w-8 h-8" />
+                <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="KrushiScan" className="w-8 h-8" />
               </div>
               <div className="hidden sm:block">
                 <div className="flex items-center gap-2">

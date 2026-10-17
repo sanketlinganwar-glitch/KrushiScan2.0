@@ -51,7 +51,7 @@ export const Signup: React.FC = () => {
       {/* Brand Header */}
       <div className="text-center mb-6">
         <div className="w-14 h-14 rounded-2xl bg-[#0A2540] border-2 border-[#FF9933] flex items-center justify-center shadow-lg mx-auto mb-2">
-          <img src="/logo.svg" alt="KrushiScan" className="w-10 h-10" />
+          <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="KrushiScan" className="w-10 h-10" />
         </div>
         <h1 className="text-2xl font-black text-[#0A2540]">
           KrushiScan <span className="text-[#0A2540]">AI</span> नोंदणी

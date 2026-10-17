@@ -29,7 +29,7 @@ export const App: React.FC = () => {
       <AuthProvider>
         <NotificationProvider>
           <CartProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={import.meta.env.BASE_URL}>
               <Routes>
                 {/* Main Dashboard Layout with Sidebar and BottomNav */}
                 <Route element={<Layout />}>

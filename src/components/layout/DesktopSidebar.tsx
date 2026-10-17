@@ -41,7 +41,7 @@ export const DesktopSidebar: React.FC = () => {
         <div className="p-4">
           <NavLink to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-xs shrink-0">
-              <img src="/logo.svg" alt="KrushiScan" className="w-8 h-8" />
+              <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="KrushiScan" className="w-8 h-8" />
             </div>
             <div>
               <h1 className="font-extrabold text-xl tracking-tight text-white flex items-center gap-1.5">

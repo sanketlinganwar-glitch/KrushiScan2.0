@@ -41,7 +41,7 @@ export const Login: React.FC = () => {
       {/* Brand Header */}
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-3xl bg-[#0A2540] border-2 border-[#FF9933] flex items-center justify-center shadow-lg mx-auto mb-3">
-          <img src="/logo.svg" alt="KrushiScan" className="w-12 h-12" />
+          <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="KrushiScan" className="w-12 h-12" />
         </div>
         <h1 className="text-3xl font-black text-[#0A2540] tracking-tight">
           KrushiScan <span className="text-[#0A2540]">AI</span>
