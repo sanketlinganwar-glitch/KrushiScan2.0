@@ -38,13 +38,26 @@ const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login }
 const Signup = lazy(() => import('./pages/Signup').then(m => ({ default: m.Signup })));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
 
+// Resilient basename detector: accurately handles GitHub Pages subpath (/KrushiScan2.0),
+// Vercel/Netlify root (/), and local preview environments without blank screens.
+const getRouterBasename = (): string => {
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/KrushiScan2.0')) {
+    return '/KrushiScan2.0';
+  }
+  const base = import.meta.env.BASE_URL;
+  if (base && base.startsWith('/') && base !== '/KrushiScan2.0/') {
+    return base;
+  }
+  return '/';
+};
+
 export const App: React.FC = () => {
   return (
     <LanguageProvider>
       <AuthProvider>
         <NotificationProvider>
           <CartProvider>
-            <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <BrowserRouter basename={getRouterBasename()}>
               <Routes>
                 {/* Main Dashboard Layout with Sidebar and BottomNav */}
                 <Route element={<Layout />}>

@@ -148,6 +148,8 @@ async function runMandiRatesTests() {
   console.log('🎉 ALL 6 MANDI RATES & NET RETURN UNIT TESTS PASSED ACCURATELY!');
 }
 
+declare const process: { exit: (code?: number) => never };
+
 runMandiRatesTests().catch((err) => {
   console.error('❌ Mandi Rates test suite failed:', err);
   process.exit(1);
