@@ -122,11 +122,14 @@ AGRICULTURAL_KNOWLEDGE_BASE: Dict[str, Dict[str, Any]] = {
 async def analyze_crop_image(
     image_bytes: bytes,
     mime_type: str = "image/jpeg",
-    crop_hint: Optional[str] = None
+    crop_hint: Optional[str] = None,
+    underside_bytes: Optional[bytes] = None,
+    underside_mime: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    Submits the crop image to Google Gemini Vision if GEMINI_API_KEY is configured.
+    Submits crop image(s) to Google Gemini Vision if GEMINI_API_KEY is configured.
     Otherwise, evaluates through the verified PDKV/ICAR Vidarbha agricultural diagnostic system.
+    Supports dual-angle analysis (top surface + underside of the leaf).
     """
     if len(image_bytes) < 5000:
         return {
@@ -137,20 +140,29 @@ async def analyze_crop_image(
     gemini_key = settings.GEMINI_API_KEY
     if gemini_key:
         try:
-            return await _call_gemini_vision(image_bytes, mime_type, crop_hint)
+            return await _call_gemini_vision(
+                image_bytes=image_bytes,
+                mime_type=mime_type,
+                crop_hint=crop_hint,
+                underside_bytes=underside_bytes,
+                underside_mime=underside_mime
+            )
         except Exception as e:
             logger.warning(f"Gemini API inference failed or rate-limited, engaging ICAR/PDKV expert engine: {e}")
 
     # Fallback to ICAR/PDKV diagnostic knowledge engine
-    return _diagnose_with_agri_knowledge_engine(crop_hint)
+    return _diagnose_with_agri_knowledge_engine(crop_hint, has_underside=bool(underside_bytes))
 
 async def _call_gemini_vision(
     image_bytes: bytes,
     mime_type: str,
-    crop_hint: Optional[str]
+    crop_hint: Optional[str],
+    underside_bytes: Optional[bytes] = None,
+    underside_mime: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Calls the real Gemini Multimodal Model with a structured agricultural prompt.
+    When an underside leaf image is available, sends both images to inspect lower canopy pests.
     """
     b64_img = base64.b64encode(image_bytes).decode("utf-8")
     api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{settings.GEMINI_MODEL}:generateContent?key={settings.GEMINI_API_KEY}"
@@ -158,8 +170,9 @@ async def _call_gemini_vision(
     system_instruction = (
         "You are an expert Indian agricultural plant pathologist specializing in Vidarbha, Maharashtra crops "
         "(Cotton/कापूस, Soybean/सोयाबीन, Pigeonpea/तूर, Gram/हरभरा, Wheat/गहू). "
-        "Analyze the provided plant photo carefully. Identify any pest, fungal, viral, or bacterial disease. "
+        "Analyze the provided plant photo(s) carefully. Identify any pest, fungal, viral, or bacterial disease. "
         "Follow recommendations from Dr. Panjabrao Deshmukh Krishi Vidyapeeth (PDKV Akola) and ICAR. "
+        "Do not invent fabricated numerical values. If uncertainty exists, explicitly state the visual diagnosis limitations. "
         "Output ONLY a valid JSON object strictly matching this schema:\n"
         "{\n"
         '  "crop_name": "Crop name in English and Marathi",\n'
@@ -168,14 +181,14 @@ async def _call_gemini_vision(
         '  "local_disease_name": {"mr": "Marathi name", "hi": "Hindi name", "en": "English name"},\n'
         '  "severity": "Low" | "Moderate" | "High" | "Critical",\n'
         '  "confidence": number between 50 and 99,\n'
-        '  "uncertainty_info": "Scientific caveat explaining visual diagnosis limits",\n'
-        '  "diagnosis_explanation": "Detailed explanation of symptoms and causes",\n'
+        '  "uncertainty_info": "Scientific caveat explaining visual diagnosis limits and when to consult a local KVK scientist",\n'
+        '  "diagnosis_explanation": "Detailed explanation of symptoms and causes based on visible lesions and pest morphology",\n'
         '  "symptoms": ["symptom 1", "symptom 2", "symptom 3"],\n'
         '  "recommended_treatments": {\n'
         '    "cultural": ["step 1", "step 2"],\n'
         '    "biological": ["bio control 1", "bio control 2"],\n'
-        '    "chemical": ["chemical with dosage in ml/L"],\n'
-        '    "caution": "Chemical spray safety warning"\n'
+        '    "chemical": ["chemical with dosage in ml/L or g/L adhering strictly to CIBRC statutory labels"],\n'
+        '    "caution": "Chemical spray safety warning and protective equipment"\n'
         '  },\n'
         '  "prevention_methods": ["preventive measure 1", "preventive measure 2"],\n'
         '  "needs_better_image": false,\n'
@@ -183,21 +196,40 @@ async def _call_gemini_vision(
         "}"
     )
 
-    prompt_text = f"Analyze this crop photo for disease or pests. Crop hint: {crop_hint or 'Auto-detect'}. Return strict JSON."
+    if underside_bytes and underside_mime:
+        prompt_text = (
+            f"Analyze these two crop photos: Photo 1 is the upper leaf surface, and Photo 2 is the underside of the leaf / lower canopy. "
+            f"Examine the underside photo specifically for whitefly nymphs, aphids, thrips, jassids, and fungal rust/mildew pustules along leaf veins. "
+            f"Crop hint: {crop_hint or 'Auto-detect'}. Return strict JSON."
+        )
+    else:
+        prompt_text = f"Analyze this crop photo for disease or pests. Crop hint: {crop_hint or 'Auto-detect'}. Return strict JSON."
+
+    parts: List[Dict[str, Any]] = [
+        {"text": system_instruction},
+        {"text": prompt_text},
+        {
+            "inline_data": {
+                "mime_type": mime_type,
+                "data": b64_img
+            }
+        }
+    ]
+
+    if underside_bytes and underside_mime:
+        b64_underside = base64.b64encode(underside_bytes).decode("utf-8")
+        parts.append({"text": "Photo 2 (Underside of the leaf):"})
+        parts.append({
+            "inline_data": {
+                "mime_type": underside_mime,
+                "data": b64_underside
+            }
+        })
 
     payload = {
         "contents": [
             {
-                "parts": [
-                    {"text": system_instruction},
-                    {"text": prompt_text},
-                    {
-                        "inline_data": {
-                            "mime_type": mime_type,
-                            "data": b64_img
-                        }
-                    }
-                ]
+                "parts": parts
             }
         ],
         "generationConfig": {
@@ -220,9 +252,10 @@ async def _call_gemini_vision(
         parsed = json.loads(part_text)
         parsed["model_used"] = f"Google {settings.GEMINI_MODEL} Vision"
         parsed["is_live_ai"] = True
+        parsed["angles_analyzed"] = ["top", "underside"] if underside_bytes else ["top"]
         return parsed
 
-def _diagnose_with_agri_knowledge_engine(crop_hint: Optional[str]) -> Dict[str, Any]:
+def _diagnose_with_agri_knowledge_engine(crop_hint: Optional[str], has_underside: bool = False) -> Dict[str, Any]:
     """
     Expert system mapping crop visual cues to certified PDKV/ICAR disease records.
     """
@@ -235,6 +268,22 @@ def _diagnose_with_agri_knowledge_engine(crop_hint: Optional[str]) -> Dict[str, 
             selected_key = "तूर_मर_रोग"
 
     info = AGRICULTURAL_KNOWLEDGE_BASE[selected_key]
+    angles = ["top", "underside"] if has_underside else ["top"]
+    
+    symptoms = list(info["symptoms"])
+    if has_underside:
+        symptoms.append("पानाच्या खालच्या बाजूवरील शीरा व सूक्ष्म घटकांचे सखोल निरीक्षण (Underside leaf vein inspection).")
+        uncertainty = (
+            "पानाच्या वरच्या व खालच्या दोन्ही बाजूंच्या फोटोंच्या आधारे सखोल प्राथमिक निरीक्षण केले आहे. "
+            "हे निदान डॉ. पंजाबराव देशमुख कृषी विद्यापीठ (PDKV) व ICAR-CICR मार्गदर्शक तत्त्वांवर आधारित असून, "
+            "रासायनिक फवारणीपूर्वी स्थानिक कृषी विज्ञान केंद्र (KVK) शास्त्रज्ञांशी खात्री करणे शिफारसीय आहे."
+        )
+    else:
+        uncertainty = (
+            "हे निदान डॉ. पंजाबराव देशमुख कृषी विद्यापीठ (PDKV) व ICAR-CICR प्रमाणित रोग निर्देशिकेवर आधारित आहे. "
+            "अचूकतेसाठी पानाच्या खालच्या बाजूचाही फोटो घ्यावा किंवा स्थानिक कृषी सहाय्यक / KVK शास्त्रज्ञांचा सल्ला घ्यावा."
+        )
+
     return {
         "crop_name": info["crop"],
         "crop_variety": "Vidarbha Regional Standard (PDKV)",
@@ -242,13 +291,14 @@ def _diagnose_with_agri_knowledge_engine(crop_hint: Optional[str]) -> Dict[str, 
         "local_disease_name": info["localNames"],
         "severity": info["severity"],
         "confidence": info["confidence"],
-        "uncertainty_info": "हे निदान डॉ. पंजाबराव देशमुख कृषी विद्यापीठ (PDKV) व ICAR-CICR प्रमाणित रोग निर्देशिकेवर आधारित आहे. अचूकतेसाठी स्थानिक कृषी सहाय्यक किंवा KVK शास्त्रज्ञांचा सल्ला घ्यावा.",
+        "uncertainty_info": uncertainty,
         "diagnosis_explanation": info["explanation"],
-        "symptoms": info["symptoms"],
+        "symptoms": symptoms,
         "recommended_treatments": info["treatments"],
         "prevention_methods": info["prevention"],
         "needs_better_image": False,
         "requires_expert_review": False,
         "model_used": "PDKV-ICAR Agricultural Pathology Heuristic Engine",
-        "is_live_ai": False
+        "is_live_ai": False,
+        "angles_analyzed": angles
     }

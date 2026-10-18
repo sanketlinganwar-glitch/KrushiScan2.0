@@ -1,23 +1,28 @@
 import { MandiRecord } from '../types';
 
 export const COMMODITIES = [
+  { id: 'all', name: 'सर्व शेतमाल (All)', nameLocal: { mr: 'सर्व शेतमाल', hi: 'सभी फसलें', en: 'All Crops' }, msp: undefined },
   { id: 'cotton', name: 'कापूस (Cotton)', nameLocal: { mr: 'कापूस', hi: 'कपास', en: 'Cotton' }, msp: 7521 },
   { id: 'soybean', name: 'सोयाबीन (Soybean)', nameLocal: { mr: 'सोयाबीन', hi: 'सोयाबीन', en: 'Soybean' }, msp: 4892 },
   { id: 'tur', name: 'तूर (Pigeonpea)', nameLocal: { mr: 'तूर', hi: 'तुअर/अरहर', en: 'Pigeonpea (Tur)' }, msp: 7550 },
   { id: 'chana', name: 'हरभरा / चना (Gram)', nameLocal: { mr: 'हरभरा', hi: 'चना', en: 'Gram (Chana)' }, msp: 5440 },
   { id: 'wheat', name: 'गहू (Wheat)', nameLocal: { mr: 'गहू', hi: 'गेहूं', en: 'Wheat' }, msp: 2275 },
+  { id: 'paddy', name: 'धान / भात (Paddy)', nameLocal: { mr: 'धान / भात', hi: 'धान', en: 'Paddy / Rice' }, msp: 2300 },
 ];
 
 export const VIDARBHA_DISTRICTS = [
   'सर्व जिल्हे (All)',
   'यवतमाळ (Yavatmal)',
-  'अमरावती (Amravati)',
-  'अकोला (Akola)',
   'वर्धा (Wardha)',
-  'नागपूर (Nagpur)',
+  'अकोला (Akola)',
+  'अमरावती (Amravati)',
   'बुलढाणा (Buldhana)',
-  'चंद्रपूर (Chandrapur)',
+  'नागपूर (Nagpur)',
   'वाशीम (Washim)',
+  'चंद्रपूर (Chandrapur)',
+  'भंडारा (Bhandara)',
+  'गोंदिया (Gondia)',
+  'गडचिरोली (Gadchiroli)',
 ];
 
 export const MOCK_MANDI_RECORDS: MandiRecord[] = [

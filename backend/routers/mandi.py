@@ -34,13 +34,8 @@ async def get_mandi_rates(
     Returns official APMC Mandi rates and arrival records across Vidarbha.
     """
     try:
-        data = await fetch_mandi_prices(commodity=commodity, district=district)
-        return {
-            "count": len(data),
-            "records": data,
-            "unit": "₹/Quintal",
-            "source": "APMC Vidarbha / Agmarknet Directorate of Marketing & Inspection"
-        }
+        response_data = await fetch_mandi_prices(commodity=commodity, district=district)
+        return response_data
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to fetch APMC market rates at this time.")
 
@@ -69,7 +64,8 @@ async def post_compare_mandis(payload: MultiMandiCompareRequest):
     """
     Compares net returns across multiple APMC markets to recommend highest net earning.
     """
-    mandis = await fetch_mandi_prices(commodity=payload.commodity)
+    mandis_data = await fetch_mandi_prices(commodity=payload.commodity)
+    mandis = mandis_data.get("records", []) if isinstance(mandis_data, dict) else mandis_data
     if not mandis:
         raise HTTPException(status_code=404, detail="No mandi records found for comparison.")
 

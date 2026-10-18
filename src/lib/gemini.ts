@@ -209,7 +209,8 @@ const VIDARBHA_DIAGNOSES = [
 
 export async function analyzeCropImage(
   imageDataUrl: string,
-  selectedCropHint?: string
+  selectedCropHint?: string,
+  undersideDataUrl?: string
 ): Promise<ScanResult> {
   // 1. Try FastAPI Backend Vision Pipeline (http://localhost:8000/api/ai/scan)
   try {
@@ -221,13 +222,27 @@ export async function analyzeCropImage(
       ia[i] = byteString.charCodeAt(i);
     }
     const blob = new Blob([ab], { type: mimeString });
-    const file = new File([blob], 'crop_scan.jpg', { type: mimeString });
+    const file = new File([blob], 'crop_scan_top.jpg', { type: mimeString });
 
     const formData = new FormData();
     formData.append('file', file);
     if (selectedCropHint) formData.append('crop_hint', selectedCropHint);
 
-    const backendUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
+    // If an optional underside image is provided, append it for dual-angle Gemini Vision analysis
+    if (undersideDataUrl) {
+      const uByteString = atob(undersideDataUrl.split(',')[1] || undersideDataUrl);
+      const uMimeString = undersideDataUrl.split(',')[0].split(':')[1]?.split(';')[0] || 'image/jpeg';
+      const uAb = new ArrayBuffer(uByteString.length);
+      const uIa = new Uint8Array(uAb);
+      for (let i = 0; i < uByteString.length; i++) {
+        uIa[i] = uByteString.charCodeAt(i);
+      }
+      const uBlob = new Blob([uAb], { type: uMimeString });
+      const uFile = new File([uBlob], 'crop_scan_underside.jpg', { type: uMimeString });
+      formData.append('file_underside', uFile);
+    }
+
+    const backendUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_API_URL) || 'http://localhost:8000';
     const res = await fetch(`${backendUrl}/api/ai/scan`, {
       method: 'POST',
       body: formData,
@@ -241,6 +256,9 @@ export async function analyzeCropImage(
         cropName: data.crop_name || data.cropName || 'कापूस (Cotton)',
         cropVariety: data.crop_variety || data.cropVariety || 'Standard (PDKV)',
         imageUrl: data.stored_image_url || imageDataUrl,
+        undersideImageUrl: data.stored_underside_image_url || undersideDataUrl || undefined,
+        anglesScanned: (data.angles_scanned as ('top' | 'underside')[]) || (undersideDataUrl ? ['top', 'underside'] : ['top']),
+        uncertaintyInfo: data.uncertainty_info || undefined,
         diseaseName: data.disease_name || data.diseaseName || 'Pest Infestation',
         localDiseaseName: data.local_disease_name || data.localDiseaseName || {
           mr: data.disease_name || 'रोग',
@@ -293,6 +311,11 @@ export async function analyzeCropImage(
     cropName: matched.cropName,
     cropVariety: matched.cropVariety,
     imageUrl: imageDataUrl,
+    undersideImageUrl: undersideDataUrl || undefined,
+    anglesScanned: undersideDataUrl ? ['top', 'underside'] : ['top'],
+    uncertaintyInfo: undersideDataUrl
+      ? 'दुहेरी कोन तपासणी (पानाचा वरचा पृष्ठभाग + खालची बाजू): पांढरी माशी, तुडतुडे व बुरशीजन्य पुरळ दोन्ही कोनांतून तपासण्यात आले आहेत.'
+      : 'केवळ एका कोनातून (पानाचा वरचा भाग) स्कॅन केले आहे. पानाच्या मागील बाजूचे रसशोषक कीड (पांढरी माशी/थ्रिप्स) तपासण्यासाठी खालचा फोटो जोडणे अधिक अचूक ठरते.',
     diseaseName: matched.diseaseName,
     localDiseaseName: matched.localDiseaseName,
     severity: matched.severity,

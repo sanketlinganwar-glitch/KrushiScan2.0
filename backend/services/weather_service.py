@@ -33,9 +33,9 @@ async def get_live_weather(district: str = DEFAULT_DISTRICT, lat: Optional[float
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={target_lat}&longitude={target_lon}"
         f"&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m"
-        f"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"
+        f"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,et0_fao_evapotranspiration"
         f"&hourly=temperature_2m,precipitation_probability,wind_speed_10m"
-        f"&forecast_days=2"
+        f"&forecast_days=7"
         f"&timezone=Asia%2FKolkata"
     )
 
@@ -68,15 +68,39 @@ async def get_live_weather(district: str = DEFAULT_DISTRICT, lat: Optional[float
     max_temps = daily.get("temperature_2m_max", [])
     min_temps = daily.get("temperature_2m_min", [])
     precip_sums = daily.get("precipitation_sum", [])
+    et0_sums = daily.get("et0_fao_evapotranspiration", [])
     
+    dry_threshold_mm = 2.5
+    consecutive_dry_days = 0
+    max_consecutive_dry_days = 0
+    valid_precip = []
+    valid_et0 = []
+
     for i in range(len(times)):
+        p_val = float(precip_sums[i]) if i < len(precip_sums) and precip_sums[i] is not None else 0.0
+        et_val = float(et0_sums[i]) if i < len(et0_sums) and et0_sums[i] is not None else 4.0
+        valid_precip.append(p_val)
+        valid_et0.append(et_val)
+
+        if p_val < dry_threshold_mm:
+            consecutive_dry_days += 1
+            if consecutive_dry_days > max_consecutive_dry_days:
+                max_consecutive_dry_days = consecutive_dry_days
+        else:
+            consecutive_dry_days = 0
+
         forecast_days.append({
             "date": times[i],
             "maxTemp": max_temps[i] if i < len(max_temps) else temp,
             "minTemp": min_temps[i] if i < len(min_temps) else temp - 6,
             "rainProb": rain_probs[i] if i < len(rain_probs) else 0,
-            "rainMm": precip_sums[i] if i < len(precip_sums) else 0.0
+            "rainMm": round(p_val, 1),
+            "et0Mm": round(et_val, 1),
+            "isDryDay": p_val < dry_threshold_mm
         })
+
+    total_rain_forecast = round(sum(valid_precip), 1)
+    total_et0_forecast = round(sum(valid_et0), 1)
 
     return {
         "district": district,
@@ -91,6 +115,13 @@ async def get_live_weather(district: str = DEFAULT_DISTRICT, lat: Optional[float
         "advisory": advisory,
         "sprayWindow": spray_window,
         "forecast": forecast_days,
+        "drySpellSummary": {
+            "thresholdMm": dry_threshold_mm,
+            "consecutiveDryDays": max_consecutive_dry_days,
+            "totalForecastRainMm": total_rain_forecast,
+            "totalEvapotranspirationMm": total_et0_forecast,
+            "waterDeficitMm": round(total_et0_forecast - total_rain_forecast, 1)
+        },
         "isLive": True,
         "dataSource": "Open-Meteo High-Resolution Numerical Weather Prediction"
     }

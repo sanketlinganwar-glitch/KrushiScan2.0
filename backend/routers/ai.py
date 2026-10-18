@@ -34,11 +34,13 @@ def is_valid_image_magic(data: bytes, content_type: str) -> bool:
 @router.post("/scan")
 async def scan_crop_disease(
     file: UploadFile = File(...),
+    file_underside: Optional[UploadFile] = File(None),
     crop_hint: Optional[str] = Form(None),
     authorization: Optional[str] = Header(None)
 ):
     """
     Submits a crop leaf or pest image to the AI vision pipeline.
+    Supports optional dual-angle scanning (top surface + underside of the leaf).
     Validates MIME type, magic bytes, file size, prevents path traversal,
     and only associates scan records with cryptographically verified auth tokens.
     """
@@ -64,11 +66,36 @@ async def scan_crop_disease(
             detail="File content does not match expected image signature (corrupted or spoofed binary)."
         )
 
+    # Optional underside photo validation
+    underside_bytes = None
+    underside_mime = None
+    if file_underside and file_underside.filename:
+        underside_mime = file_underside.content_type or "image/jpeg"
+        if underside_mime not in valid_mimes:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid underside image format: '{underside_mime}'. Supported: JPEG, PNG, WEBP."
+            )
+        raw_underside = await file_underside.read()
+        if len(raw_underside) > settings.MAX_IMAGE_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Underside file exceeds 10MB limit. Uploaded size: {len(raw_underside) / (1024*1024):.2f}MB."
+            )
+        if not is_valid_image_magic(raw_underside, underside_mime):
+            raise HTTPException(
+                status_code=400,
+                detail="Underside file content does not match expected image signature."
+            )
+        underside_bytes = raw_underside
+
     # Run AI inference
     diagnosis = await analyze_crop_image(
         image_bytes=image_bytes,
         mime_type=content_type,
-        crop_hint=crop_hint
+        crop_hint=crop_hint,
+        underside_bytes=underside_bytes,
+        underside_mime=underside_mime
     )
 
     # Extract verified user_id strictly from Bearer token if present (prevent IDOR)

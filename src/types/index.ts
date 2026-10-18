@@ -49,6 +49,9 @@ export interface ScanResult {
   scannedAt: string;
   isDemo?: boolean;
   qualityWarning?: string;
+  undersideImageUrl?: string;
+  anglesScanned?: ('top' | 'underside')[];
+  uncertaintyInfo?: string;
   symptomBoxes?: {
     id: string;
     label: string;
@@ -141,10 +144,11 @@ export interface GuidanceArticle {
 export interface MandiRecord {
   id: string;
   commodity: string;
-  commodityLocal: { mr: string; hi: string; en: string };
+  commodityLocal?: { mr: string; hi: string; en: string };
   variety: string;
-  state: string;
+  state?: string;
   district: string;
+  districtLocal?: { mr: string; hi: string; en: string };
   marketName: string;
   minPrice: number;
   maxPrice: number;
@@ -152,6 +156,26 @@ export interface MandiRecord {
   arrivalsTonnes: number;
   arrivalDate: string;
   msp?: number;
+  unit?: string;
+  trend?: 'up' | 'down' | 'stable';
+  contactNumber?: string;
+  source?: string;
+  sourceUrl?: string;
+  fetchedAt?: string;
+  historical7Days?: number[];
+}
+
+export interface MandiApiResponse {
+  count: number;
+  records: MandiRecord[];
+  unit: string;
+  status: 'live' | 'cached' | 'baseline';
+  isStale: boolean;
+  lastFetchedAt: string;
+  source: string;
+  sourceUrl: string;
+  apiKeyConfigured: boolean;
+  disclaimer: string;
 }
 
 export interface Product {

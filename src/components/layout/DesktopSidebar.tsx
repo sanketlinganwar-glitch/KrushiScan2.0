@@ -12,7 +12,9 @@ import {
   MessageSquare, 
   Bell, 
   User,
-  FlaskConical 
+  FlaskConical,
+  Bug,
+  CloudRain
 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -25,6 +27,9 @@ export const DesktopSidebar: React.FC = () => {
     { to: '/', label: t('navHome'), icon: Home },
     { to: '/scan', label: t('navScan'), icon: Camera, highlight: true },
     { to: '/crops', label: t('navMyCrops'), icon: Sprout },
+    { to: '/scouting', label: 'कीड सर्वेक्षण (ETL)', icon: Bug },
+    { to: '/soil', label: 'मृदा आरोग्य व खत गणक', icon: FlaskConical },
+    { to: '/weather', label: 'हवामान व कोरडा काळ', icon: CloudRain },
     { to: '/recovery', label: t('navRecovery'), icon: Activity },
     { to: '/history', label: t('navHistory'), icon: History },
     { to: '/guidance', label: t('navGuidance'), icon: BookOpen },

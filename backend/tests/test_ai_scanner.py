@@ -37,6 +37,25 @@ def test_scan_valid_image_payload():
     assert "chemical" in treatments
     assert "caution" in treatments
 
+def test_scan_multi_angle_payload():
+    # Construct two valid JPEG payloads (top leaf and underside)
+    top_image = io.BytesIO(b"\xFF\xD8\xFF\xE0" + b"\x00" * 6000)
+    underside_image = io.BytesIO(b"\xFF\xD8\xFF\xE0" + b"\x00" * 7000)
+    res = client.post(
+        "/api/ai/scan",
+        files={
+            "file": ("top_leaf.jpg", top_image, "image/jpeg"),
+            "file_underside": ("underside_leaf.jpg", underside_image, "image/jpeg")
+        },
+        data={"crop_hint": "कापूस"}
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert "angles_analyzed" in data
+    assert data["angles_analyzed"] == ["top", "underside"]
+    assert "uncertainty_info" in data
+    assert "दोन्ही बाजूंच्या" in data["uncertainty_info"]
+
 def test_agri_knowledge_base_integrity():
     for key, item in AGRICULTURAL_KNOWLEDGE_BASE.items():
         assert "crop" in item

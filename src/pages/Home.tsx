@@ -333,6 +333,20 @@ export const Home: React.FC = () => {
             {weather.advisory[language] || weather.advisory['mr']}
           </p>
         </div>
+
+        {/* Link to 7-Day Dry Spell & Weather Stress Advisor */}
+        <div className="mt-3 pt-3 border-t border-[#EEF3F8] flex items-center justify-between text-xs">
+          <span className="text-[#5B6B7D] font-medium flex items-center gap-1.5">
+            <CloudRain className="w-3.5 h-3.5 text-[#3B6EA5]" />
+            <span>{language === 'mr' ? '७-दिवसीय कोरडा काळ व पीक-ताण अंदाज' : '7-Day Dry Spell & Crop Stress Forecast'}</span>
+          </span>
+          <Link
+            to="/weather"
+            className="font-bold text-[#0A2540] hover:text-[#138808] flex items-center gap-1 transition px-2.5 py-1 rounded-lg hover:bg-[#EEF3F8]"
+          >
+            <span>{language === 'mr' ? 'सल्लागार उघडा →' : 'Open Advisor →'}</span>
+          </Link>
+        </div>
       </Card>
 
       {/* 2b. Suraksha Spray Radar Widget */}

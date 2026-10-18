@@ -17,17 +17,26 @@ import {
   RefreshCw,
   Info,
   Crosshair,
-  Target
+  Target,
+  Layers,
+  WifiOff
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { analyzeCropImage, isGeminiConfigured } from '../lib/gemini';
+import { enqueueOfflineScan } from '../lib/offlineKnowledge';
 import { ScanResult, SeverityLevel } from '../types';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { speakText, stopSpeaking } from '../lib/speech';
 import { LOCAL_STORAGE_KEYS } from '../lib/supabase';
+import { 
+  compressCropImage, 
+  validateImageFile, 
+  formatBytes, 
+  CompressionResult 
+} from '../lib/imageCompression';
 import confetti from 'canvas-confetti';
 
 export const Scan: React.FC = () => {
@@ -38,6 +47,8 @@ export const Scan: React.FC = () => {
   // Workflow states
   const [selectedCrop, setSelectedCrop] = useState<string>('auto');
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [undersideImageSrc, setUndersideImageSrc] = useState<string | null>(null);
+  const [activeSlot, setActiveSlot] = useState<'top' | 'underside'>('top');
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
@@ -46,6 +57,15 @@ export const Scan: React.FC = () => {
   const [addedToRecovery, setAddedToRecovery] = useState<boolean>(false);
   const [showSymptomBoxes, setShowSymptomBoxes] = useState<boolean>(true);
   const [selectedSymptomBox, setSelectedSymptomBox] = useState<string | null>(null);
+
+  // Client-side smart image compression states
+  const [compressionStats, setCompressionStats] = useState<CompressionResult | null>(null);
+  const [undersideCompressionStats, setUndersideCompressionStats] = useState<CompressionResult | null>(null);
+  const [isCompressing, setIsCompressing] = useState<boolean>(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isSavingOffline, setIsSavingOffline] = useState<boolean>(false);
+  const [offlineSaveNotice, setOfflineSaveNotice] = useState<string | null>(null);
+  const [isDeviceOnline, setIsDeviceOnline] = useState<boolean>(() => (typeof navigator !== 'undefined' ? navigator.onLine : true));
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,8 +79,10 @@ export const Scan: React.FC = () => {
     };
   }, []);
 
-  const startCamera = async () => {
+  const startCamera = async (slot: 'top' | 'underside' = 'top') => {
+    setActiveSlot(slot);
     setCameraError(null);
+    setUploadError(null);
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Camera API not available in this browser environment');
@@ -92,7 +114,7 @@ export const Scan: React.FC = () => {
     setIsCameraActive(false);
   };
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
     if (!videoRef.current) return;
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth || 640;
@@ -100,21 +122,102 @@ export const Scan: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-      setImageSrc(dataUrl);
+      const rawDataUrl = canvas.toDataURL('image/jpeg', 0.90);
       stopCamera();
+
+      // Optimize camera capture to guarantee max 1280px standard diagnostic format
+      setIsCompressing(true);
+      try {
+        const compressed = await compressCropImage(rawDataUrl, {
+          maxDimension: 1280,
+          quality: 0.82,
+        });
+        if (activeSlot === 'top') {
+          setImageSrc(compressed.dataUrl);
+          setCompressionStats(compressed);
+        } else {
+          setUndersideImageSrc(compressed.dataUrl);
+          setUndersideCompressionStats(compressed);
+        }
+      } catch (err) {
+        console.warn('Camera photo compression fallback:', err);
+        if (activeSlot === 'top') {
+          setImageSrc(rawDataUrl);
+        } else {
+          setUndersideImageSrc(rawDataUrl);
+        }
+      } finally {
+        setIsCompressing(false);
+      }
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const triggerFileInput = (slot: 'top' | 'underside') => {
+    setActiveSlot(slot);
+    setUploadError(null);
+    setCameraError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    setUploadError(null);
+    setCameraError(null);
+
+    // Validate MIME type and file integrity
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setUploadError(validation.error || 'असमर्थित फोटो प्रकार.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setIsCompressing(true);
+    try {
+      const compressed = await compressCropImage(file, {
+        maxDimension: 1280,
+        quality: 0.82,
+      });
+      if (activeSlot === 'top') {
+        setImageSrc(compressed.dataUrl);
+        setCompressionStats(compressed);
+      } else {
+        setUndersideImageSrc(compressed.dataUrl);
+        setUndersideCompressionStats(compressed);
+      }
+      stopCamera();
+    } catch (err: any) {
+      console.warn('Client-side compression fallback:', err);
+      // Fallback to FileReader if offscreen canvas decoding fails
       const reader = new FileReader();
       reader.onload = (event) => {
-        setImageSrc(event.target?.result as string);
+        const raw = event.target?.result as string;
+        if (activeSlot === 'top') {
+          setImageSrc(raw);
+        } else {
+          setUndersideImageSrc(raw);
+        }
         stopCamera();
       };
       reader.readAsDataURL(file);
+    } finally {
+      setIsCompressing(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveSlot = (slot: 'top' | 'underside') => {
+    if (slot === 'top') {
+      setImageSrc(null);
+      setCompressionStats(null);
+    } else {
+      setUndersideImageSrc(null);
+      setUndersideCompressionStats(null);
     }
   };
 
@@ -122,8 +225,39 @@ export const Scan: React.FC = () => {
     stopSpeaking();
     setIsSpeaking(false);
     setImageSrc(null);
+    setUndersideImageSrc(null);
     setResult(null);
     setAddedToRecovery(false);
+    setCompressionStats(null);
+    setUndersideCompressionStats(null);
+    setUploadError(null);
+    setOfflineSaveNotice(null);
+    setActiveSlot('top');
+  };
+
+  const handleQueueOffline = async () => {
+    if (!imageSrc) return;
+    setIsSavingOffline(true);
+    setOfflineSaveNotice(null);
+    setUploadError(null);
+    try {
+      await enqueueOfflineScan({
+        cropHint: selectedCrop === 'auto' ? 'कापूस / सामान्य पीक' : selectedCrop,
+        topImageDataUrl: imageSrc,
+        undersideImageDataUrl: undersideImageSrc || undefined,
+      });
+      setOfflineSaveNotice(
+        language === 'mr'
+          ? 'हा स्कॅन ऑफलाइन रांगेत सेव्ह झाला आहे! इंटरनेट सुरू झाल्यावर तुम्ही तो स्कॅन इतिहासामधून एका क्लिकवर सिंक करू शकता.'
+          : language === 'hi'
+          ? 'यह स्कैन ऑफ़लाइन कतार में सुरक्षित हो गया है! इंटरनेट आने पर आप इसे इतिहास से सिंक कर सकते हैं।'
+          : 'Scan queued safely in offline storage! It will be ready to sync as soon as you have internet.'
+      );
+    } catch (err: any) {
+      setUploadError(err?.message || 'ऑफलाइन सेव्ह करताना त्रुटी आली.');
+    } finally {
+      setIsSavingOffline(false);
+    }
   };
 
   const handleAnalyze = async () => {
@@ -133,7 +267,11 @@ export const Scan: React.FC = () => {
 
     try {
       const cropHint = selectedCrop === 'auto' ? undefined : selectedCrop;
-      const diagnosis = await analyzeCropImage(imageSrc, cropHint);
+      const diagnosis = await analyzeCropImage(
+        imageSrc, 
+        cropHint, 
+        undersideImageSrc || undefined
+      );
       setResult(diagnosis);
 
       // Persist in local storage scan history
@@ -279,13 +417,12 @@ export const Scan: React.FC = () => {
         </Card>
       )}
 
-      {/* Camera / Upload Workflow Area */}
+      {/* Camera / Multi-Angle Scanner Workflow Area */}
       {!result && (
         <Card variant="white" padding="none" className="overflow-hidden border border-[#D5DEE8] shadow-sm">
-          {/* Main Visual Frame */}
-          <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#0B1626] flex items-center justify-center overflow-hidden">
-            {/* Live Camera Feed */}
-            {isCameraActive && (
+          {/* Active Camera Viewfinder Overlay (if camera is active) */}
+          {isCameraActive ? (
+            <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#0B1626] flex items-center justify-center overflow-hidden">
               <video
                 ref={videoRef}
                 autoPlay
@@ -293,56 +430,8 @@ export const Scan: React.FC = () => {
                 muted
                 className="w-full h-full object-cover"
               />
-            )}
 
-            {/* Captured or Uploaded Image Preview */}
-            {!isCameraActive && imageSrc && (
-              <img
-                src={imageSrc}
-                alt="Crop preview"
-                className="w-full h-full object-contain"
-              />
-            )}
-
-            {/* Empty Camera Placeholder */}
-            {!isCameraActive && !imageSrc && (
-              <div className="flex flex-col items-center justify-center p-6 text-center">
-                <div className="w-20 h-20 rounded-full bg-[#13243A] border-2 border-[#FF9933] flex items-center justify-center text-[#FF9933] mb-4 shadow-md">
-                  <Camera className="w-10 h-10 animate-pulse" />
-                </div>
-                <h4 className="text-lg font-bold text-white">
-                  पिकाच्या पानाचा स्पष्ट फोटो काढा
-                </h4>
-                <p className="text-xs sm:text-sm text-[#EAF0F7]/80 max-w-sm mt-1">
-                  चांगल्या सूर्यप्रकाशात रोगट भाग मध्यभागी ठेवून कॅमेऱ्याने फोटो घ्या
-                </p>
-
-                {cameraError && (
-                  <div className="mt-4 p-2.5 rounded-xl bg-[#C0392B]/20 border border-[#C0392B]/60 text-white text-xs max-w-md">
-                    {cameraError}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Animated Laser Scanline during Analysis */}
-            {isAnalyzing && (
-              <div className="absolute inset-0 bg-[#0B1626]/80 backdrop-blur-xs flex flex-col items-center justify-center z-20">
-                <div className="animate-scan" />
-                <div className="w-16 h-16 rounded-2xl bg-[#13243A] border-2 border-[#FF9933] flex items-center justify-center text-[#FF9933] shadow-lg mb-3">
-                  <RefreshCw className="w-8 h-8 animate-spin" />
-                </div>
-                <p className="text-base font-bold text-white tracking-wide">
-                  {t('analyzingInProgress')}
-                </p>
-                <p className="text-xs text-[#4CC46A] mt-1 font-semibold">
-                  AI व्हिजन मॉडेल कीड व रोग तपासत आहे...
-                </p>
-              </div>
-            )}
-
-            {/* Scanner Viewfinder Overlay */}
-            {(isCameraActive || imageSrc) && !isAnalyzing && (
+              {/* Viewfinder Target Guide */}
               <div className="absolute inset-6 sm:inset-10 border-2 border-dashed border-white/40 rounded-3xl pointer-events-none flex flex-col justify-between p-3">
                 <div className="flex justify-between">
                   <div className="w-6 h-6 border-t-4 border-l-4 border-[#FF9933] rounded-tl-lg" />
@@ -353,13 +442,275 @@ export const Scan: React.FC = () => {
                   <div className="w-6 h-6 border-b-4 border-r-4 border-[#FF9933] rounded-br-lg" />
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Controls Bar Below Preview */}
-          <div className="p-4 sm:p-5 bg-[#EEF3F8] border-t border-[#D5DEE8] flex flex-wrap items-center justify-between gap-3">
-            {/* Left Options */}
-            <div className="flex items-center gap-2">
+              {/* Slot Indicator Tag */}
+              <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0A2540]/90 text-white text-xs font-bold border border-white/20 shadow-md">
+                <Camera className="w-3.5 h-3.5 text-amber-400" />
+                <span>
+                  {activeSlot === 'top'
+                    ? '📸 पानाचा वरचा भाग (Top Surface) टिपत आहात'
+                    : '📸 पानाची खालची बाजू (Underside Leaf) टिपत आहात'}
+                </span>
+              </div>
+
+              {/* Compressing Indicator */}
+              {isCompressing && (
+                <div className="absolute inset-0 bg-[#0B1626]/85 backdrop-blur-xs flex flex-col items-center justify-center z-20">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-950/80 border border-emerald-500/50 flex items-center justify-center text-emerald-400 mb-2">
+                    <RefreshCw className="w-6 h-6 animate-spin" />
+                  </div>
+                  <p className="text-sm font-bold text-white">फोटो ऑप्टिमाइझ केला जात आहे...</p>
+                  <p className="text-xs text-slate-300">ग्रामीण नेटवर्कसाठी जलद आकार कमी करत आहोत</p>
+                </div>
+              )}
+
+              {/* In-Camera Action Controls */}
+              <div className="absolute bottom-4 inset-x-4 z-10 flex items-center justify-between gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-black/60 text-white border-white/30 hover:bg-black/80"
+                  onClick={stopCamera}
+                >
+                  रद्द करा (Cancel)
+                </Button>
+
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={capturePhoto}
+                  leftIcon={<Camera className="w-5 h-5" />}
+                  className="bg-[#0A2540] text-white text-base font-bold shadow-xl border-2 border-white/30"
+                >
+                  फोटो टिपला (Capture)
+                </Button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveSlot(activeSlot === 'top' ? 'underside' : 'top')}
+                  className="px-3 py-2 rounded-xl bg-black/60 text-white text-xs font-semibold hover:bg-black/80 border border-white/20 transition"
+                >
+                  {activeSlot === 'top' ? 'खालच्या बाजूसाठी स्विच' : 'वरच्या भागासाठी स्विच'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Multi-Angle Dual Photo Slots Dashboard */
+            <div className="p-4 sm:p-6 space-y-5">
+              {/* Header with Title and Mode */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[#D5DEE8]">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-[#3B6EA5]" />
+                  <h3 className="font-extrabold text-[#0A2540] text-base">
+                    मल्टी-अँगल क्रॉप स्कॅनर (Multi-Angle Leaf Scanner)
+                  </h3>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300 text-[11px] font-bold flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-emerald-600" />
+                  दुहेरी कोन समर्थित (Dual-Angle AI)
+                </span>
+              </div>
+
+              <p className="text-xs text-[#5B6B7D]">
+                पानाचा वरचा भाग (अनिवार्य) आणि खालची बाजू (पर्यायी) स्कॅन करून पांढरी माशी, तुडतुडे, अंडी व तांबेऱ्याच्या पुरळचे अचूक निदान मिळवा.
+              </p>
+
+              {/* Dual Slots Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Slot 1: Top Surface (Required) */}
+                <div className={`p-4 rounded-2xl border-2 transition-all ${
+                  imageSrc 
+                    ? 'border-emerald-500/50 bg-emerald-50/20 shadow-xs' 
+                    : 'border-[#D5DEE8] bg-slate-50/60 hover:border-[#3B6EA5]/50'
+                }`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-extrabold text-[#0A2540] flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-[#0A2540] text-white flex items-center justify-center text-[10px]">१</span>
+                      <span>पानाचा वरचा पृष्ठभाग (Top Surface)</span>
+                    </span>
+                    <Badge variant={imageSrc ? 'success' : 'info'} size="sm">
+                      {imageSrc ? 'सज्ज (Ready)' : 'मुख्य फोटो / Required'}
+                    </Badge>
+                  </div>
+
+                  {imageSrc ? (
+                    <div className="space-y-3">
+                      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/90 border border-slate-200">
+                        <img
+                          src={imageSrc}
+                          alt="Top leaf surface"
+                          className="w-full h-full object-contain"
+                        />
+                        {compressionStats && (
+                          <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0A2540]/90 text-white text-[10px] font-bold backdrop-blur-xs border border-white/20">
+                            <Sparkles className="w-3 h-3 text-emerald-400" />
+                            <span>
+                              {formatBytes(compressionStats.originalSizeBytes)} ➔ {formatBytes(compressionStats.compressedSizeBytes)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs bg-white text-[#0A2540] border-[#D5DEE8]"
+                          onClick={() => startCamera('top')}
+                          leftIcon={<RotateCw className="w-3.5 h-3.5" />}
+                        >
+                          पुन्हा काढा
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs text-[#C0392B] hover:bg-red-50"
+                          onClick={() => handleRemoveSlot('top')}
+                          leftIcon={<Trash2 className="w-3.5 h-3.5" />}
+                        >
+                          काढून टाका
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-[#D5DEE8] rounded-xl bg-white min-h-[220px]">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-[#0A2540] mb-2 shadow-2xs">
+                        <Camera className="w-6 h-6" />
+                      </div>
+                      <p className="text-xs font-bold text-[#0A2540] mb-1">
+                        पानावरील करपा, डाग व रंगबदल
+                      </p>
+                      <p className="text-[11px] text-[#5B6B7D] mb-4 max-w-xs">
+                        चांगल्या प्रकाशात वरून स्पष्ट फोटो घ्या
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => startCamera('top')}
+                          leftIcon={<Camera className="w-3.5 h-3.5" />}
+                        >
+                          {t('takePhoto')}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white text-[#0A2540] border-[#D5DEE8]"
+                          onClick={() => triggerFileInput('top')}
+                          leftIcon={<Upload className="w-3.5 h-3.5 text-[#3B6EA5]" />}
+                        >
+                          {t('uploadGallery')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Slot 2: Underside (Optional) */}
+                <div className={`p-4 rounded-2xl border-2 transition-all ${
+                  undersideImageSrc 
+                    ? 'border-emerald-500/50 bg-emerald-50/20 shadow-xs' 
+                    : 'border-[#D5DEE8] bg-slate-50/60 hover:border-[#3B6EA5]/50'
+                }`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-extrabold text-[#0A2540] flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-[#3B6EA5] text-white flex items-center justify-center text-[10px]">२</span>
+                      <span>पानाची खालची बाजू (Leaf Underside)</span>
+                    </span>
+                    <Badge variant={undersideImageSrc ? 'success' : 'warning'} size="sm">
+                      {undersideImageSrc ? 'सज्ज (Ready)' : 'पर्यायी / Recommended'}
+                    </Badge>
+                  </div>
+
+                  {undersideImageSrc ? (
+                    <div className="space-y-3">
+                      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/90 border border-slate-200">
+                        <img
+                          src={undersideImageSrc}
+                          alt="Leaf underside surface"
+                          className="w-full h-full object-contain"
+                        />
+                        {undersideCompressionStats && (
+                          <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0A2540]/90 text-white text-[10px] font-bold backdrop-blur-xs border border-white/20">
+                            <Sparkles className="w-3 h-3 text-emerald-400" />
+                            <span>
+                              {formatBytes(undersideCompressionStats.originalSizeBytes)} ➔ {formatBytes(undersideCompressionStats.compressedSizeBytes)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs bg-white text-[#0A2540] border-[#D5DEE8]"
+                          onClick={() => startCamera('underside')}
+                          leftIcon={<RotateCw className="w-3.5 h-3.5" />}
+                        >
+                          पुन्हा काढा
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs text-[#C0392B] hover:bg-red-50"
+                          onClick={() => handleRemoveSlot('underside')}
+                          leftIcon={<Trash2 className="w-3.5 h-3.5" />}
+                        >
+                          काढून टाका
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-[#D5DEE8] rounded-xl bg-white min-h-[220px]">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-[#3B6EA5] mb-2 shadow-2xs">
+                        <Layers className="w-6 h-6" />
+                      </div>
+                      <p className="text-xs font-bold text-[#0A2540] mb-1">
+                        पांढरी माशी, तुडतुडे व बुरशी पुरळ
+                      </p>
+                      <p className="text-[11px] text-[#5B6B7D] mb-4 max-w-xs">
+                        पान उलटे करून खालच्या पृष्ठभागाचा फोटो जोडा
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white text-[#0A2540] border-[#D5DEE8]"
+                          onClick={() => startCamera('underside')}
+                          leftIcon={<Camera className="w-3.5 h-3.5" />}
+                        >
+                          {t('takePhoto')}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white text-[#0A2540] border-[#D5DEE8]"
+                          onClick={() => triggerFileInput('underside')}
+                          leftIcon={<Upload className="w-3.5 h-3.5 text-[#3B6EA5]" />}
+                        >
+                          {t('uploadGallery')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Error messages if any */}
+              {cameraError && (
+                <div className="p-3 rounded-xl bg-[#C0392B]/10 border border-[#C0392B]/30 text-[#C0392B] text-xs">
+                  {cameraError}
+                </div>
+              )}
+              {uploadError && (
+                <div className="p-3 rounded-xl bg-[#C0392B]/10 border border-[#C0392B]/30 text-[#C0392B] text-xs flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                  <span>{uploadError}</span>
+                </div>
+              )}
+
+              {/* Hidden file input for uploads */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -369,78 +720,85 @@ export const Scan: React.FC = () => {
                 onChange={handleFileUpload}
               />
 
-              {!imageSrc && !isCameraActive && (
-                <>
+              {/* Bottom Summary & Trigger Bar */}
+              <div className="pt-3 border-t border-[#D5DEE8] flex flex-wrap items-center justify-between gap-3">
+                <div className="text-xs font-medium">
+                  {imageSrc && undersideImageSrc ? (
+                    <span className="text-emerald-700 font-bold flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                      🌿 दुहेरी कोन सज्ज: वरचा व खालचा पृष्ठभाग दोन्ही AI विश्लेषणासाठी तयार आहेत (कमाल अचूकता)
+                    </span>
+                  ) : imageSrc ? (
+                    <span className="text-slate-700 font-semibold flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      🍃 एकल कोन सज्ज: वरचा फोटो तयार. (पर्यायी: रसशोषक किडींसाठी खालचा फोटो जोडू शकता)
+                    </span>
+                  ) : (
+                    <span className="text-[#5B6B7D] flex items-center gap-1.5">
+                      <Info className="w-4 h-4 text-slate-400" />
+                      कृपया किमान पानाच्या वरच्या भागाचा फोटो जोडून निदान सुरू करा.
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {(imageSrc || undersideImageSrc) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-[#C0392B] hover:bg-red-50"
+                      onClick={handleReset}
+                    >
+                      सर्व साफ करा
+                    </Button>
+                  )}
+
+                  {/* Offline Queue button */}
+                  {imageSrc && (
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={handleQueueOffline}
+                      disabled={isSavingOffline || isAnalyzing}
+                      isLoading={isSavingOffline}
+                      leftIcon={<WifiOff className="w-4 h-4 text-amber-600" />}
+                      className="px-4 py-2.5 text-xs sm:text-sm font-bold border-[#D5DEE8] text-[#0A2540] hover:bg-amber-50"
+                    >
+                      {language === 'mr' ? 'ऑफलाइन रांगेत सेव्ह करा' : 'Queue Offline'}
+                    </Button>
+                  )}
+
                   <Button
                     variant="primary"
-                    size="md"
-                    onClick={startCamera}
-                    leftIcon={<Camera className="w-4 h-4" />}
+                    size="lg"
+                    onClick={handleAnalyze}
+                    disabled={!imageSrc || isCompressing || isAnalyzing}
+                    isLoading={isAnalyzing}
+                    leftIcon={<Sparkles className="w-5 h-5 text-amber-300" />}
+                    className="px-6 py-2.5 text-sm font-extrabold shadow-md bg-[#0A2540] hover:bg-[#081d32] disabled:opacity-50"
                   >
-                    {t('takePhoto')}
+                    {undersideImageSrc ? 'दोन्ही कोनांचे निदान करा (Dual Angle)' : t('analyzePhoto')}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="md"
-                    className="bg-white text-[#0A2540] border-[#D5DEE8] hover:bg-slate-50"
-                    onClick={() => fileInputRef.current?.click()}
-                    leftIcon={<Upload className="w-4 h-4 text-[#3B6EA5]" />}
-                  >
-                    {t('uploadGallery')}
-                  </Button>
-                </>
-              )}
+                </div>
+              </div>
 
-              {isCameraActive && (
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={capturePhoto}
-                  leftIcon={<Camera className="w-5 h-5" />}
-                  className="bg-[#0A2540] text-white text-base font-bold shadow-md"
-                >
-                  फोटो टिपला (Capture)
-                </Button>
-              )}
-
-              {imageSrc && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-white text-[#0A2540] border-[#D5DEE8]"
-                    onClick={handleReset}
-                    leftIcon={<RotateCw className="w-4 h-4" />}
+              {/* Offline Saved Success Alert */}
+              {offlineSaveNotice && (
+                <div className="mt-3 p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{offlineSaveNotice}</span>
+                  </div>
+                  <button
+                    onClick={() => navigate('/history?tab=queue')}
+                    className="font-bold text-[#0A2540] underline hover:text-[#138808] shrink-0"
                   >
-                    {t('retakePhoto')}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[#C0392B] hover:bg-red-50"
-                    onClick={handleReset}
-                    leftIcon={<Trash2 className="w-4 h-4" />}
-                  >
-                    काढून टाका
-                  </Button>
+                    {language === 'mr' ? 'रांग पहा (View Queue) →' : 'View Queue →'}
+                  </button>
                 </div>
               )}
             </div>
-
-            {/* Right Action: Analyze Button */}
-            {imageSrc && (
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleAnalyze}
-                isLoading={isAnalyzing}
-                leftIcon={<Sparkles className="w-5 h-5 text-amber-300" />}
-                className="px-7 py-3 text-base font-extrabold shadow-md bg-[#0A2540] hover:bg-[#081d32]"
-              >
-                {t('analyzePhoto')}
-              </Button>
-            )}
-          </div>
+          )}
         </Card>
       )}
 
@@ -524,15 +882,49 @@ export const Scan: React.FC = () => {
                     </span>
                   </button>
                 )}
+
+                {/* Underside Leaf Inspection Thumbnail / Card */}
+                {result.undersideImageUrl && (
+                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs space-y-2">
+                    <div className="flex items-center justify-between text-xs font-bold text-[#0A2540]">
+                      <span className="flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>पानाची खालची बाजू (Underside)</span>
+                      </span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-semibold">तपासली</span>
+                    </div>
+                    <div className="rounded-xl overflow-hidden aspect-[4/3] bg-black/90 border border-slate-200">
+                      <img
+                        src={result.undersideImageUrl}
+                        alt="Leaf Underside"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-600 font-medium leading-tight">
+                      पानाच्या पाठीमागील रसशोषक किडींचे थवे व बुरशीजन्य पुरळ तपासणीसाठी दोन्ही कोनांचे विश्लेषण.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Disease Details & Voice Reader */}
               <div className="flex-1 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="px-2.5 py-1 rounded-lg bg-[#EEF3F8] text-[#0A2540] font-bold text-xs border border-[#D5DEE8]">
                       {result.cropName} ({result.cropVariety || 'Standard'})
                     </span>
+                    {result.undersideImageUrl ? (
+                      <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-300 flex items-center gap-1 shadow-2xs">
+                        <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                        दुहेरी कोन स्कॅन (Top + Underside)
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-medium text-xs border border-slate-300 flex items-center gap-1 shadow-2xs">
+                        <Layers className="w-3.5 h-3.5 text-slate-500" />
+                        एकल कोन स्कॅन (Single Angle)
+                      </span>
+                    )}
                   </div>
 
                   {/* Audio Reader Button */}
@@ -561,6 +953,22 @@ export const Scan: React.FC = () => {
                 <p className="text-sm text-[#0A2540] leading-relaxed font-medium">
                   {result.diagnosisExplanation}
                 </p>
+
+                {/* Diagnostic Certainty & Scope Card */}
+                {result.uncertaintyInfo && (
+                  <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-950 space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold text-sky-900">
+                      <Info className="w-4 h-4 text-sky-700 shrink-0" />
+                      <span>तपासणी व्याप्ती व शास्त्रीय खात्री (Diagnostic Scope & Certainty)</span>
+                    </div>
+                    <p className="text-slate-700 font-medium leading-relaxed">
+                      {result.uncertaintyInfo}
+                    </p>
+                    <p className="text-[11px] text-slate-500 font-normal">
+                      टीप: कोणत्याही रासायनिक फवारणीपूर्वी शेतात किडीची प्रत्यक्ष आर्थिक नुकसान पातळी (ETL) तपासावी. शंका असल्यास खालील 'तज्ज्ञांचा सल्ला घ्या' पर्यायाचा वापर करा.
+                    </p>
+                  </div>
+                )}
 
                 {/* Interactive Selected Symptom Inspector Card */}
                 {selectedSymptomBox && (() => {

@@ -3,6 +3,8 @@
  * Connects directly to the Python FastAPI backend (http://localhost:8000).
  */
 
+import { MandiApiResponse } from '../types';
+
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
 
 export interface HealthResponse {
@@ -106,7 +108,7 @@ export const api = {
   },
 
   mandi: {
-    async getRates(commodity?: string, district?: string) {
+    async getRates(commodity?: string, district?: string): Promise<MandiApiResponse> {
       let url = `${API_BASE_URL}/api/mandi/rates?`;
       if (commodity) url += `commodity=${encodeURIComponent(commodity)}&`;
       if (district) url += `district=${encodeURIComponent(district)}`;
