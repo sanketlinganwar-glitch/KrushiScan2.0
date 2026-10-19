@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/postbuild.js",
     "test": "npx tsx src/lib/tankMixData.test.ts && npx tsx src/lib/imageCompression.test.ts && npx tsx src/lib/gemini.test.ts && npx tsx src/lib/kvkData.test.ts && npx tsx src/components/voice/VoiceAssistant.test.ts && npx tsx src/lib/etlData.test.ts && npx tsx src/lib/soilNutrientData.test.ts && npx tsx src/lib/weatherAdvisor.test.ts && npx tsx src/lib/offlineSync.test.ts && npx tsx src/lib/mandiRates.test.ts",
     "lint": "oxlint",
     "preview": "vite preview"

@@ -1,9 +1,21 @@
+import json
 import logging
+import socket
 import time
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 import httpx
 from backend.config import settings
+
+# Force IPv4 for data.gov.in to bypass misconfigured synthetic NAT64 AAAA record (64:ff9b::a464:3dc6)
+_orig_getaddrinfo = socket.getaddrinfo
+
+def _ipv4_only_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    if host and ("data.gov.in" in host or "agmarknet" in host):
+        family = socket.AF_INET
+    return _orig_getaddrinfo(host, port, family, type, proto, flags)
+
+socket.getaddrinfo = _ipv4_only_getaddrinfo
 
 logger = logging.getLogger(__name__)
 
@@ -718,7 +730,7 @@ async def fetch_mandi_prices(
     """
     global _mandi_cache
     now = time.time()
-    api_key = settings.DATA_GOV_IN_API_KEY
+    api_key = (settings.DATA_GOV_IN_API_KEY or "").strip().strip("'\"")
 
     # Check if cache is still fresh (< 15 mins) and has data (unless refresh requested)
     is_cache_fresh = (
@@ -731,45 +743,69 @@ async def fetch_mandi_prices(
     upstream_error = None
     if not is_cache_fresh:
         if api_key:
+            endpoint = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
+            params = {
+                "api-key": api_key,
+                "format": "json",
+                "filters[state]": "Maharashtra",
+                "limit": "200"
+            }
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                "Accept": "application/json"
+            }
+            raw_records = []
+            
+            # Primary fetch via httpx
             try:
-                # Query official Agmarknet OGD endpoint for Maharashtra state
-                url = (
-                    f"https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
-                    f"?api-key={api_key}&format=json&filters[state]=Maharashtra&limit=200"
-                )
-                headers = {
-                    "User-Agent": "KrushiScan-AI/2.0 (Agricultural Intelligence; +https://krushiscan2-0-1.onrender.com)",
-                    "Accept": "application/json"
-                }
                 async with httpx.AsyncClient(timeout=25.0, follow_redirects=True) as client:
-                    res = await client.get(url, headers=headers)
+                    res = await client.get(endpoint, params=params, headers=headers)
                     if res.status_code == 200:
                         raw_records = res.json().get("records", [])
-                        parsed = parse_agmarknet_records(raw_records)
-                        if parsed:
-                            _mandi_cache = {
-                                "records": parsed,
-                                "last_fetched_epoch": now,
-                                "status": "live",
-                                "is_stale": False,
-                                "source": "Government of India AGMARKNET (data.gov.in)",
-                                "source_url": "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
-                            }
-                            logger.info(f"Successfully fetched and cached {len(parsed)} live Agmarknet records.")
-                        else:
-                            upstream_error = "Government API returned empty recordset for today"
                     else:
-                        upstream_error = f"data.gov.in returned HTTP {res.status_code}"
-                        logger.warning(f"Data.gov.in returned HTTP {res.status_code}: {res.text[:150]}")
-                        if _mandi_cache["records"]:
-                            _mandi_cache["is_stale"] = True
-                            _mandi_cache["status"] = "cached"
+                        upstream_error = f"data.gov.in returned HTTP {res.status_code}: {res.text[:120]}"
+                        logger.warning(upstream_error)
             except Exception as e:
-                upstream_error = str(e)
-                logger.warning(f"Data.gov.in Agmarknet API call failed: {e}")
+                upstream_error = f"httpx error: {e}"
+                logger.warning(f"Data.gov.in Agmarknet httpx call failed: {e}")
+
+            # Fallback fetch via urllib if httpx failed to retrieve records
+            if not raw_records:
+                try:
+                    import urllib.request, urllib.parse
+                    full_url = f"{endpoint}?{urllib.parse.urlencode(params)}"
+                    req = urllib.request.Request(full_url, headers=headers)
+                    with urllib.request.urlopen(req, timeout=25.0) as u_res:
+                        if u_res.status == 200:
+                            u_data = json.loads(u_res.read().decode("utf-8"))
+                            raw_records = u_data.get("records", [])
+                            upstream_error = None
+                            logger.info("Successfully fetched live records via urllib fallback.")
+                except Exception as ue:
+                    if not upstream_error:
+                        upstream_error = f"urllib error: {ue}"
+                    logger.warning(f"Data.gov.in Agmarknet urllib fallback failed: {ue}")
+
+            if raw_records:
+                parsed = parse_agmarknet_records(raw_records)
+                if parsed:
+                    _mandi_cache = {
+                        "records": parsed,
+                        "last_fetched_epoch": now,
+                        "status": "live",
+                        "is_stale": False,
+                        "source": "Government of India AGMARKNET (data.gov.in)",
+                        "source_url": "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
+                        "upstream_error": None
+                    }
+                    logger.info(f"Successfully fetched and cached {len(parsed)} live Agmarknet records.")
+                else:
+                    upstream_error = "Government API returned empty recordset for today"
+            else:
                 if _mandi_cache["records"]:
                     _mandi_cache["is_stale"] = True
                     _mandi_cache["status"] = "cached"
+                    _mandi_cache["upstream_error"] = upstream_error
 
     # If no records in cache yet (or no API key), populate from verified Vidarbha APMC benchmark
     if _mandi_cache["records"] is None:
@@ -779,7 +815,8 @@ async def fetch_mandi_prices(
             "status": "baseline",
             "is_stale": False,
             "source": "APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)",
-            "source_url": "https://agmarknet.gov.in"
+            "source_url": "https://agmarknet.gov.in",
+            "upstream_error": upstream_error
         }
 
     all_records: List[Dict[str, Any]] = _mandi_cache["records"]
@@ -804,7 +841,7 @@ async def fetch_mandi_prices(
         _mandi_cache["last_fetched_epoch"], tz=timezone.utc
     ).strftime("%Y-%m-%d %H:%M:%S UTC")
 
-    return {
+    response_payload: Dict[str, Any] = {
         "count": len(filtered),
         "records": filtered,
         "unit": "₹/क्विंटल (Quintal)",
@@ -819,6 +856,12 @@ async def fetch_mandi_prices(
             "नोंदींवर आधारित केवळ मार्गदर्शक आहेत. प्रत्यक्ष लिलावातील भाव मालाचा दर्जा, ओलावा आणि स्थानिक लिलावावर अवलंबून असतात."
         )
     }
+
+    active_err = _mandi_cache.get("upstream_error") or upstream_error
+    if active_err:
+        response_payload["upstreamError"] = active_err
+
+    return response_payload
 
 def calculate_net_return(
     modal_price_per_quintal: float,
