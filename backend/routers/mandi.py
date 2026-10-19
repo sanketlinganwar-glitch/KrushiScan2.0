@@ -83,3 +83,48 @@ async def post_compare_mandis(payload: MultiMandiCompareRequest):
         "bestOption": results[0] if results else None,
         "allOptions": results
     }
+
+@router.get("/probe")
+def probe_upstream_connectivity():
+    import socket, urllib.request, time
+    from backend.config import settings
+
+    diag = {}
+    host = "api.data.gov.in"
+    port = 443
+    key = (settings.DATA_GOV_IN_API_KEY or "").strip()
+
+    # 1. DNS Resolution
+    try:
+        addr_info = socket.getaddrinfo(host, port)
+        diag["dns_resolved"] = [f"{a[0].name}:{a[4][0]}" for a in addr_info]
+    except Exception as e:
+        diag["dns_error"] = str(e)
+
+    # 2. Raw TCP Connect to IPv4
+    try:
+        t0 = time.time()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(5.0)
+        s.connect(("164.100.61.198", 443))
+        s.close()
+        diag["tcp_connect_ipv4"] = f"OK in {round(time.time() - t0, 3)}s"
+    except Exception as e:
+        diag["tcp_connect_ipv4_error"] = str(e)
+
+    # 3. HTTP GET via urllib
+    try:
+        url = f"https://{host}/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key={key}&format=json&filters[state]=Maharashtra&limit=2"
+        req = urllib.request.Request(
+            url,
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        )
+        t0 = time.time()
+        with urllib.request.urlopen(req, timeout=10.0) as resp:
+            diag["urllib_status"] = resp.status
+            body = resp.read(200).decode("utf-8", errors="replace")
+            diag["urllib_body_preview"] = body
+    except Exception as e:
+        diag["urllib_error"] = str(e)
+
+    return diag
