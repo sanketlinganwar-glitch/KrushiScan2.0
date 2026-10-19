@@ -169,13 +169,15 @@ export interface MandiApiResponse {
   count: number;
   records: MandiRecord[];
   unit: string;
-  status: 'live' | 'cached' | 'baseline';
+  status: 'live' | 'cached' | 'stale' | 'baseline';
   isStale: boolean;
+  sourceArrivalDate?: string;
   lastFetchedAt: string;
   source: string;
   sourceUrl: string;
   apiKeyConfigured: boolean;
   disclaimer: string;
+  upstreamError?: string;
 }
 
 export interface Product {

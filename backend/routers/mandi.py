@@ -1,13 +1,20 @@
-from typing import Optional, List, Dict
-from fastapi import APIRouter, Query, HTTPException
+from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, Query, HTTPException, Header, status
 from pydantic import BaseModel, Field
 from backend.services.mandi_service import (
     fetch_mandi_prices,
     calculate_net_return,
-    compare_multiple_mandis
+    compare_multiple_mandis,
+    update_mandi_cache_with_records
 )
 
 router = APIRouter(prefix="/api/mandi", tags=["Mandi Rates & Net Return"])
+
+class MandiSyncPayload(BaseModel):
+    records: List[Dict[str, Any]]
+    source: Optional[str] = "Government of India AGMARKNET (data.gov.in)"
+    sourceUrl: Optional[str] = "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
+    arrivalDate: Optional[str] = None
 
 class NetReturnRequest(BaseModel):
     modalPricePerQuintal: float = Field(..., gt=0, description="Modal price in INR per quintal")
@@ -39,6 +46,44 @@ async def get_mandi_rates(
         return response_data
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to fetch APMC market rates at this time.")
+
+@router.post("/sync")
+def sync_mandi_rates(
+    payload: MandiSyncPayload,
+    x_sync_secret: Optional[str] = Header(None, alias="X-Sync-Secret"),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Authenticated scheduled data ingestion endpoint.
+    Accepts genuine validated records fetched from official Data.gov.in / Agmarknet source.
+    """
+    from backend.config import settings
+    expected_secret = settings.MANDI_SYNC_SECRET.strip()
+
+    provided_secret = None
+    if x_sync_secret:
+        provided_secret = x_sync_secret.strip()
+    elif authorization and authorization.startswith("Bearer "):
+        provided_secret = authorization.replace("Bearer ", "").strip()
+
+    if not provided_secret or provided_secret != expected_secret:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing Mandi synchronization authorization secret."
+        )
+
+    try:
+        result = update_mandi_cache_with_records(
+            raw_records=payload.records,
+            source_name=payload.source or "Government of India AGMARKNET (data.gov.in)",
+            source_url=payload.sourceUrl or "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
+            arrival_date=payload.arrivalDate
+        )
+        return result
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process mandi sync: {e}")
 
 @router.post("/calculate-net-return")
 def post_calculate_net_return(payload: NetReturnRequest):

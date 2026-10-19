@@ -57,16 +57,19 @@ export const MandiRates: React.FC = () => {
 
   // Metadata State
   const [meta, setMeta] = useState<{
-    status: 'live' | 'cached' | 'baseline';
+    status: 'live' | 'cached' | 'stale' | 'baseline';
     isStale: boolean;
+    sourceArrivalDate?: string;
     lastFetchedAt: string;
     source: string;
     sourceUrl: string;
     apiKeyConfigured: boolean;
     disclaimer: string;
+    upstreamError?: string;
   }>({
     status: 'baseline',
     isStale: false,
+    sourceArrivalDate: '18 ऑक्टोबर २०२६',
     lastFetchedAt: '18 ऑक्टोबर २०२६',
     source: 'APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)',
     sourceUrl: 'https://agmarknet.gov.in',
@@ -99,11 +102,13 @@ export const MandiRates: React.FC = () => {
         setMeta({
           status: data.status,
           isStale: data.isStale,
+          sourceArrivalDate: data.sourceArrivalDate,
           lastFetchedAt: data.lastFetchedAt,
           source: data.source,
           sourceUrl: data.sourceUrl,
           apiKeyConfigured: data.apiKeyConfigured,
-          disclaimer: data.disclaimer
+          disclaimer: data.disclaimer,
+          upstreamError: data.upstreamError
         });
         localStorage.setItem('krushiscan_mandi_cache', JSON.stringify(data));
       }
@@ -237,12 +242,17 @@ export const MandiRates: React.FC = () => {
           {meta.status === 'live' ? (
             <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-50 text-[#138808] border border-[#138808]/30 font-bold flex items-center gap-1.5 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-[#138808] animate-pulse" />
-              <span>● Agmarknet थेट डेटा (Live)</span>
+              <span>● Agmarknet थेट दर (Live {meta.sourceArrivalDate ? `• ${meta.sourceArrivalDate}` : ''})</span>
             </span>
           ) : meta.status === 'cached' ? (
             <span className="text-[10px] px-2.5 py-1 rounded-full bg-amber-50 text-[#B7791F] border border-[#B7791F]/30 font-bold flex items-center gap-1.5 shadow-2xs">
               <Clock className="w-3 h-3 text-[#B7791F]" />
-              <span>⟳ कॅश डेटा ({meta.isStale ? 'Stale' : 'Fresh'})</span>
+              <span>⟳ कॅश डेटा (Fresh {meta.sourceArrivalDate ? `• ${meta.sourceArrivalDate}` : ''})</span>
+            </span>
+          ) : meta.status === 'stale' ? (
+            <span className="text-[10px] px-2.5 py-1 rounded-full bg-amber-100 text-[#B7791F] border border-[#B7791F]/40 font-bold flex items-center gap-1.5 shadow-2xs">
+              <Clock className="w-3 h-3 text-[#B7791F]" />
+              <span>⚠ जुना डेटा (Stale {meta.sourceArrivalDate ? `• ${meta.sourceArrivalDate}` : ''})</span>
             </span>
           ) : (
             <span className="text-[10px] px-2.5 py-1 rounded-full bg-blue-50 text-[#0A2540] border border-[#3B6EA5]/30 font-bold flex items-center gap-1.5 shadow-2xs">
@@ -895,11 +905,18 @@ export const MandiRates: React.FC = () => {
               {meta.source} <ExternalLink className="w-3 h-3" />
             </a>
           </span>
+          {meta.sourceArrivalDate && (
+            <span>
+              आवक नोंद तारीख: <strong className="text-[#0A2540]">{meta.sourceArrivalDate}</strong>
+            </span>
+          )}
           <span>
             अंतिम संकलन वेळ: <strong className="text-[#0A2540]">{meta.lastFetchedAt}</strong>
           </span>
           <span>
-            दर परिमाण: <strong className="text-[#138808]">{meta.status === 'live' ? 'थेट (Live Agmarknet)' : meta.status === 'cached' ? 'कॅश (Cached)' : 'अधिकृत संदर्भ (Baseline Reference)'}</strong>
+            दर स्थिती: <strong className={meta.status === 'live' ? 'text-[#138808]' : meta.status === 'baseline' ? 'text-[#3B6EA5]' : 'text-[#B7791F]'}>
+              {meta.status === 'live' ? 'थेट (Live Agmarknet)' : meta.status === 'baseline' ? 'अधिकृत संदर्भ (Baseline Reference)' : (meta.status === 'stale' ? 'जुना डेटा (Stale)' : 'कॅश (Cached)')}
+            </strong>
           </span>
         </div>
       </div>

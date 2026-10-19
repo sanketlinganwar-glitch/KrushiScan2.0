@@ -1,0 +1,36 @@
+{
+  "records": [
+    {
+      "id": "agmarknet-yavatmal-yavatmal-cotton",
+      "district": "Yavatmal",
+      "marketName": "Yavatmal APMC",
+      "commodity": "कापूस (Cotton)",
+      "variety": "Standard",
+      "minPrice": 7600.0,
+      "maxPrice": 8000.0,
+      "modalPrice": 7800.0,
+      "msp": 7521.0,
+      "arrivalsTonnes": 150.0,
+      "arrivalDate": "19/10/2026",
+      "unit": "₹/क्विंटल (Quintal)",
+      "trend": "stable",
+      "historical7Days": [
+        7800.0,
+        7800.0,
+        7800.0,
+        7800.0,
+        7800.0,
+        7800.0,
+        7800.0
+      ],
+      "source": "Government of India AGMARKNET (data.gov.in)"
+    }
+  ],
+  "last_fetched_epoch": 1792401053.6711435,
+  "source_arrival_date": "19/10/2026",
+  "status": "live",
+  "is_stale": false,
+  "source": "Government of India AGMARKNET (data.gov.in)",
+  "source_url": "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
+  "upstream_error": null
+}

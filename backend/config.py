@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     
     # Mandi Data / Agmarknet (Data.gov.in)
     DATA_GOV_IN_API_KEY: str = ""
+    DATA_GOV_IN_PROXY_URL: str = ""
+    MANDI_SYNC_SECRET: str = "krushiscan-mandi-sync-auth-token-2026"
+    MANDI_SNAPSHOT_FILE: str = "backend/data/mandi_snapshot.json"
     
     # Razorpay Payment Gateway
     RAZORPAY_KEY_ID: str = ""

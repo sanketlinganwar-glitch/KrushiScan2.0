@@ -183,9 +183,12 @@ def health_check():
                 "configured": True
             },
             "mandi_market_rates": {
-                "status": "live_connected" if _mandi_cache.get("status") == "live" else ("upstream_unreachable_fallback_baseline" if data_gov_configured else "baseline_reference"),
+                "status": "live_connected" if _mandi_cache.get("status") == "live" else ("cached_live_records" if _mandi_cache.get("status") in ["cached", "stale"] else ("upstream_unreachable_fallback_baseline" if data_gov_configured else "baseline_reference")),
                 "provider": _mandi_cache.get("source", "APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)"),
                 "configured": data_gov_configured,
+                "data_status": _mandi_cache.get("status", "baseline"),
+                "is_stale": _mandi_cache.get("is_stale", False),
+                "source_arrival_date": _mandi_cache.get("source_arrival_date"),
                 "upstream_error": _mandi_cache.get("upstream_error")
             },
             "payments_razorpay": {

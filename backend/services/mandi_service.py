@@ -1,21 +1,12 @@
 import json
 import logging
-import socket
+import os
+from pathlib import Path
 import time
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 import httpx
 from backend.config import settings
-
-# Force IPv4 for data.gov.in to bypass misconfigured synthetic NAT64 AAAA record (64:ff9b::a464:3dc6)
-_orig_getaddrinfo = socket.getaddrinfo
-
-def _ipv4_only_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
-    if host and ("data.gov.in" in host or "agmarknet" in host):
-        family = socket.AF_INET
-    return _orig_getaddrinfo(host, port, family, type, proto, flags)
-
-socket.getaddrinfo = _ipv4_only_getaddrinfo
 
 logger = logging.getLogger(__name__)
 
@@ -626,16 +617,128 @@ COMMODITY_MSP_MAP: Dict[str, float] = {
     "rice": 2300.0
 }
 
-# In-memory Cache & Refresh Management
-CACHE_TTL_SECONDS = 900  # 15 minutes cache freshness
-_mandi_cache: Dict[str, Any] = {
-    "records": None,
-    "last_fetched_epoch": 0.0,
-    "status": "baseline",
-    "is_stale": False,
-    "source": "APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)",
-    "source_url": "https://agmarknet.gov.in"
-}
+# In-memory Cache, Snapshot Persistence & Refresh Management
+LIVE_CACHE_TTL_SECONDS = 900        # 15 minutes fresh
+STALE_THRESHOLD_SECONDS = 86400     # 24 hours until labeled as stale
+
+def _get_snapshot_path() -> Path:
+    p = Path(settings.MANDI_SNAPSHOT_FILE)
+    if not p.is_absolute():
+        p = Path.cwd() / p
+    return p
+
+def _save_mandi_snapshot(data: Dict[str, Any]) -> None:
+    try:
+        path = _get_snapshot_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        logger.info(f"Saved Mandi snapshot ({len(data.get('records', []))} records) to {path}")
+    except Exception as e:
+        logger.warning(f"Failed to persist Mandi snapshot to disk: {e}")
+
+def _load_mandi_snapshot() -> Optional[Dict[str, Any]]:
+    try:
+        path = _get_snapshot_path()
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if data and data.get("records"):
+                logger.info(f"Loaded Mandi snapshot from {path} with {len(data['records'])} records.")
+                return data
+    except Exception as e:
+        logger.warning(f"Failed to load Mandi snapshot from disk: {e}")
+    return None
+
+def _init_mandi_cache() -> Dict[str, Any]:
+    snapshot = _load_mandi_snapshot()
+    now = time.time()
+    if snapshot and snapshot.get("records"):
+        fetched_epoch = snapshot.get("last_fetched_epoch", 0.0)
+        age = now - fetched_epoch
+        is_stale = age >= STALE_THRESHOLD_SECONDS
+        status = "live" if age < LIVE_CACHE_TTL_SECONDS else ("cached" if not is_stale else "stale")
+        return {
+            "records": snapshot["records"],
+            "last_fetched_epoch": fetched_epoch,
+            "source_arrival_date": snapshot.get("source_arrival_date"),
+            "status": status,
+            "is_stale": is_stale,
+            "source": snapshot.get("source", "Government of India AGMARKNET (data.gov.in)"),
+            "source_url": snapshot.get("source_url", "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"),
+            "upstream_error": None
+        }
+    return {
+        "records": None,
+        "last_fetched_epoch": 0.0,
+        "source_arrival_date": None,
+        "status": "baseline",
+        "is_stale": False,
+        "source": "APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)",
+        "source_url": "https://agmarknet.gov.in",
+        "upstream_error": None
+    }
+
+_mandi_cache: Dict[str, Any] = _init_mandi_cache()
+
+def _reset_mandi_cache() -> None:
+    """Helper for unit tests to reset cache state to baseline."""
+    global _mandi_cache
+    _mandi_cache = {
+        "records": None,
+        "last_fetched_epoch": 0.0,
+        "source_arrival_date": None,
+        "status": "baseline",
+        "is_stale": False,
+        "source": "APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)",
+        "source_url": "https://agmarknet.gov.in",
+        "upstream_error": None
+    }
+
+def update_mandi_cache_with_records(
+    raw_records: List[Dict[str, Any]],
+    source_name: str = "Government of India AGMARKNET (data.gov.in)",
+    source_url: str = "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
+    arrival_date: Optional[str] = None
+) -> Dict[str, Any]:
+    """
+    Validates, parses and injects genuine Agmarknet records into cache and persistent snapshot.
+    Guarantees 'live' status is only granted to genuine validated records.
+    """
+    global _mandi_cache
+    parsed = parse_agmarknet_records(raw_records)
+    if not parsed:
+        raise ValueError("No valid Agmarknet records could be parsed from input data.")
+
+    now = time.time()
+    if not arrival_date:
+        dates = [r["arrivalDate"] for r in parsed if r.get("arrivalDate")]
+        arrival_date = dates[0] if dates else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    cache_data = {
+        "records": parsed,
+        "last_fetched_epoch": now,
+        "source_arrival_date": arrival_date,
+        "status": "live",
+        "is_stale": False,
+        "source": source_name,
+        "source_url": source_url,
+        "upstream_error": None
+    }
+    _mandi_cache = cache_data
+    _save_mandi_snapshot(cache_data)
+
+    last_fetched_iso = datetime.fromtimestamp(now, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    logger.info(f"Updated live Mandi cache: {len(parsed)} genuine records from {source_name} (Arrival: {arrival_date})")
+
+    return {
+        "success": True,
+        "count": len(parsed),
+        "status": "live",
+        "sourceArrivalDate": arrival_date,
+        "lastFetchedAt": last_fetched_iso,
+        "source": source_name
+    }
 
 def resolve_commodity_msp(name: str) -> Optional[float]:
     lower = name.lower()
@@ -656,7 +759,13 @@ def parse_agmarknet_records(records: List[Dict[str, Any]]) -> List[Dict[str, Any
             district = str(r.get("district") or "").strip()
             commodity = str(r.get("commodity") or "").strip()
             variety = str(r.get("variety") or "Standard").strip()
-            arrival_date = str(r.get("arrival_date") or datetime.now(timezone.utc).strftime("%Y-%m-%d")).strip()
+            raw_date = str(r.get("arrival_date") or "").strip()
+
+            # Normalize arrival date
+            if raw_date:
+                arrival_date = raw_date
+            else:
+                arrival_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
             modal_raw = r.get("modal_price") or 0
             min_raw = r.get("min_price") or modal_raw
@@ -695,10 +804,12 @@ def parse_agmarknet_records(records: List[Dict[str, Any]]) -> List[Dict[str, Any
 
             m_id = f"agmarknet-{district.lower()}-{market.lower()}-{commodity.lower()}".replace(" ", "-")
 
+            m_name = market if "APMC" in market.upper() else f"{market} APMC"
+
             parsed.append({
                 "id": m_id,
                 "district": district,
-                "marketName": f"{market} APMC",
+                "marketName": m_name,
                 "commodity": comm_display,
                 "variety": variety,
                 "minPrice": min_price,
@@ -726,36 +837,50 @@ async def fetch_mandi_prices(
     """
     Fetches mandi price records from Data.gov.in Agmarknet API when credentials exist,
     or serves the verified in-memory APMC cache / official Vidarbha reference benchmark.
-    Preserves last successful response when upstream fails.
+    Preserves last successful genuine dataset when upstream fails.
     """
     global _mandi_cache
     now = time.time()
     api_key = (settings.DATA_GOV_IN_API_KEY or "").strip().strip("'\"")
 
-    # Check if cache is still fresh (< 15 mins) and has data (unless refresh requested)
+    has_genuine_data = (
+        _mandi_cache.get("records") is not None and 
+        _mandi_cache.get("source_arrival_date") is not None
+    )
+
+    # Check cache age and stale status
+    if has_genuine_data:
+        age = now - _mandi_cache.get("last_fetched_epoch", 0.0)
+        if age >= STALE_THRESHOLD_SECONDS:
+            _mandi_cache["is_stale"] = True
+            _mandi_cache["status"] = "stale"
+        elif age >= LIVE_CACHE_TTL_SECONDS:
+            _mandi_cache["status"] = "cached"
+
+    # Check if cache is fresh (< 15 mins) and has data (unless refresh requested)
     is_cache_fresh = (
         not refresh and
-        _mandi_cache["records"] is not None and
+        has_genuine_data and
         _mandi_cache["status"] == "live" and
-        (now - _mandi_cache["last_fetched_epoch"]) < CACHE_TTL_SECONDS
+        (now - _mandi_cache["last_fetched_epoch"]) < LIVE_CACHE_TTL_SECONDS
     )
 
     upstream_error = None
     if not is_cache_fresh:
         if api_key:
-            endpoint = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
+            endpoint = (settings.DATA_GOV_IN_PROXY_URL or "").strip() or "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
             params = {
                 "api-key": api_key,
                 "format": "json",
                 "filters[state]": "Maharashtra",
-                "limit": "200"
+                "limit": "250"
             }
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
                 "Accept": "application/json"
             }
             raw_records = []
-            
+
             # Primary fetch via httpx
             try:
                 async with httpx.AsyncClient(timeout=25.0, follow_redirects=True) as client:
@@ -789,29 +914,36 @@ async def fetch_mandi_prices(
             if raw_records:
                 parsed = parse_agmarknet_records(raw_records)
                 if parsed:
-                    _mandi_cache = {
+                    dates = [r["arrivalDate"] for r in parsed if r.get("arrivalDate")]
+                    arrival_date = dates[0] if dates else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                    cache_data = {
                         "records": parsed,
                         "last_fetched_epoch": now,
+                        "source_arrival_date": arrival_date,
                         "status": "live",
                         "is_stale": False,
                         "source": "Government of India AGMARKNET (data.gov.in)",
                         "source_url": "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
                         "upstream_error": None
                     }
+                    _mandi_cache = cache_data
+                    _save_mandi_snapshot(cache_data)
                     logger.info(f"Successfully fetched and cached {len(parsed)} live Agmarknet records.")
                 else:
                     upstream_error = "Government API returned empty recordset for today"
             else:
-                if _mandi_cache["records"]:
+                if has_genuine_data:
                     _mandi_cache["is_stale"] = True
-                    _mandi_cache["status"] = "cached"
+                    age = now - _mandi_cache["last_fetched_epoch"]
+                    _mandi_cache["status"] = "stale" if age >= STALE_THRESHOLD_SECONDS else "cached"
                     _mandi_cache["upstream_error"] = upstream_error
 
-    # If no records in cache yet (or no API key), populate from verified Vidarbha APMC benchmark
-    if _mandi_cache["records"] is None:
+    # If no genuine records in cache yet (or cold start / no API key), populate from verified Vidarbha APMC benchmark
+    if _mandi_cache.get("records") is None:
         _mandi_cache = {
             "records": OFFICIAL_VIDARBHA_MANDIS,
             "last_fetched_epoch": now,
+            "source_arrival_date": "2026-10-18",
             "status": "baseline",
             "is_stale": False,
             "source": "APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)",
@@ -845,8 +977,9 @@ async def fetch_mandi_prices(
         "count": len(filtered),
         "records": filtered,
         "unit": "₹/क्विंटल (Quintal)",
-        "status": _mandi_cache["status"],  # "live" | "cached" | "baseline"
+        "status": _mandi_cache["status"],  # "live" | "cached" | "stale" | "baseline"
         "isStale": _mandi_cache["is_stale"],
+        "sourceArrivalDate": _mandi_cache.get("source_arrival_date") or "2026-10-18",
         "lastFetchedAt": last_fetched_iso,
         "source": _mandi_cache["source"],
         "sourceUrl": _mandi_cache["source_url"],
