@@ -9,6 +9,7 @@ from backend.config import settings
 from backend.routers import auth, ai, weather, mandi, crops, expert, store, payments
 from backend.services.razorpay_service import is_razorpay_configured
 from backend.services.supabase_client import get_supabase_admin
+from backend.services.mandi_service import _mandi_cache
 
 # Logging configuration
 logging.basicConfig(
@@ -182,9 +183,10 @@ def health_check():
                 "configured": True
             },
             "mandi_market_rates": {
-                "status": "live_connected" if data_gov_configured else "active_apmc_vidarbha_feed",
-                "provider": "Data.gov.in Agmarknet API" if data_gov_configured else "Official APMC Vidarbha Benchmark Feed",
-                "configured": True
+                "status": "live_connected" if _mandi_cache.get("status") == "live" else ("upstream_unreachable_fallback_baseline" if data_gov_configured else "baseline_reference"),
+                "provider": _mandi_cache.get("source", "APMC Vidarbha Official Bulletin & MSP Benchmarks (Reference Data)"),
+                "configured": data_gov_configured,
+                "upstream_error": _mandi_cache.get("upstream_error")
             },
             "payments_razorpay": {
                 "status": "live_configured" if razorpay_configured else "awaiting_credentials",
