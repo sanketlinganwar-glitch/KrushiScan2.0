@@ -708,7 +708,8 @@ def parse_agmarknet_records(records: List[Dict[str, Any]]) -> List[Dict[str, Any
 
 async def fetch_mandi_prices(
     commodity: Optional[str] = None,
-    district: Optional[str] = None
+    district: Optional[str] = None,
+    refresh: bool = False
 ) -> Dict[str, Any]:
     """
     Fetches mandi price records from Data.gov.in Agmarknet API when credentials exist,
@@ -719,12 +720,15 @@ async def fetch_mandi_prices(
     now = time.time()
     api_key = settings.DATA_GOV_IN_API_KEY
 
-    # Check if cache is still fresh (< 15 mins) and has data
+    # Check if cache is still fresh (< 15 mins) and has data (unless refresh requested)
     is_cache_fresh = (
+        not refresh and
         _mandi_cache["records"] is not None and
+        _mandi_cache["status"] == "live" and
         (now - _mandi_cache["last_fetched_epoch"]) < CACHE_TTL_SECONDS
     )
 
+    upstream_error = None
     if not is_cache_fresh:
         if api_key:
             try:
@@ -733,8 +737,11 @@ async def fetch_mandi_prices(
                     f"https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
                     f"?api-key={api_key}&format=json&filters[state]=Maharashtra&limit=200"
                 )
-                headers = {"User-Agent": "KrushiScan-AI/2.0 (Agricultural Intelligence)"}
-                async with httpx.AsyncClient(timeout=12.0) as client:
+                headers = {
+                    "User-Agent": "KrushiScan-AI/2.0 (Agricultural Intelligence; +https://krushiscan2-0-1.onrender.com)",
+                    "Accept": "application/json"
+                }
+                async with httpx.AsyncClient(timeout=25.0, follow_redirects=True) as client:
                     res = await client.get(url, headers=headers)
                     if res.status_code == 200:
                         raw_records = res.json().get("records", [])
@@ -749,12 +756,16 @@ async def fetch_mandi_prices(
                                 "source_url": "https://data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
                             }
                             logger.info(f"Successfully fetched and cached {len(parsed)} live Agmarknet records.")
+                        else:
+                            upstream_error = "Government API returned empty recordset for today"
                     else:
+                        upstream_error = f"data.gov.in returned HTTP {res.status_code}"
                         logger.warning(f"Data.gov.in returned HTTP {res.status_code}: {res.text[:150]}")
                         if _mandi_cache["records"]:
                             _mandi_cache["is_stale"] = True
                             _mandi_cache["status"] = "cached"
             except Exception as e:
+                upstream_error = str(e)
                 logger.warning(f"Data.gov.in Agmarknet API call failed: {e}")
                 if _mandi_cache["records"]:
                     _mandi_cache["is_stale"] = True

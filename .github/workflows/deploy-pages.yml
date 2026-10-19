@@ -37,6 +37,7 @@ jobs:
         env:
           GITHUB_PAGES: 'true'
           VITE_BASE_PATH: '/KrushiScan2.0/'
+          VITE_BACKEND_API_URL: 'https://krushiscan2-0-1.onrender.com'
         run: npm run build
 
       - name: Ensure .nojekyll and SPA 404 Fallback

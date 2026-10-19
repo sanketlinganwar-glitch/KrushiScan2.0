@@ -28,13 +28,14 @@ class MultiMandiCompareRequest(BaseModel):
 @router.get("/rates")
 async def get_mandi_rates(
     commodity: Optional[str] = Query(None, description="Crop filter e.g. कापूस, सोयाबीन, तूर"),
-    district: Optional[str] = Query(None, description="District filter e.g. Yavatmal, Wardha, Akola")
+    district: Optional[str] = Query(None, description="District filter e.g. Yavatmal, Wardha, Akola"),
+    refresh: bool = Query(False, description="Bypass cache and force refresh from official Agmarknet feed")
 ):
     """
     Returns official APMC Mandi rates and arrival records across Vidarbha.
     """
     try:
-        response_data = await fetch_mandi_prices(commodity=commodity, district=district)
+        response_data = await fetch_mandi_prices(commodity=commodity, district=district, refresh=refresh)
         return response_data
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to fetch APMC market rates at this time.")
