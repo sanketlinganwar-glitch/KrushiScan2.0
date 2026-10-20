@@ -245,11 +245,11 @@ export const Guidance: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-[#0A2540] flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-[#0A2540]" />
+          <h2 className="text-2xl font-black text-[#152D24] flex items-center gap-2">
+            <BookOpen className="w-6 h-6 text-[#0B5137]" />
             <span>{t('navGuidance')} (Farmer Knowledge Center)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#5B6B7D] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#5F7065] mt-0.5">
             डॉ. पंजाबराव देशमुख कृषी विद्यापीठ व ICAR प्रमाणित शेती सल्ला, कीड उपाय व योजना
           </p>
         </div>
@@ -258,31 +258,31 @@ export const Guidance: React.FC = () => {
           onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition border ${
             showBookmarksOnly
-              ? 'bg-[#0A2540] text-white border-[#0A2540] shadow-sm'
-              : 'bg-white text-[#0A2540] border-[#D5DEE8] hover:bg-[#EEF3F8]'
+              ? 'bg-[#0B5137] text-white border-[#0B5137] shadow-sm'
+              : 'bg-white text-[#152D24] border-[#DDE8DC] hover:bg-[#E6F2E5]'
           }`}
         >
-          <Bookmark className="w-4 h-4 text-[#FF9933]" />
+          <Bookmark className="w-4 h-4 text-[#E9A23B]" />
           <span>जतन केलेले लेख ({bookmarks.length})</span>
         </button>
       </div>
 
       {/* Featured Tank-Mix Compatibility Banner */}
-      <div className="bg-gradient-to-r from-teal-900 to-[#0A2540] text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-teal-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#0B5137] to-[#073D2A] text-white rounded-3xl p-4 sm:p-5 shadow-sm border border-[#2F9E59]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center shrink-0">
-            <FlaskConical className="w-6 h-6 text-teal-300" />
+          <div className="w-11 h-11 rounded-2xl bg-[#2F9E59]/20 border border-[#2F9E59]/40 flex items-center justify-center shrink-0">
+            <FlaskConical className="w-6 h-6 text-[#E6F2E5]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-white">
                 {language === 'mr' ? 'रासायनिक टँक-मिक्स सुसंगतता कॅल्क्युलेटर' : language === 'hi' ? 'टैंक-मिक्स रासायनिक अनुकूलता कैलकुलेटर' : 'Tank-Mix Chemical Compatibility Tool'}
               </h3>
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-400/40">
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#2F9E59]/30 text-[#E6F2E5] border border-[#2F9E59]/40">
                 PDKV / CIBRC
               </span>
             </div>
-            <p className="text-xs text-slate-300 mt-0.5">
+            <p className="text-xs text-white/80 mt-0.5">
               {language === 'mr' 
                 ? 'कीटकनाशक, बुरशीनाशक व विद्राव्य खत एकत्र मिसळण्यापूर्वी सुसंगतता व W.A.L.E.S. फवारणी क्रम तपासा.'
                 : 'Check if your tank-mix will curdle or burn crops before mixing, with verified W.A.L.E.S. mixing sequences.'}
@@ -291,7 +291,7 @@ export const Guidance: React.FC = () => {
         </div>
 
         <Link to="/tank-mix" className="shrink-0">
-          <Button variant="primary" size="sm" className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs">
+          <Button variant="primary" size="sm" className="bg-[#2F9E59] hover:bg-[#21864A] text-white font-black text-xs">
             {language === 'mr' ? 'कॅल्क्युलेटर उघडा' : 'Launch Calculator'}
           </Button>
         </Link>
@@ -301,13 +301,13 @@ export const Guidance: React.FC = () => {
       <div className="space-y-3">
         {/* Search */}
         <div className="relative">
-          <Search className="w-5 h-5 text-[#5B6B7D] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-5 h-5 text-[#5F7065] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="कीड, खत किंवा योजना शोधा (उदा. बोंडअळी, १९:१९:१९, पीक विमा)..."
-            className="w-full bg-white border border-[#D5DEE8] text-[#0A2540] rounded-2xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2540] placeholder:text-[#5B6B7D] shadow-2xs"
+            className="w-full bg-white border border-[#DDE8DC] text-[#152D24] rounded-2xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B5137] placeholder:text-[#5F7065] shadow-2xs"
           />
         </div>
 
@@ -322,8 +322,8 @@ export const Guidance: React.FC = () => {
               }}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
                 activeCategory === cat.id && !showBookmarksOnly
-                  ? 'bg-[#0A2540] text-white border-[#0A2540] shadow-sm'
-                  : 'bg-white text-[#5B6B7D] border-[#D5DEE8] hover:bg-[#EEF3F8] hover:text-[#0A2540]'
+                  ? 'bg-[#0B5137] text-white border-[#0B5137] shadow-sm'
+                  : 'bg-white text-[#5F7065] border-[#DDE8DC] hover:bg-[#E6F2E5] hover:text-[#0B5137]'
               }`}
             >
               {cat.label}
@@ -344,61 +344,61 @@ export const Guidance: React.FC = () => {
               key={article.id}
               variant="white"
               padding="none"
-              className="overflow-hidden border border-[#D5DEE8] flex flex-col justify-between group hover:shadow-lg transition shadow-sm"
+              className="overflow-hidden border border-[#DDE8DC] flex flex-col justify-between group hover:shadow-lg transition shadow-sm"
             >
               <div>
                 {/* Image Header */}
-                <div className="relative aspect-[16/9] bg-[#0B1626] overflow-hidden">
+                <div className="relative aspect-[16/9] bg-[#0B5137] overflow-hidden">
                   <img
                     src={article.imageUrl}
                     alt={title}
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                   />
                   <div className="absolute top-2.5 left-2.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#0B1626]/80 text-white backdrop-blur-xs border border-white/20">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#0B5137]/90 text-white backdrop-blur-xs border border-white/20">
                       {article.category}
                     </span>
                   </div>
 
                   <button
                     onClick={(e) => toggleBookmark(article.id, e)}
-                    className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/95 text-[#0A2540] flex items-center justify-center hover:bg-white transition shadow-sm"
+                    className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/95 text-[#152D24] flex items-center justify-center hover:bg-white transition shadow-sm"
                     title={isBookmarked ? 'जतन केले' : 'जतन करा'}
                   >
                     {isBookmarked ? (
-                      <BookmarkCheck className="w-4 h-4 text-[#FF9933]" />
+                      <BookmarkCheck className="w-4 h-4 text-[#E9A23B]" />
                     ) : (
-                      <Bookmark className="w-4 h-4 text-[#5B6B7D]" />
+                      <Bookmark className="w-4 h-4 text-[#5F7065]" />
                     )}
                   </button>
 
-                  <div className="absolute bottom-2.5 right-2.5 bg-[#0B1626]/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white flex items-center gap-1 font-medium">
-                    <Clock className="w-3 h-3 text-[#FF9933]" />
+                  <div className="absolute bottom-2.5 right-2.5 bg-[#0B5137]/90 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white flex items-center gap-1 font-medium">
+                    <Clock className="w-3 h-3 text-[#E9A23B]" />
                     <span>{article.readingTimeMinutes} मिनिटे वाचन</span>
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-[#5B6B7D]">
-                    <span className="font-semibold text-[#3B6EA5] truncate max-w-[200px]">
+                  <div className="flex items-center justify-between text-xs text-[#5F7065]">
+                    <span className="font-semibold text-[#2F9E59] truncate max-w-[200px]">
                       {article.source}
                     </span>
                     <span>{article.publishedDate}</span>
                   </div>
 
-                  <h3 className="font-extrabold text-base text-[#0A2540] leading-snug transition">
+                  <h3 className="font-extrabold text-base text-[#152D24] leading-snug transition">
                     {title}
                   </h3>
 
-                  <p className="text-xs text-[#5B6B7D] line-clamp-3 leading-relaxed">
+                  <p className="text-xs text-[#5F7065] line-clamp-3 leading-relaxed">
                     {summary}
                   </p>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="p-4 pt-2 border-t border-[#D5DEE8] flex items-center justify-between gap-2">
+              <div className="p-4 pt-2 border-t border-[#DDE8DC] flex items-center justify-between gap-2">
                 <Button
                   variant="primary"
                   size="sm"
@@ -411,9 +411,9 @@ export const Guidance: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-white text-slate-800 border-slate-300 hover:bg-slate-100 text-xs"
+                  className="bg-white text-[#152D24] border-[#DDE8DC] hover:bg-[#E6F2E5] text-xs"
                   onClick={() => handleSpeak(article)}
-                  leftIcon={<Volume2 className="w-3.5 h-3.5 text-emerald-600" />}
+                  leftIcon={<Volume2 className="w-3.5 h-3.5 text-[#2F9E59]" />}
                 >
                   ऐका
                 </Button>
@@ -436,7 +436,7 @@ export const Guidance: React.FC = () => {
           maxWidth="2xl"
         >
           <div className="space-y-4">
-            <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-slate-900">
+            <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-[#0B5137]">
               <img
                 src={selectedArticle.imageUrl}
                 alt="Article"
@@ -445,7 +445,7 @@ export const Guidance: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-emerald-400 font-bold">
+              <span className="text-xs text-[#2F9E59] font-bold">
                 {selectedArticle.publishedDate} • {selectedArticle.readingTimeMinutes} मिनिटे वाचन
               </span>
 
@@ -454,25 +454,25 @@ export const Guidance: React.FC = () => {
                 size="sm"
                 className="text-xs"
                 onClick={() => handleSpeak(selectedArticle)}
-                leftIcon={isSpeaking ? <VolumeX className="w-4 h-4 animate-bounce" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+                leftIcon={isSpeaking ? <VolumeX className="w-4 h-4 animate-bounce" /> : <Volume2 className="w-4 h-4 text-[#2F9E59]" />}
               >
                 {isSpeaking ? 'आवाज थांबवा' : 'मराठीत ऐका (Voice)'}
               </Button>
             </div>
 
-            <h3 className="text-xl font-black text-slate-900 leading-tight">
+            <h3 className="text-xl font-black text-[#152D24] leading-tight">
               {selectedArticle.title[language] || selectedArticle.title['mr']}
             </h3>
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium leading-relaxed">
+            <div className="p-3 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] text-xs text-[#152D24] font-medium leading-relaxed">
               {selectedArticle.summary[language] || selectedArticle.summary['mr']}
             </div>
 
-            <div className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed space-y-3 font-sans">
+            <div className="text-sm text-[#152D24] whitespace-pre-wrap leading-relaxed space-y-3 font-sans">
               {selectedArticle.content[language] || selectedArticle.content['mr']}
             </div>
 
-            <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+            <div className="pt-3 border-t border-[#DDE8DC] flex items-center justify-between text-xs text-[#5F7065]">
               <span>अधिकृत स्रोत: {selectedArticle.source}</span>
               <Button
                 variant="outline"

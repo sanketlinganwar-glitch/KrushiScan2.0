@@ -32,13 +32,13 @@ export const Alerts: React.FC = () => {
   const getIcon = (type: string) => {
     switch (type) {
       case 'weather':
-        return <CloudRain className="w-5 h-5 text-blue-500" />;
+        return <CloudRain className="w-5 h-5 text-[#2F9E59]" />;
       case 'disease':
-        return <AlertTriangle className="w-5 h-5 text-red-500" />;
+        return <AlertTriangle className="w-5 h-5 text-[#C83E3E]" />;
       case 'price':
-        return <TrendingUp className="w-5 h-5 text-emerald-500" />;
+        return <TrendingUp className="w-5 h-5 text-[#21864A]" />;
       default:
-        return <Bell className="w-5 h-5 text-krushiOrange" />;
+        return <Bell className="w-5 h-5 text-[#E9A23B]" />;
     }
   };
 
@@ -47,11 +47,11 @@ export const Alerts: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-[#0A2540] flex items-center gap-2">
-            <Bell className="w-6 h-6 text-[#0A2540]" />
+          <h2 className="text-2xl font-black text-[#152D24] flex items-center gap-2">
+            <Bell className="w-6 h-6 text-[#0B5137]" />
             <span>{t('navAlerts')} (Alerts & Notifications)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#5B6B7D] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#5F7065] mt-0.5">
             हवामानाचे इशारे, किडींचे उद्रेक, बाजार भाव बदल व शेती मार्गदर्शक सूचना
           </p>
         </div>
@@ -61,7 +61,7 @@ export const Alerts: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={markAllAsRead}
-            leftIcon={<CheckCheck className="w-4 h-4 text-[#138808]" />}
+            leftIcon={<CheckCheck className="w-4 h-4 text-[#2F9E59]" />}
           >
             सर्व वाचले म्हणून खूण करा ({unreadCount})
           </Button>
@@ -81,8 +81,8 @@ export const Alerts: React.FC = () => {
             onClick={() => setActiveTab(tab.id as any)}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
               activeTab === tab.id
-                ? 'bg-[#0A2540] text-white border-[#0A2540] shadow-sm'
-                : 'bg-white text-[#5B6B7D] border-[#D5DEE8] hover:bg-[#EEF3F8] hover:text-[#0A2540]'
+                ? 'bg-[#0B5137] text-white border-[#0B5137] shadow-sm'
+                : 'bg-white text-[#5F7065] border-[#DDE8DC] hover:bg-[#E6F2E5] hover:text-[#0B5137]'
             }`}
           >
             {tab.label}
@@ -92,14 +92,14 @@ export const Alerts: React.FC = () => {
 
       {/* Notifications List */}
       {filteredNotifs.length === 0 ? (
-        <Card variant="white" className="p-12 text-center space-y-3 border-[#D5DEE8]">
-          <div className="w-16 h-16 rounded-full bg-[#EEF3F8] text-[#5B6B7D] flex items-center justify-center mx-auto">
+        <Card variant="white" className="p-12 text-center space-y-3 border-[#DDE8DC]">
+          <div className="w-16 h-16 rounded-full bg-[#F6F8F0] text-[#5F7065] flex items-center justify-center mx-auto">
             <Bell className="w-8 h-8" />
           </div>
-          <h4 className="font-bold text-[#0A2540] text-base">
+          <h4 className="font-bold text-[#152D24] text-base">
             सध्या कोणताही नवीन इशारा नाही
           </h4>
-          <p className="text-xs text-[#5B6B7D] max-w-xs mx-auto">
+          <p className="text-xs text-[#5F7065] max-w-xs mx-auto">
             तुमच्या शेतासाठी व परिसरासाठी सर्व हवामान व कीड स्थिती सामान्य आहे.
           </p>
         </Card>
@@ -110,28 +110,28 @@ export const Alerts: React.FC = () => {
               key={item.id}
               variant="white"
               padding="md"
-              className={`border-l-4 transition border-[#D5DEE8] ${
-                !item.isRead ? 'bg-[#EEF3F8]/40 border-l-[#FF9933]' : 'border-l-[#D5DEE8]'
+              className={`border-l-4 transition border-[#DDE8DC] ${
+                !item.isRead ? 'bg-[#E6F2E5]/40 border-l-[#E9A23B]' : 'border-l-[#DDE8DC]'
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="p-2.5 rounded-xl bg-[#EEF3F8] shrink-0 mt-0.5 border border-[#D5DEE8]">
+                  <div className="p-2.5 rounded-xl bg-[#F6F8F0] shrink-0 mt-0.5 border border-[#DDE8DC]">
                     {getIcon(item.type)}
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-sm text-[#0A2540]">
+                      <h4 className="font-bold text-sm text-[#152D24]">
                         {item.title[language] || item.title['mr']}
                       </h4>
                       {!item.isRead && (
-                        <span className="w-2 h-2 rounded-full bg-[#FF9933] shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[#E9A23B] shrink-0" />
                       )}
                     </div>
-                    <p className="text-xs text-[#5B6B7D] leading-relaxed font-medium">
+                    <p className="text-xs text-[#5F7065] leading-relaxed font-medium">
                       {item.message[language] || item.message['mr']}
                     </p>
-                    <span className="text-[10px] text-[#5B6B7D] block pt-1">
+                    <span className="text-[10px] text-[#5F7065] block pt-1">
                       {item.timestamp}
                     </span>
                   </div>
@@ -140,7 +140,7 @@ export const Alerts: React.FC = () => {
                 <div className="flex items-center gap-1.5 shrink-0">
                   {item.actionUrl && (
                     <Link to={item.actionUrl}>
-                      <Button variant="outline" size="sm" className="bg-white text-[#0A2540] border-[#D5DEE8] text-xs">
+                      <Button variant="outline" size="sm" className="bg-white text-[#152D24] border-[#DDE8DC] hover:bg-[#E6F2E5] text-xs">
                         तपासा
                       </Button>
                     </Link>
@@ -148,7 +148,7 @@ export const Alerts: React.FC = () => {
                   {!item.isRead && (
                     <button
                       onClick={() => markAsRead(item.id)}
-                      className="p-1.5 text-[#5B6B7D] hover:text-[#138808] rounded-lg"
+                      className="p-1.5 text-[#5F7065] hover:text-[#2F9E59] rounded-lg"
                       title="वाचले म्हणून खूण करा"
                     >
                       <CheckCheck className="w-4 h-4" />
@@ -156,7 +156,7 @@ export const Alerts: React.FC = () => {
                   )}
                   <button
                     onClick={() => deleteNotification(item.id)}
-                    className="p-1.5 text-[#5B6B7D] hover:text-[#C0392B] rounded-lg"
+                    className="p-1.5 text-[#5F7065] hover:text-[#C83E3E] rounded-lg"
                     title="हटवा"
                   >
                     <Trash2 className="w-4 h-4" />

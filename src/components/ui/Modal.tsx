@@ -38,7 +38,7 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#152D24]/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div
         className="fixed inset-0"
         onClick={onClose}
@@ -46,16 +46,16 @@ export const Modal: React.FC<ModalProps> = ({
       />
 
       <div
-        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white border border-slate-200 text-slate-900 rounded-3xl shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col`}
+        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white border border-[#DDE8DC] text-[#152D24] rounded-3xl shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col`}
         role="dialog"
         aria-modal="true"
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900">{title}</h3>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#DDE8DC] bg-[#F6F8F0]">
+            <h3 className="text-base sm:text-lg font-bold text-[#152D24]">{title}</h3>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-200/60 transition"
+              className="p-2 text-[#5F7065] hover:text-[#152D24] rounded-full hover:bg-[#E6F2E5] transition"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />

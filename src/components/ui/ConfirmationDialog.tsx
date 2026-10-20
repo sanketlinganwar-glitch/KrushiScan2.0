@@ -29,11 +29,11 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="sm">
       <div className="flex flex-col items-center text-center">
-        <div className="w-12 h-12 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600 mb-4">
+        <div className="w-12 h-12 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-[#C83E3E] mb-4">
           <AlertTriangle className="w-6 h-6" />
         </div>
-        <h4 className="text-lg font-bold text-slate-900 mb-2">{title}</h4>
-        <p className="text-xs sm:text-sm text-slate-600 mb-6">{message}</p>
+        <h4 className="text-lg font-bold text-[#152D24] mb-2">{title}</h4>
+        <p className="text-xs sm:text-sm text-[#5F7065] mb-6">{message}</p>
         <div className="flex items-center gap-3 w-full">
           <Button
             variant="outline"

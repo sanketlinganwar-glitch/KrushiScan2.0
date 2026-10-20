@@ -16,28 +16,28 @@ export const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF3F8] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F6F8F0] flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Card variant="white" className="p-6 sm:p-8 border-[#D5DEE8] shadow-sm">
+        <Card variant="white" className="p-6 sm:p-8 border-[#DDE8DC] shadow-sm">
           <Link
             to="/login"
-            className="inline-flex items-center gap-1.5 text-xs text-[#5B6B7D] hover:text-[#0A2540] font-semibold mb-4"
+            className="inline-flex items-center gap-1.5 text-xs text-[#5F7065] hover:text-[#0B5137] font-semibold mb-4"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             लॉगिनकडे परत जा
           </Link>
 
-          <h2 className="text-xl font-black text-[#0A2540] mb-1">
+          <h2 className="text-xl font-black text-[#152D24] mb-1">
             पासवर्ड पुनर्प्राप्ती (Password Reset)
           </h2>
-          <p className="text-xs text-[#5B6B7D] mb-4 pb-3 border-b border-[#D5DEE8]">
+          <p className="text-xs text-[#5F7065] mb-4 pb-3 border-b border-[#DDE8DC]">
             तुमचा नोंदणीकृत मोबाईल नंबर टाका. त्यावर ओटीपी (OTP) पाठवला जाईल.
           </p>
 
           {sent ? (
-            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-[#0A2540] space-y-2">
-              <div className="flex items-center gap-2 font-bold text-[#138808]">
-                <CheckCircle2 className="w-5 h-5 text-[#138808]" />
+            <div className="p-4 rounded-xl bg-[#E6F2E5] border border-[#21864A]/30 text-xs text-[#152D24] space-y-2">
+              <div className="flex items-center gap-2 font-bold text-[#21864A]">
+                <CheckCircle2 className="w-5 h-5 text-[#21864A]" />
                 <span>ओटीपी यशस्वीरित्या पाठवला आहे!</span>
               </div>
               <p>
@@ -54,18 +54,18 @@ export const ForgotPassword: React.FC = () => {
           ) : (
             <form onSubmit={handleReset} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#0A2540] mb-1">
+                <label className="block text-xs font-bold text-[#152D24] mb-1">
                   नोंदणीकृत मोबाईल नंबर
                 </label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 text-[#5B6B7D] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Phone className="w-4 h-4 text-[#5F7065] absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="tel"
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="उदा. 9876543210"
-                    className="w-full bg-white border border-[#D5DEE8] rounded-xl pl-9 pr-3 py-2.5 text-xs sm:text-sm font-semibold text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]"
+                    className="w-full bg-white border border-[#DDE8DC] rounded-xl pl-9 pr-3 py-2.5 text-xs sm:text-sm font-semibold text-[#152D24] focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                   />
                 </div>
               </div>

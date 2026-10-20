@@ -59,37 +59,37 @@ export const Signup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF3F8] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F6F8F0] flex flex-col items-center justify-center p-4">
       {/* Brand Header */}
       <div className="text-center mb-6">
-        <div className="w-14 h-14 rounded-2xl bg-[#0A2540] border-2 border-[#FF9933] flex items-center justify-center shadow-lg mx-auto mb-2">
+        <div className="w-14 h-14 rounded-2xl bg-[#0B5137] border-2 border-[#2F9E59] flex items-center justify-center shadow-lg mx-auto mb-2">
           <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="KrushiScan AI Logo" className="w-10 h-10" />
         </div>
-        <h1 className="text-2xl font-black text-[#0A2540]">
-          KrushiScan <span className="text-[#0A2540]">AI</span> नोंदणी
+        <h1 className="text-2xl font-black text-[#152D24]">
+          KrushiScan <span className="text-[#2F9E59]">AI</span> नोंदणी
         </h1>
-        <p className="text-xs text-[#138808] font-bold">
+        <p className="text-xs text-[#2F9E59] font-bold">
           विदर्भातील शेतकरी बांधवांसाठी मोफत नोंदणी
         </p>
       </div>
 
       <div className="w-full max-w-md">
-        <Card variant="white" className="p-6 sm:p-8 border-[#D5DEE8] shadow-sm">
-          <h2 className="text-lg font-black text-[#0A2540] mb-1">नवीन शेतकरी खाते</h2>
-          <p className="text-xs text-[#5B6B7D] mb-4 pb-3 border-b border-[#D5DEE8]">
+        <Card variant="white" className="p-6 sm:p-8 border-[#DDE8DC] shadow-sm">
+          <h2 className="text-lg font-black text-[#152D24] mb-1">नवीन शेतकरी खाते</h2>
+          <p className="text-xs text-[#5F7065] mb-4 pb-3 border-b border-[#DDE8DC]">
             रोग निदान, पीक व्यवस्थापन व थेट बाजार भावासाठी माहिती भरा
           </p>
 
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-[#C0392B] flex items-center gap-2" role="alert">
-              <AlertCircle className="w-4 h-4 shrink-0 text-[#C0392B]" />
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-[#C83E3E] flex items-center gap-2" role="alert">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#C83E3E]" />
               <span>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div>
-              <label htmlFor="signup-name" className="block text-xs font-bold text-[#0A2540] mb-1">
+              <label htmlFor="signup-name" className="block text-xs font-bold text-[#152D24] mb-1">
                 शेतकऱ्याचे नाव
               </label>
               <input
@@ -99,12 +99,12 @@ export const Signup: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="उदा. गजानन पवार"
-                className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]"
+                className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#152D24] focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
               />
             </div>
 
             <div>
-              <label htmlFor="signup-phone" className="block text-xs font-bold text-[#0A2540] mb-1">
+              <label htmlFor="signup-phone" className="block text-xs font-bold text-[#152D24] mb-1">
                 मोबाईल नंबर
               </label>
               <input
@@ -114,20 +114,20 @@ export const Signup: React.FC = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="उदा. 9876543210"
-                className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]"
+                className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#152D24] focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="signup-district" className="block text-xs font-bold text-[#0A2540] mb-1">
+                <label htmlFor="signup-district" className="block text-xs font-bold text-[#152D24] mb-1">
                   जिल्हा
                 </label>
                 <select
                   id="signup-district"
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#152D24] focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                 >
                   <option value="यवतमाळ (Yavatmal)">यवतमाळ</option>
                   <option value="अमरावती (Amravati)">अमरावती</option>
@@ -140,7 +140,7 @@ export const Signup: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="signup-village" className="block text-xs font-bold text-[#0A2540] mb-1">
+                <label htmlFor="signup-village" className="block text-xs font-bold text-[#152D24] mb-1">
                   गाव / तालुका
                 </label>
                 <input
@@ -150,14 +150,14 @@ export const Signup: React.FC = () => {
                   value={village}
                   onChange={(e) => setVillage(e.target.value)}
                   placeholder="उदा. दारव्हा"
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#152D24] focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="signup-farmsize" className="block text-xs font-bold text-[#0A2540] mb-1">
+                <label htmlFor="signup-farmsize" className="block text-xs font-bold text-[#152D24] mb-1">
                   शेती क्षेत्र (एकर)
                 </label>
                 <input
@@ -168,12 +168,12 @@ export const Signup: React.FC = () => {
                   required
                   value={farmSizeAcres}
                   onChange={(e) => setFarmSizeAcres(Number(e.target.value))}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#152D24] focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                 />
               </div>
 
               <div>
-                <label htmlFor="signup-password" className="block text-xs font-bold text-[#0A2540] mb-1">
+                <label htmlFor="signup-password" className="block text-xs font-bold text-[#152D24] mb-1">
                   पासवर्ड (किमान ८ अक्षरे)
                 </label>
                 <input
@@ -184,28 +184,28 @@ export const Signup: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm font-semibold text-[#152D24] focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                 />
               </div>
             </div>
 
             {/* Legal Consent Checkbox (DPDP Act 2023 & IT Act Compliance) */}
             <div className="pt-2">
-              <label className="flex items-start gap-2.5 cursor-pointer text-xs text-[#0A2540]">
+              <label className="flex items-start gap-2.5 cursor-pointer text-xs text-[#152D24]">
                 <input
                   type="checkbox"
                   id="agree-consent"
                   checked={agreeConsent}
                   onChange={(e) => setAgreeConsent(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded text-[#138808] border-[#D5DEE8] focus:ring-[#138808]"
+                  className="mt-0.5 w-4 h-4 rounded text-[#2F9E59] border-[#DDE8DC] focus:ring-[#0B5137]"
                 />
-                <span className="leading-tight text-[11px] text-[#5B6B7D]">
+                <span className="leading-tight text-[11px] text-[#5F7065]">
                   मी KrushiScan चे{' '}
-                  <Link to="/terms" target="_blank" className="text-[#0A2540] font-bold underline">
+                  <Link to="/terms" target="_blank" className="text-[#0B5137] font-bold underline">
                     नियम व अटी (Terms)
                   </Link>
                   {' '}आणि{' '}
-                  <Link to="/privacy" target="_blank" className="text-[#0A2540] font-bold underline">
+                  <Link to="/privacy" target="_blank" className="text-[#0B5137] font-bold underline">
                     गोपनीयता धोरण (Privacy Policy)
                   </Link>
                   {' '}वाचले असून डिजिटल पर्सनल डेटा प्रोटेक्शन कायदा (DPDP Act) अंतर्गत डेटा संकलनास संमती देतो.
@@ -225,9 +225,9 @@ export const Signup: React.FC = () => {
             </Button>
           </form>
 
-          <div className="mt-4 pt-4 border-t border-[#D5DEE8] text-center text-xs text-[#5B6B7D]">
+          <div className="mt-4 pt-4 border-t border-[#DDE8DC] text-center text-xs text-[#5F7065]">
             आधीच खाते आहे का?{' '}
-            <Link to="/login" className="text-[#0A2540] font-black underline hover:text-[#3B6EA5]">
+            <Link to="/login" className="text-[#0B5137] font-black underline hover:text-[#2F9E59]">
               लॉगिन करा (Login)
             </Link>
           </div>

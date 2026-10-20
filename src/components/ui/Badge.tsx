@@ -17,20 +17,20 @@ export const Badge: React.FC<BadgeProps> = ({
   const base = 'inline-flex items-center font-bold rounded-full shrink-0 tracking-wide';
 
   const variants = {
-    // Saffron Badge (Rank 1 badge, best market) - Saffron background with crisp WHITE text (Never saffron text on white!)
-    saffron: 'bg-[#FF9933] text-white border border-[#FF9933] shadow-xs font-black',
-    // India Green #138808 (Net return, profit, high confidence)
-    success: 'bg-emerald-50 text-[#138808] border border-[#138808]/30 font-bold',
-    // Red #C0392B (Shrinkage, deductions, warnings, below MSP)
-    danger: 'bg-red-50 text-[#C0392B] border border-[#C0392B]/30 font-bold',
-    // Blue #3B6EA5 (Loading and mandi fees, APMC info)
-    info: 'bg-blue-50 text-[#3B6EA5] border border-[#3B6EA5]/30 font-bold',
-    // Neutral (Slate #5B6B7D on Page #EEF3F8 with Line #D5DEE8 border)
-    neutral: 'bg-[#EEF3F8] text-[#5B6B7D] border border-[#D5DEE8] font-semibold',
-    // Warning
-    warning: 'bg-amber-50 text-amber-900 border border-amber-200 font-bold',
-    // Orange alias
-    orange: 'bg-[#FF9933] text-white border border-[#FF9933] font-bold',
+    // Krushi Green Highlight Badge - Leaf Green with crisp white text
+    saffron: 'bg-[#2F9E59] text-white border border-[#2F9E59] shadow-xs font-bold',
+    // Success #21864A (Profit, healthy crop, high confidence)
+    success: 'bg-[#E6F2E5] text-[#21864A] border border-[#21864A]/30 font-bold',
+    // Error / Danger #C83E3E (Critical disease, losses, alerts)
+    danger: 'bg-red-50 text-[#C83E3E] border border-[#C83E3E]/30 font-bold',
+    // Info / Forest & Leaf Green
+    info: 'bg-[#E6F2E5] text-[#0B5137] border border-[#0B5137]/30 font-bold',
+    // Neutral (Slate #5F7065 on Page #F6F8F0 with subtle green border #DDE8DC)
+    neutral: 'bg-[#F6F8F0] text-[#5F7065] border border-[#DDE8DC] font-semibold',
+    // Warning #E9A23B
+    warning: 'bg-amber-50 text-[#b5731b] border border-[#E9A23B]/40 font-bold',
+    // Orange / Highlight alias
+    orange: 'bg-[#E9A23B] text-white border border-[#E9A23B] font-bold',
   };
 
   const sizes = {
@@ -41,11 +41,11 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const dotColors = {
     saffron: 'bg-white',
-    success: 'bg-[#138808]',
-    warning: 'bg-amber-500',
-    danger: 'bg-[#C0392B]',
-    info: 'bg-[#3B6EA5]',
-    neutral: 'bg-[#5B6B7D]',
+    success: 'bg-[#21864A]',
+    warning: 'bg-[#E9A23B]',
+    danger: 'bg-[#C83E3E]',
+    info: 'bg-[#0B5137]',
+    neutral: 'bg-[#5F7065]',
     orange: 'bg-white',
   };
 

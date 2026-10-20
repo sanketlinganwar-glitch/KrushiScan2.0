@@ -166,11 +166,11 @@ export const RecoveryTracker: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-black text-[#0A2540] flex items-center gap-2">
-          <Activity className="w-6 h-6 text-[#0A2540]" />
+        <h2 className="text-2xl font-black text-[#152D24] flex items-center gap-2">
+          <Activity className="w-6 h-6 text-[#2F9E59]" />
           <span>{t('navRecovery')} (Crop Recovery Tracker)</span>
         </h2>
-        <p className="text-xs sm:text-sm text-[#5B6B7D] mt-0.5">
+        <p className="text-xs sm:text-sm text-[#5F7065] mt-0.5">
           फवारणी व उपचारानंतर पिकात झालेला प्रत्यक्ष फरक, निरीक्षणे व आधी/नंतरचा फोटो तपासा
         </p>
       </div>
@@ -179,7 +179,7 @@ export const RecoveryTracker: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Tracked Crops List */}
         <div className="lg:col-span-5 space-y-3">
-          <h4 className="text-sm font-bold text-[#0A2540] uppercase tracking-wide px-1">
+          <h4 className="text-sm font-bold text-[#152D24] uppercase tracking-wide px-1">
             उपचार चालू असलेली पिके ({logs.length})
           </h4>
 
@@ -193,7 +193,7 @@ export const RecoveryTracker: React.FC = () => {
                 interactive
                 onClick={() => setSelectedLog(log)}
                 className={`border-2 transition ${
-                  isSelected ? 'border-[#0A2540] shadow-md ring-2 ring-[#0A2540]/20' : 'border-[#D5DEE8]'
+                  isSelected ? 'border-[#0B5137] shadow-md ring-2 ring-[#0B5137]/20' : 'border-[#DDE8DC]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -215,20 +215,20 @@ export const RecoveryTracker: React.FC = () => {
                         ? 'सुधारणा होत आहे (Improving)'
                         : 'स्थिर स्थिती (Monitoring)'}
                     </Badge>
-                    <h4 className="font-bold text-base text-[#0A2540]">
+                    <h4 className="font-bold text-base text-[#152D24]">
                       {log.cropName}
                     </h4>
-                    <p className="text-xs font-semibold text-[#C0392B]">
+                    <p className="text-xs font-semibold text-[#C83E3E]">
                       मूळ रोग: {log.originalDisease}
                     </p>
                   </div>
 
-                  <span className="text-[11px] text-[#5B6B7D] shrink-0">
+                  <span className="text-[11px] text-[#5F7065] shrink-0">
                     {log.lastUpdated}
                   </span>
                 </div>
 
-                <p className="text-xs text-[#5B6B7D] line-clamp-1 mt-2 font-medium">
+                <p className="text-xs text-[#5F7065] line-clamp-1 mt-2 font-medium">
                   उपचार: {log.treatmentApplied}
                 </p>
               </Card>
@@ -240,13 +240,13 @@ export const RecoveryTracker: React.FC = () => {
         {selectedLog && (
           <div className="lg:col-span-7 space-y-5">
             {/* Top Card: Before vs After Photo Comparison */}
-            <Card variant="white" className="p-5 border-[#D5DEE8]">
-              <div className="flex items-center justify-between pb-3 border-b border-[#D5DEE8] mb-4">
+            <Card variant="white" className="p-5 border-[#DDE8DC]">
+              <div className="flex items-center justify-between pb-3 border-b border-[#DDE8DC] mb-4">
                 <div>
-                  <h3 className="font-black text-lg text-[#0A2540]">
+                  <h3 className="font-black text-lg text-[#152D24]">
                     {selectedLog.cropName}
                   </h3>
-                  <p className="text-xs text-[#5B6B7D]">
+                  <p className="text-xs text-[#5F7065]">
                     सुरुवात: {selectedLog.startDate} • ताजी नोंद: {selectedLog.lastUpdated}
                   </p>
                 </div>
@@ -265,17 +265,17 @@ export const RecoveryTracker: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Before Photo */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs font-bold text-[#0A2540]">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#152D24]">
                     <span>पूर्वीची स्थिती (Before)</span>
-                    <span className="text-[#C0392B] font-semibold">{selectedLog.initialSeverity}</span>
+                    <span className="text-[#C83E3E] font-semibold">{selectedLog.initialSeverity}</span>
                   </div>
-                  <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#0B1626] border border-[#D5DEE8] shadow-sm relative">
+                  <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#152D24] border border-[#DDE8DC] shadow-xs relative">
                     <img
                       src={selectedLog.initialImageUrl}
                       alt="Before treatment"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-2 left-2 bg-[#0B1626]/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white font-medium">
+                    <div className="absolute bottom-2 left-2 bg-[#0B5137]/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white font-medium">
                       {selectedLog.startDate}
                     </div>
                   </div>
@@ -283,13 +283,13 @@ export const RecoveryTracker: React.FC = () => {
 
                 {/* After Photo */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs font-bold text-[#0A2540]">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#152D24]">
                     <span>सध्याची स्थिती (After / Current)</span>
-                    <span className="text-[#138808] font-semibold">
+                    <span className="text-[#21864A] font-semibold">
                       {selectedLog.currentStatus === 'recovered' ? 'निरोगी' : 'सुधारणा'}
                     </span>
                   </div>
-                  <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#0B1626] border border-[#D5DEE8] shadow-sm relative flex items-center justify-center">
+                  <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#152D24] border border-[#DDE8DC] shadow-xs relative flex items-center justify-center">
                     {selectedLog.latestImageUrl ? (
                       <>
                         <img
@@ -297,14 +297,14 @@ export const RecoveryTracker: React.FC = () => {
                           alt="After treatment"
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute bottom-2 left-2 bg-[#138808]/90 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white font-medium">
+                        <div className="absolute bottom-2 left-2 bg-[#2F9E59]/90 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white font-medium">
                           {selectedLog.lastUpdated}
                         </div>
                       </>
                     ) : (
                       <div className="text-center p-4">
-                        <ImageIcon className="w-8 h-8 text-[#5B6B7D] mx-auto mb-1" />
-                        <p className="text-xs text-[#5B6B7D]">नवीन फोटो अपलोड करा</p>
+                        <ImageIcon className="w-8 h-8 text-[#5F7065] mx-auto mb-1" />
+                        <p className="text-xs text-[#5F7065]">नवीन फोटो अपलोड करा</p>
                       </div>
                     )}
                   </div>
@@ -312,11 +312,11 @@ export const RecoveryTracker: React.FC = () => {
               </div>
 
               {/* Treatment Applied Box */}
-              <div className="mt-4 p-3 rounded-xl bg-[#EEF3F8] border border-[#D5DEE8] text-xs">
-                <span className="font-bold text-[#0A2540] block mb-0.5">
+              <div className="mt-4 p-3 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] text-xs">
+                <span className="font-bold text-[#152D24] block mb-0.5">
                   केलेला उपचार / फवारणी:
                 </span>
-                <span className="text-[#0A2540] font-medium">
+                <span className="text-[#152D24] font-medium">
                   {selectedLog.treatmentApplied}
                 </span>
               </div>
@@ -331,17 +331,17 @@ export const RecoveryTracker: React.FC = () => {
               );
 
               return (
-                <Card variant="white" className="p-5 border-emerald-300 shadow-md bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/30">
-                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-emerald-100 mb-3">
+                <Card variant="white" className="p-5 border-[#DDE8DC] shadow-xs bg-[#F6F8F0]/50">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#DDE8DC] mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="p-1.5 rounded-lg bg-emerald-600 text-white shadow-xs">
+                      <span className="p-1.5 rounded-lg bg-[#0B5137] text-white shadow-xs">
                         <Sparkles className="w-4 h-4" />
                       </span>
                       <div>
-                        <h4 className="text-sm font-bold text-[#0A2540]">
+                        <h4 className="text-sm font-bold text-[#152D24]">
                           {language === 'mr' ? 'AI तुलनात्मक सुधारणा विश्लेषण (Recovery Delta)' : 'AI Comparative Recovery Delta Analysis'}
                         </h4>
-                        <span className="text-[11px] text-[#5B6B7D]">
+                        <span className="text-[11px] text-[#5F7065]">
                           {language === 'mr' ? 'मूळ फोटो विरुद्ध नवीन फोटो संगणकीय तपासणी' : 'Computer vision differential analysis between Day 1 & follow-up'}
                         </span>
                       </div>
@@ -354,31 +354,31 @@ export const RecoveryTracker: React.FC = () => {
 
                   {/* Recovery Metric Gauges */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-2xs">
+                    <div className="p-3 bg-white rounded-xl border border-[#DDE8DC] shadow-2xs">
                       <div className="flex justify-between items-center text-xs mb-1">
-                        <span className="font-bold text-[#0A2540]">
+                        <span className="font-bold text-[#152D24]">
                           {language === 'mr' ? 'एकूण सुधारणा प्रमाण (Healing Progress):' : 'Overall Healing Score:'}
                         </span>
-                        <span className="text-emerald-700 font-extrabold text-sm">{delta.recoveryScorePercent}%</span>
+                        <span className="text-[#0B5137] font-extrabold text-sm">{delta.recoveryScorePercent}%</span>
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <div className="w-full bg-[#E6F2E5] rounded-full h-2.5 overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#2F9E59] to-[#0B5137] rounded-full transition-all duration-500"
                           style={{ width: `${delta.recoveryScorePercent}%` }}
                         />
                       </div>
                     </div>
 
-                    <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-2xs">
+                    <div className="p-3 bg-white rounded-xl border border-[#DDE8DC] shadow-2xs">
                       <div className="flex justify-between items-center text-xs mb-1">
-                        <span className="font-bold text-[#0A2540]">
+                        <span className="font-bold text-[#152D24]">
                           {language === 'mr' ? 'रोगट डागांचे प्रमाण घटले (Lesion Reduction):' : 'Lesion Desiccation:'}
                         </span>
-                        <span className="text-[#3B6EA5] font-extrabold text-sm">{delta.lesionReductionPercent}%</span>
+                        <span className="text-[#2F9E59] font-extrabold text-sm">{delta.lesionReductionPercent}%</span>
                       </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <div className="w-full bg-[#E6F2E5] rounded-full h-2.5 overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-[#2F9E59] to-[#0B5137] rounded-full transition-all duration-500"
                           style={{ width: `${delta.lesionReductionPercent}%` }}
                         />
                       </div>
@@ -387,21 +387,21 @@ export const RecoveryTracker: React.FC = () => {
 
                   {/* AI Clinical Observations & Agronomic Advice */}
                   <div className="space-y-2 text-xs">
-                    <div className="p-3 rounded-xl bg-white border border-emerald-100">
-                      <span className="font-bold text-emerald-950 block mb-1">
+                    <div className="p-3 rounded-xl bg-white border border-[#DDE8DC]">
+                      <span className="font-bold text-[#0B5137] block mb-1">
                         🔬 {language === 'mr' ? 'AI निरीक्षण:' : 'AI Vision Finding:'}
                       </span>
-                      <p className="text-slate-700 leading-relaxed font-medium">
+                      <p className="text-[#152D24] leading-relaxed font-medium">
                         {delta.observations[language]}
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200">
-                      <span className="font-bold text-emerald-950 flex items-center gap-1 mb-1">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                    <div className="p-3 rounded-xl bg-[#E6F2E5] border border-[#DDE8DC]">
+                      <span className="font-bold text-[#0B5137] flex items-center gap-1 mb-1">
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#2F9E59]" />
                         <span>{language === 'mr' ? 'पुढील शिफारस (Next Agronomic Action):' : 'Agronomic Action:'}</span>
                       </span>
-                      <p className="text-emerald-900 leading-relaxed font-semibold">
+                      <p className="text-[#152D24] leading-relaxed font-semibold">
                         {delta.nextStepRecommendation[language]}
                       </p>
                     </div>
@@ -411,24 +411,24 @@ export const RecoveryTracker: React.FC = () => {
             })()}
 
             {/* Recovery Timeline */}
-            <Card variant="white" className="p-5 border-[#D5DEE8]">
-              <h4 className="font-bold text-sm text-[#0A2540] mb-3 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#138808]" />
+            <Card variant="white" className="p-5 border-[#DDE8DC]">
+              <h4 className="font-bold text-sm text-[#152D24] mb-3 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#2F9E59]" />
                 <span>सुधारणा कालक्रम (Timeline & Farmer Notes)</span>
               </h4>
 
-              <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#D5DEE8]">
+              <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#DDE8DC]">
                 {selectedLog.timeline.map((item, idx) => (
                   <div key={idx} className="relative group">
                     {/* Bullet */}
-                    <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-[#138808] ring-4 ring-[#138808]/20" />
+                    <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-[#2F9E59] ring-4 ring-[#2F9E59]/20" />
 
-                    <div className="bg-[#EEF3F8] border border-[#D5DEE8] rounded-xl p-3">
+                    <div className="bg-[#F6F8F0] border border-[#DDE8DC] rounded-xl p-3">
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="font-bold text-[#0A2540]">{item.status}</span>
-                        <span className="text-[11px] text-[#5B6B7D]">{item.date}</span>
+                        <span className="font-bold text-[#152D24]">{item.status}</span>
+                        <span className="text-[11px] text-[#5F7065]">{item.date}</span>
                       </div>
-                      <p className="text-xs text-[#0A2540] leading-relaxed font-medium">
+                      <p className="text-xs text-[#152D24] leading-relaxed font-medium">
                         {item.note}
                       </p>
                     </div>

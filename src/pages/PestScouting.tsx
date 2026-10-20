@@ -167,14 +167,14 @@ export const PestScouting: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-2xl bg-[#0A2540] text-white flex items-center justify-center shadow-xs">
-              <Bug className="w-6 h-6 text-[#FF9933]" />
+            <div className="w-10 h-10 rounded-2xl bg-[#0B5137] text-white flex items-center justify-center shadow-xs">
+              <Bug className="w-6 h-6 text-[#E9A23B]" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-[#0A2540] tracking-tight">
+              <h1 className="text-2xl font-black text-[#152D24] tracking-tight">
                 कीड सर्वेक्षण व ईटीएल गणक
               </h1>
-              <p className="text-xs sm:text-sm text-[#5B6B7D] font-medium">
+              <p className="text-xs sm:text-sm text-[#5F7065] font-medium">
                 PDKV अकोला व ICAR प्रमाणित आर्थिक नुकसान पातळी (ETL) निर्णय प्रणाली
               </p>
             </div>
@@ -182,8 +182,8 @@ export const PestScouting: React.FC = () => {
         </div>
 
         {/* Scientific Authority Tag */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#D5DEE8] text-xs font-bold text-[#0A2540] shadow-xs shrink-0">
-          <BookOpen className="w-4 h-4 text-[#138808]" />
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#DDE8DC] text-xs font-bold text-[#152D24] shadow-xs shrink-0">
+          <BookOpen className="w-4 h-4 text-[#2F9E59]" />
           <span>डॉ. पंदेकृवि, अकोला शिफारस</span>
         </div>
       </div>
@@ -203,8 +203,8 @@ export const PestScouting: React.FC = () => {
             onClick={() => setSelectedCrop(tab.id as any)}
             className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition border flex items-center gap-2 ${
               selectedCrop === tab.id
-                ? 'bg-[#0A2540] text-white border-[#0A2540] shadow-sm'
-                : 'bg-white text-[#5B6B7D] border-[#D5DEE8] hover:bg-[#EEF3F8] hover:text-[#0A2540]'
+                ? 'bg-[#0B5137] text-white border-[#0B5137] shadow-xs'
+                : 'bg-white text-[#5F7065] border-[#DDE8DC] hover:bg-[#E6F2E5] hover:text-[#0B5137]'
             }`}
           >
             <span>{tab.icon}</span>
@@ -214,8 +214,8 @@ export const PestScouting: React.FC = () => {
       </div>
 
       {/* Pest Rule Selection for Chosen Crop */}
-      <Card variant="white" padding="md" className="border-[#D5DEE8] space-y-3">
-        <label className="block text-xs font-bold text-[#0A2540] uppercase tracking-wider">
+      <Card variant="white" padding="md" className="border-[#DDE8DC] space-y-3">
+        <label className="block text-xs font-bold text-[#152D24] uppercase tracking-wider">
           कीड प्रकार निवडा (Select Target Pest):
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -226,17 +226,17 @@ export const PestScouting: React.FC = () => {
               onClick={() => setSelectedRuleId(rule.id)}
               className={`p-3.5 rounded-2xl text-left border transition flex flex-col justify-between gap-1.5 ${
                 selectedRuleId === rule.id
-                  ? 'bg-[#EEF3F8] border-[#0A2540] ring-2 ring-[#0A2540]/20'
-                  : 'bg-white border-[#D5DEE8] hover:border-slate-300'
+                  ? 'bg-[#E6F2E5] border-[#0B5137] ring-2 ring-[#0B5137]/20'
+                  : 'bg-white border-[#DDE8DC] hover:border-[#2F9E59]'
               }`}
             >
-              <div className="font-extrabold text-sm text-[#0A2540]">
+              <div className="font-extrabold text-sm text-[#152D24]">
                 {rule.pestName[language] || rule.pestName.mr}
               </div>
-              <div className="text-[11px] text-[#5B6B7D] italic">
+              <div className="text-[11px] text-[#5F7065] italic">
                 {rule.pestName.scientific}
               </div>
-              <div className="text-[11px] font-bold text-[#138808] pt-1 border-t border-[#D5DEE8]/60">
+              <div className="text-[11px] font-bold text-[#2F9E59] pt-1 border-t border-[#DDE8DC]/60">
                 ईटीएल: {rule.thresholdDisplay[language] || rule.thresholdDisplay.mr}
               </div>
             </button>
@@ -249,43 +249,43 @@ export const PestScouting: React.FC = () => {
         {/* Left Column: Sampling Protocol & Input Steppers */}
         <div className="lg:col-span-6 space-y-5">
           {/* Sampling Protocol Card */}
-          <Card variant="white" padding="lg" className="border-[#D5DEE8] space-y-4">
+          <Card variant="white" padding="lg" className="border-[#DDE8DC] space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
-                <Info className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-xl bg-[#E6F2E5] text-[#0B5137] flex items-center justify-center shrink-0 border border-[#DDE8DC]">
+                <Info className="w-4 h-4 text-[#2F9E59]" />
               </div>
               <div>
-                <h3 className="font-bold text-sm text-[#0A2540]">
+                <h3 className="font-bold text-sm text-[#152D24]">
                   शास्त्रोक्त नमुना पद्धत (Sampling Protocol)
                 </h3>
-                <p className="text-xs text-[#5B6B7D] mt-1 leading-relaxed font-medium">
+                <p className="text-xs text-[#5F7065] mt-1 leading-relaxed font-medium">
                   {activeRule.samplingMethod[language] || activeRule.samplingMethod.mr}
                 </p>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#EEF3F8] border border-[#D5DEE8] text-xs text-[#0A2540] flex items-center justify-between">
-              <span className="font-semibold text-[#5B6B7D]">लक्ष्य पीक अवस्था:</span>
-              <span className="font-extrabold text-[#0A2540]">
+            <div className="p-3 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] text-xs text-[#152D24] flex items-center justify-between">
+              <span className="font-semibold text-[#5F7065]">लक्ष्य पीक अवस्था:</span>
+              <span className="font-extrabold text-[#152D24]">
                 {activeRule.targetCropStage[language] || activeRule.targetCropStage.mr}
               </span>
             </div>
           </Card>
 
           {/* Stepper Inputs Card */}
-          <Card variant="white" padding="lg" className="border-[#D5DEE8] space-y-5">
-            <h3 className="font-bold text-base text-[#0A2540] flex items-center gap-2">
-              <Bug className="w-5 h-5 text-[#FF9933]" />
+          <Card variant="white" padding="lg" className="border-[#DDE8DC] space-y-5">
+            <h3 className="font-bold text-base text-[#152D24] flex items-center gap-2">
+              <Bug className="w-5 h-5 text-[#E9A23B]" />
               <span>प्रत्यक्ष शेतातील निरीक्षणे (Field Counts)</span>
             </h3>
 
             {/* Input 1: Sample Size */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#0A2540]">
+                <label className="text-xs font-bold text-[#152D24]">
                   तपासलेले नमुने / झाडे / दिवस (Samples Inspected):
                 </label>
-                <span className="text-xs font-bold text-[#5B6B7D]">
+                <span className="text-xs font-bold text-[#5F7065]">
                   किमान शिफारस: {activeRule.minRecommendedSamples}
                 </span>
               </div>
@@ -293,7 +293,7 @@ export const PestScouting: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSamplesCount((prev) => Math.max(1, prev - 1))}
-                  className="w-12 h-12 rounded-2xl bg-[#EEF3F8] border border-[#D5DEE8] text-xl font-bold text-[#0A2540] hover:bg-[#D5DEE8] active:scale-95 transition"
+                  className="w-12 h-12 rounded-2xl bg-[#F6F8F0] border border-[#DDE8DC] text-xl font-bold text-[#152D24] hover:bg-[#E6F2E5] active:scale-95 transition"
                 >
                   -
                 </button>
@@ -303,18 +303,18 @@ export const PestScouting: React.FC = () => {
                   max="500"
                   value={samplesCount}
                   onChange={(e) => setSamplesCount(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="flex-1 text-center font-extrabold text-lg py-2.5 bg-white border border-[#D5DEE8] rounded-2xl text-[#0A2540] focus:ring-2 focus:ring-[#0A2540]"
+                  className="flex-1 text-center font-extrabold text-lg py-2.5 bg-white border border-[#DDE8DC] rounded-2xl text-[#152D24] focus:ring-2 focus:ring-[#0B5137] focus:outline-hidden"
                 />
                 <button
                   type="button"
                   onClick={() => setSamplesCount((prev) => prev + 1)}
-                  className="w-12 h-12 rounded-2xl bg-[#EEF3F8] border border-[#D5DEE8] text-xl font-bold text-[#0A2540] hover:bg-[#D5DEE8] active:scale-95 transition"
+                  className="w-12 h-12 rounded-2xl bg-[#F6F8F0] border border-[#DDE8DC] text-xl font-bold text-[#152D24] hover:bg-[#E6F2E5] active:scale-95 transition"
                 >
                   +
                 </button>
               </div>
               {samplesCount < activeRule.minRecommendedSamples && (
-                <p className="text-[11px] text-[#C0392B] font-medium flex items-center gap-1">
+                <p className="text-[11px] text-[#C83E3E] font-medium flex items-center gap-1">
                   <AlertTriangle className="w-3.5 h-3.5" />
                   विश्वसनीय निष्कर्षासाठी किमान {activeRule.minRecommendedSamples} नमुने तपासणे आवश्यक आहे.
                 </p>
@@ -324,10 +324,10 @@ export const PestScouting: React.FC = () => {
             {/* Input 2: Total Pest Count */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#0A2540]">
+                <label className="text-xs font-bold text-[#152D24]">
                   एकूण आढळलेली कीड / पतंग संख्या (Total Pests Observed):
                 </label>
-                <span className="text-xs font-bold text-[#138808]">
+                <span className="text-xs font-bold text-[#2F9E59]">
                   {activeRule.unitLabel[language] || activeRule.unitLabel.mr}
                 </span>
               </div>
@@ -335,7 +335,7 @@ export const PestScouting: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setTotalPestObserved((prev) => Math.max(0, prev - 1))}
-                  className="w-12 h-12 rounded-2xl bg-[#EEF3F8] border border-[#D5DEE8] text-xl font-bold text-[#0A2540] hover:bg-[#D5DEE8] active:scale-95 transition"
+                  className="w-12 h-12 rounded-2xl bg-[#F6F8F0] border border-[#DDE8DC] text-xl font-bold text-[#152D24] hover:bg-[#E6F2E5] active:scale-95 transition"
                 >
                   -
                 </button>
@@ -345,12 +345,12 @@ export const PestScouting: React.FC = () => {
                   max="5000"
                   value={totalPestObserved}
                   onChange={(e) => setTotalPestObserved(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="flex-1 text-center font-extrabold text-lg py-2.5 bg-white border border-[#D5DEE8] rounded-2xl text-[#0A2540] focus:ring-2 focus:ring-[#0A2540]"
+                  className="flex-1 text-center font-extrabold text-lg py-2.5 bg-white border border-[#DDE8DC] rounded-2xl text-[#152D24] focus:ring-2 focus:ring-[#0B5137] focus:outline-hidden"
                 />
                 <button
                   type="button"
                   onClick={() => setTotalPestObserved((prev) => prev + 1)}
-                  className="w-12 h-12 rounded-2xl bg-[#EEF3F8] border border-[#D5DEE8] text-xl font-bold text-[#0A2540] hover:bg-[#D5DEE8] active:scale-95 transition"
+                  className="w-12 h-12 rounded-2xl bg-[#F6F8F0] border border-[#DDE8DC] text-xl font-bold text-[#152D24] hover:bg-[#E6F2E5] active:scale-95 transition"
                 >
                   +
                 </button>
@@ -364,7 +364,7 @@ export const PestScouting: React.FC = () => {
                 setSamplesCount(activeRule.minRecommendedSamples);
                 setTotalPestObserved(0);
               }}
-              className="text-xs text-[#5B6B7D] hover:text-[#0A2540] flex items-center gap-1 font-bold underline"
+              className="text-xs text-[#5F7065] hover:text-[#0B5137] flex items-center gap-1 font-bold underline"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               निरीक्षणे पूर्ववत करा (Reset)
@@ -375,14 +375,14 @@ export const PestScouting: React.FC = () => {
         {/* Right Column: Live Calculation Result & Action Advisory */}
         <div className="lg:col-span-6 space-y-5">
           {evaluation && (
-            <Card variant="white" padding="lg" className="border-[#D5DEE8] space-y-5 shadow-sm">
+            <Card variant="white" padding="lg" className="border-[#DDE8DC] space-y-5 shadow-xs">
               {/* Verdict Header */}
-              <div className="flex items-start justify-between gap-3 pb-4 border-b border-[#D5DEE8]">
+              <div className="flex items-start justify-between gap-3 pb-4 border-b border-[#DDE8DC]">
                 <div>
-                  <span className="text-xs font-bold text-[#5B6B7D] uppercase tracking-wider block">
+                  <span className="text-xs font-bold text-[#5F7065] uppercase tracking-wider block">
                     ईटीएल मूल्यमापन निष्कर्ष
                   </span>
-                  <h3 className="text-lg font-black text-[#0A2540] mt-0.5">
+                  <h3 className="text-lg font-black text-[#152D24] mt-0.5">
                     {evaluation.statusHeadline[language] || evaluation.statusHeadline.mr}
                   </h3>
                 </div>
@@ -390,21 +390,21 @@ export const PestScouting: React.FC = () => {
               </div>
 
               {/* Numerical Breakdown Box */}
-              <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-[#EEF3F8] border border-[#D5DEE8]">
+              <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-[#F6F8F0] border border-[#DDE8DC]">
                 <div>
-                  <span className="text-xs text-[#5B6B7D] font-bold block">नोंदवलेली सरासरी</span>
-                  <span className="text-xl font-black text-[#0A2540]">
+                  <span className="text-xs text-[#5F7065] font-bold block">नोंदवलेली सरासरी</span>
+                  <span className="text-xl font-black text-[#152D24]">
                     {evaluation.calculatedAverage}{' '}
-                    <span className="text-xs font-bold text-[#5B6B7D]">
+                    <span className="text-xs font-bold text-[#5F7065]">
                       {evaluation.rule.unitLabel[language] || evaluation.rule.unitLabel.mr}
                     </span>
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#5B6B7D] font-bold block">अधिकृत ईटीएल मर्यादा</span>
-                  <span className="text-xl font-black text-[#138808]">
+                  <span className="text-xs text-[#5F7065] font-bold block">अधिकृत ईटीएल मर्यादा</span>
+                  <span className="text-xl font-black text-[#21864A]">
                     {evaluation.rule.etlThreshold}{' '}
-                    <span className="text-xs font-bold text-[#5B6B7D]">
+                    <span className="text-xs font-bold text-[#5F7065]">
                       {evaluation.rule.unitLabel[language] || evaluation.rule.unitLabel.mr}
                     </span>
                   </span>
@@ -414,27 +414,27 @@ export const PestScouting: React.FC = () => {
               {/* Progress Gauge against ETL */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-[#0A2540]">ईटीएल प्रमाण (ETL Level)</span>
+                  <span className="text-[#152D24]">ईटीएल प्रमाण (ETL Level)</span>
                   <span
                     className={
                       evaluation.status === 'ABOVE_ETL'
-                        ? 'text-red-700'
+                        ? 'text-[#C83E3E]'
                         : evaluation.status === 'APPROACHING_ETL'
-                        ? 'text-amber-700'
-                        : 'text-emerald-700'
+                        ? 'text-[#E9A23B]'
+                        : 'text-[#21864A]'
                     }
                   >
                     {evaluation.percentageOfEtl}%
                   </span>
                 </div>
-                <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden p-0.5">
+                <div className="h-3 w-full bg-[#E6F2E5] rounded-full overflow-hidden p-0.5">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
                       evaluation.status === 'ABOVE_ETL'
-                        ? 'bg-red-600'
+                        ? 'bg-[#C83E3E]'
                         : evaluation.status === 'APPROACHING_ETL'
-                        ? 'bg-amber-500'
-                        : 'bg-emerald-600'
+                        ? 'bg-[#E9A23B]'
+                        : 'bg-[#21864A]'
                     }`}
                     style={{ width: `${Math.min(100, evaluation.percentageOfEtl)}%` }}
                   />
@@ -448,7 +448,7 @@ export const PestScouting: React.FC = () => {
                     ? 'bg-red-50/60 border-red-200 text-red-900'
                     : evaluation.status === 'APPROACHING_ETL'
                     ? 'bg-amber-50/60 border-amber-200 text-amber-900'
-                    : 'bg-emerald-50/60 border-emerald-200 text-emerald-900'
+                    : 'bg-[#E6F2E5] border-[#DDE8DC] text-[#0B5137]'
                 }`}
               >
                 <div className="font-extrabold text-xs uppercase tracking-wider mb-1.5">
@@ -463,8 +463,8 @@ export const PestScouting: React.FC = () => {
               <div className="flex items-center gap-3 pt-2">
                 <Button
                   variant="primary"
-                  className="flex-1 bg-[#0A2540] hover:bg-[#071A2E] text-white"
-                  leftIcon={<Save className="w-4 h-4 text-[#FF9933]" />}
+                  className="flex-1 bg-[#0B5137] hover:bg-[#073D2A] text-white"
+                  leftIcon={<Save className="w-4 h-4 text-[#E9A23B]" />}
                   onClick={handleSaveObservation}
                 >
                   निरीक्षण जतन करा (Save Record)
@@ -473,13 +473,13 @@ export const PestScouting: React.FC = () => {
 
               {savedSuccessMsg && (
                 <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-bold flex items-center gap-2 animate-in fade-in">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                  <CheckCircle2 className="w-4 h-4 text-[#21864A]" />
                   <span>निरीक्षण यशस्वीपणे जतन झाले आहे! खालील इतिहासात नोंद झाली.</span>
                 </div>
               )}
 
               {/* Source & Citation Footer */}
-              <div className="pt-3 border-t border-[#D5DEE8] text-[11px] text-[#5B6B7D] space-y-1">
+              <div className="pt-3 border-t border-[#DDE8DC] text-[11px] text-[#5F7065] space-y-1">
                 <div>
                   <span className="font-bold">आधार:</span> {evaluation.rule.sourceDoc} ({evaluation.rule.sourceAuthority})
                 </div>
@@ -493,52 +493,52 @@ export const PestScouting: React.FC = () => {
       </div>
 
       {/* Saved Scouting History Section */}
-      <div className="pt-6 border-t border-[#D5DEE8] space-y-4">
+      <div className="pt-6 border-t border-[#DDE8DC] space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-black text-[#0A2540] flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#0A2540]" />
+          <h2 className="text-lg font-black text-[#152D24] flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-[#2F9E59]" />
             <span>माझे कीड सर्वेक्षण इतिहास (Field Scouting History)</span>
           </h2>
-          <span className="text-xs font-bold text-[#5B6B7D]">
+          <span className="text-xs font-bold text-[#5F7065]">
             एकूण नोंदी: {history.length}
           </span>
         </div>
 
         {history.length === 0 ? (
-          <Card variant="white" padding="lg" className="border-[#D5DEE8] text-center p-8 space-y-2">
-            <div className="w-12 h-12 rounded-full bg-[#EEF3F8] text-[#5B6B7D] flex items-center justify-center mx-auto">
-              <Bug className="w-6 h-6" />
+          <Card variant="white" padding="lg" className="border-[#DDE8DC] text-center p-8 space-y-2">
+            <div className="w-12 h-12 rounded-full bg-[#E6F2E5] text-[#5F7065] flex items-center justify-center mx-auto">
+              <Bug className="w-6 h-6 text-[#2F9E59]" />
             </div>
-            <h4 className="font-bold text-sm text-[#0A2540]">कोणतीही नोंद उपलब्ध नाही</h4>
-            <p className="text-xs text-[#5B6B7D]">
+            <h4 className="font-bold text-sm text-[#152D24]">कोणतीही नोंद उपलब्ध नाही</h4>
+            <p className="text-xs text-[#5F7065]">
               वर दिलेल्या गणकात नमुने भरून "निरीक्षण जतन करा" बटणावर क्लिक करा.
             </p>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {history.map((record) => (
-              <Card key={record.id} variant="white" padding="md" className="border-[#D5DEE8] space-y-2.5">
+              <Card key={record.id} variant="white" padding="md" className="border-[#DDE8DC] space-y-2.5">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <span className="text-[10px] font-black text-[#5B6B7D] uppercase tracking-wider block">
+                    <span className="text-[10px] font-black text-[#5F7065] uppercase tracking-wider block">
                       {record.cropName} • {record.date}
                     </span>
-                    <h4 className="font-extrabold text-sm text-[#0A2540]">
+                    <h4 className="font-extrabold text-sm text-[#152D24]">
                       {record.pestName}
                     </h4>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleDeleteRecord(record.id)}
-                    className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg"
+                    className="p-1.5 text-slate-400 hover:text-[#C83E3E] rounded-lg"
                     title="हटवा"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1 border-t border-[#D5DEE8]/60">
-                  <span className="font-bold text-[#0A2540]">
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-[#DDE8DC]/60">
+                  <span className="font-bold text-[#152D24]">
                     सरासरी: {record.calculatedAverage} {record.unitLabel}
                   </span>
                   <div>{getStatusBadge(record.status)}</div>

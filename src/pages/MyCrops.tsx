@@ -218,11 +218,11 @@ export const MyCrops: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-[#0A2540] flex items-center gap-2">
-            <Sprout className="w-6 h-6 text-[#0A2540]" />
+          <h2 className="text-2xl font-black text-[#152D24] flex items-center gap-2">
+            <Sprout className="w-6 h-6 text-[#2F9E59]" />
             <span>{t('myCropsTitle')}</span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#5B6B7D] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#5F7065] mt-0.5">
             तुमच्या शेतातील पिके, वाण, पेरणी दिनांक व आरोग्य स्थिती व्यवस्थापित करा
           </p>
         </div>
@@ -239,25 +239,25 @@ export const MyCrops: React.FC = () => {
 
       {/* Summary Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-2xl bg-white border border-[#D5DEE8] shadow-sm">
-          <span className="text-xs text-[#5B6B7D] font-semibold">एकूण पिके</span>
-          <p className="text-2xl font-black text-[#0A2540] mt-0.5">{crops.length}</p>
+        <div className="p-3.5 rounded-2xl bg-white border border-[#DDE8DC] shadow-xs">
+          <span className="text-xs text-[#5F7065] font-semibold">एकूण पिके</span>
+          <p className="text-2xl font-black text-[#152D24] mt-0.5">{crops.length}</p>
         </div>
-        <div className="p-3.5 rounded-2xl bg-white border border-[#D5DEE8] shadow-sm">
-          <span className="text-xs text-[#5B6B7D] font-semibold">एकूण क्षेत्रफळ</span>
-          <p className="text-2xl font-black text-[#138808] mt-0.5">
+        <div className="p-3.5 rounded-2xl bg-white border border-[#DDE8DC] shadow-xs">
+          <span className="text-xs text-[#5F7065] font-semibold">एकूण क्षेत्रफळ</span>
+          <p className="text-2xl font-black text-[#2F9E59] mt-0.5">
             {crops.reduce((sum, c) => sum + Number(c.areaAcres), 0)} एकर
           </p>
         </div>
-        <div className="p-3.5 rounded-2xl bg-white border border-[#D5DEE8] shadow-sm">
-          <span className="text-xs text-[#5B6B7D] font-semibold">निरोगी पिके</span>
-          <p className="text-2xl font-black text-[#138808] mt-0.5">
+        <div className="p-3.5 rounded-2xl bg-white border border-[#DDE8DC] shadow-xs">
+          <span className="text-xs text-[#5F7065] font-semibold">निरोगी पिके</span>
+          <p className="text-2xl font-black text-[#21864A] mt-0.5">
             {crops.filter((c) => c.healthStatus === 'healthy').length}
           </p>
         </div>
-        <div className="p-3.5 rounded-2xl bg-white border border-[#D5DEE8] shadow-sm">
-          <span className="text-xs text-[#5B6B7D] font-semibold">लक्ष देणे गरजेचे</span>
-          <p className="text-2xl font-black text-[#C0392B] mt-0.5">
+        <div className="p-3.5 rounded-2xl bg-white border border-[#DDE8DC] shadow-xs">
+          <span className="text-xs text-[#5F7065] font-semibold">लक्ष देणे गरजेचे</span>
+          <p className="text-2xl font-black text-[#C83E3E] mt-0.5">
             {crops.filter((c) => c.healthStatus !== 'healthy').length}
           </p>
         </div>
@@ -270,11 +270,11 @@ export const MyCrops: React.FC = () => {
             key={crop.id}
             variant="white"
             padding="lg"
-            className="flex flex-col justify-between border-[#D5DEE8] relative group shadow-sm"
+            className="flex flex-col justify-between border-[#DDE8DC] relative group shadow-xs"
           >
             <div>
               {/* Card Header */}
-              <div className="flex items-start justify-between gap-2 pb-3 border-b border-[#D5DEE8]">
+              <div className="flex items-start justify-between gap-2 pb-3 border-b border-[#DDE8DC]">
                 <div>
                   <div className="flex items-center gap-1.5 mb-1">
                     <Badge
@@ -295,15 +295,15 @@ export const MyCrops: React.FC = () => {
                         : 'गंभीर (Critical)'}
                     </Badge>
                     {crop.isSample && (
-                      <span className="text-[10px] text-[#5B6B7D] bg-[#EEF3F8] px-1.5 py-0.5 rounded font-medium border border-[#D5DEE8]">
+                      <span className="text-[10px] text-[#5F7065] bg-[#E6F2E5] px-1.5 py-0.5 rounded font-medium border border-[#DDE8DC]">
                         नमुना (Sample)
                       </span>
                     )}
                   </div>
-                  <h3 className="font-extrabold text-lg text-[#0A2540] leading-tight">
+                  <h3 className="font-extrabold text-lg text-[#152D24] leading-tight">
                     {crop.name}
                   </h3>
-                  <p className="text-xs font-semibold text-[#5B6B7D] mt-0.5">
+                  <p className="text-xs font-semibold text-[#5F7065] mt-0.5">
                     {crop.variety}
                   </p>
                 </div>
@@ -311,14 +311,14 @@ export const MyCrops: React.FC = () => {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleOpenEditModal(crop)}
-                    className="p-1.5 text-[#5B6B7D] hover:text-[#0A2540] rounded-lg hover:bg-[#EEF3F8] transition"
+                    className="p-1.5 text-[#5F7065] hover:text-[#0B5137] rounded-lg hover:bg-[#E6F2E5] transition"
                     title="माहिती संपादित करा"
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setDeleteTargetId(crop.id)}
-                    className="p-1.5 text-[#5B6B7D] hover:text-[#C0392B] rounded-lg hover:bg-red-50 transition"
+                    className="p-1.5 text-[#5F7065] hover:text-[#C83E3E] rounded-lg hover:bg-red-50 transition"
                     title="पीक हटवा"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -327,21 +327,21 @@ export const MyCrops: React.FC = () => {
               </div>
 
               {/* Crop Specs */}
-              <div className="grid grid-cols-2 gap-2.5 py-3 text-xs text-[#5B6B7D]">
+              <div className="grid grid-cols-2 gap-2.5 py-3 text-xs text-[#5F7065]">
                 <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-[#3B6EA5] shrink-0" />
+                  <MapPin className="w-3.5 h-3.5 text-[#2F9E59] shrink-0" />
                   <span className="truncate">{crop.plotName}</span>
                 </div>
-                <div className="flex items-center gap-1.5 font-bold text-[#0A2540]">
-                  <span className="text-[#138808]">क्षेत्र:</span>
+                <div className="flex items-center gap-1.5 font-bold text-[#152D24]">
+                  <span className="text-[#2F9E59]">क्षेत्र:</span>
                   <span>{crop.areaAcres} एकर</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-[#3B6EA5] shrink-0" />
+                  <Calendar className="w-3.5 h-3.5 text-[#2F9E59] shrink-0" />
                   <span>पेरणी: {crop.sowingDate}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Droplet className="w-3.5 h-3.5 text-[#3B6EA5] shrink-0" />
+                  <Droplet className="w-3.5 h-3.5 text-[#2F9E59] shrink-0" />
                   <span className="capitalize">{crop.irrigationType} ओलीत</span>
                 </div>
               </div>
@@ -350,20 +350,20 @@ export const MyCrops: React.FC = () => {
               {(() => {
                 const stageInfo = calculateCropStage(crop);
                 return (
-                  <div className="py-2.5 border-t border-[#D5DEE8] space-y-2">
+                  <div className="py-2.5 border-t border-[#DDE8DC] space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-[#0A2540] font-bold flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-[#138808]" />
+                      <span className="text-[#152D24] font-bold flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-[#2F9E59]" />
                         {stageInfo.stageName[language]}
                       </span>
-                      <span className="text-[11px] text-[#5B6B7D] font-medium">
+                      <span className="text-[11px] text-[#5F7065] font-medium">
                         दिवस {stageInfo.daysAfterSowing} ({stageInfo.progressPercent}%)
                       </span>
                     </div>
 
-                    <div className="w-full h-2 rounded-full bg-[#EEF3F8] overflow-hidden">
+                    <div className="w-full h-2 rounded-full bg-[#E6F2E5] overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-[#2F9E59] to-[#0B5137] rounded-full transition-all duration-500"
                         style={{ width: `${stageInfo.progressPercent}%` }}
                       />
                     </div>
@@ -379,14 +379,14 @@ export const MyCrops: React.FC = () => {
 
               {/* Latest Scan Link */}
               {crop.latestDiseaseName && (
-                <div className="mt-2 p-2.5 rounded-xl bg-[#C0392B]/10 border border-[#C0392B]/30 text-xs flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[#C0392B] font-semibold truncate">
-                    <Activity className="w-4 h-4 text-[#C0392B] shrink-0" />
+                <div className="mt-2 p-2.5 rounded-xl bg-[#C83E3E]/10 border border-[#C83E3E]/30 text-xs flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[#C83E3E] font-semibold truncate">
+                    <Activity className="w-4 h-4 text-[#C83E3E] shrink-0" />
                     <span className="truncate">{crop.latestDiseaseName}</span>
                   </div>
                   <Link
                     to="/recovery"
-                    className="text-[#C0392B] hover:underline font-bold shrink-0 text-[11px]"
+                    className="text-[#C83E3E] hover:underline font-bold shrink-0 text-[11px]"
                   >
                     ट्रॅकर
                   </Link>
@@ -395,7 +395,7 @@ export const MyCrops: React.FC = () => {
             </div>
 
             {/* Bottom Action: Scan this crop */}
-            <div className="mt-4 pt-3 border-t border-[#D5DEE8] flex items-center justify-between gap-2">
+            <div className="mt-4 pt-3 border-t border-[#DDE8DC] flex items-center justify-between gap-2">
               <Button
                 variant="primary"
                 size="sm"

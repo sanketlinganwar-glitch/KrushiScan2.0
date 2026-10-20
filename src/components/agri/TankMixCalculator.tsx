@@ -212,20 +212,20 @@ export const TankMixCalculator: React.FC<TankMixCalculatorProps> = ({
   return (
     <div className={`space-y-6 ${embedded ? '' : 'max-w-5xl mx-auto'}`}>
       {/* Header Banner */}
-      <div className="bg-[#0A2540] text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-slate-700 relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-44 h-44 bg-teal-500/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="bg-[#0B5137] text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-[#073D2A] relative overflow-hidden">
+        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-44 h-44 bg-[#2F9E59]/20 rounded-full blur-2xl pointer-events-none" />
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
           <div className="flex items-start gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center shrink-0 shadow-inner">
-              <FlaskConical className="w-6 h-6 text-teal-300" />
+            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-inner">
+              <FlaskConical className="w-6 h-6 text-[#2F9E59]" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
                   {language === 'mr' ? 'रासायनिक टँक-मिक्स सुसंगतता कॅल्क्युलेटर' : language === 'hi' ? 'कृषि रसायन टैंक-मिक्स अनुकूलता कैलकुलेटर' : 'Chemical & Fertilizer Tank-Mix Compatibility'}
                 </h2>
-                <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#138808]/30 text-emerald-300 border border-emerald-500/40 uppercase">
+                <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#2F9E59]/30 text-white border border-[#2F9E59]/40 uppercase">
                   PDKV / ICAR / CIBRC मार्गदर्शक
                 </span>
               </div>
@@ -313,21 +313,21 @@ export const TankMixCalculator: React.FC<TankMixCalculatorProps> = ({
           <Card className="p-4 sm:p-5 border-slate-200 shadow-sm bg-white">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="text-base font-bold text-[#0A2540] flex items-center gap-2">
+                <h3 className="text-base font-bold text-[#152D24] flex items-center gap-2">
                   <span>
                     {language === 'mr' ? '१. फवारणीसाठी औषधे व खते निवडा' : language === 'hi' ? '1. छिड़काव हेतु दवाएं व खाद चुनें' : '1. Select Chemicals & Fertilizers to Mix'}
                   </span>
-                  <span className="text-xs font-normal text-slate-500">
+                  <span className="text-xs font-normal text-[#5F7065]">
                     ({selectedIds.length}/4 {language === 'mr' ? 'निवडले' : language === 'hi' ? 'चुने' : 'Selected'})
                   </span>
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-[#5F7065] mt-0.5">
                   {language === 'mr' ? 'खालील यादीतून २ ते ४ उत्पादने निवडा:' : language === 'hi' ? 'सूची से 2 से 4 उत्पाद चुनें:' : 'Select 2 to 4 products to mix:'}
                 </p>
               </div>
 
               {selectedIds.length >= 2 && (
-                <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-300 font-bold text-xs">
+                <Badge variant="success" className="bg-[#E6F2E5] text-[#21864A] border-[#21864A]/30 font-bold text-xs">
                   {selectedIds.length} {language === 'mr' ? 'निवडले' : language === 'hi' ? 'चुने' : 'Selected'}
                 </Badge>
               )}
@@ -335,23 +335,23 @@ export const TankMixCalculator: React.FC<TankMixCalculatorProps> = ({
 
             {/* Selected Chips Tray */}
             {selectedIds.length > 0 && (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl mb-4">
-                <span className="text-[11px] font-bold text-slate-600 block mb-2 uppercase tracking-wider">
+              <div className="p-3 bg-[#F6F8F0] border border-[#DDE8DC] rounded-2xl mb-4">
+                <span className="text-[11px] font-bold text-[#5F7065] block mb-2 uppercase tracking-wider">
                   {language === 'mr' ? 'सध्या निवडलेली उत्पादने:' : language === 'hi' ? 'वर्तमान में चयनित उत्पाद:' : 'Currently Selected In Tank:'}
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {evaluation.selectedChemicals.map((chem) => (
                     <span 
                       key={chem.id}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-slate-900 border border-slate-300 shadow-2xs text-xs font-bold"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-[#152D24] border border-[#DDE8DC] shadow-2xs text-xs font-bold"
                     >
-                      <span className="px-1.5 py-0.2 rounded-md bg-[#0A2540] text-white text-[10px] font-mono">
+                      <span className="px-1.5 py-0.2 rounded-md bg-[#0B5137] text-white text-[10px] font-mono">
                         {chem.formulation}
                       </span>
                       <span>{chem.name}</span>
                       <button
                         onClick={() => handleRemoveChemical(chem.id)}
-                        className="text-slate-400 hover:text-rose-600 transition ml-1"
+                        className="text-[#5F7065] hover:text-[#C83E3E] transition ml-1"
                         title={language === 'mr' ? 'काढून टाका' : language === 'hi' ? 'हटाएं' : 'Remove'}
                         aria-label="Remove"
                       >
@@ -364,7 +364,7 @@ export const TankMixCalculator: React.FC<TankMixCalculatorProps> = ({
             )}
 
             {/* Category Filter Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-100 text-xs scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-[#DDE8DC] text-xs scrollbar-none">
               {[
                 { id: 'all', label: { mr: 'सर्व (All)', hi: 'सभी (All)', en: 'All' } },
                 { id: 'insecticide', label: { mr: 'कीटकनाशके', hi: 'कीटनाशक', en: 'Insecticides' } },
@@ -378,8 +378,8 @@ export const TankMixCalculator: React.FC<TankMixCalculatorProps> = ({
                   onClick={() => setActiveCategoryFilter(tab.id as any)}
                   className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition ${
                     activeCategoryFilter === tab.id
-                      ? 'bg-[#0A2540] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-[#0B5137] text-white shadow-xs'
+                      : 'bg-[#F6F8F0] text-[#5F7065] hover:bg-[#E6F2E5]'
                   }`}
                 >
                   {tab.label[language]}
@@ -548,19 +548,19 @@ export const TankMixCalculator: React.FC<TankMixCalculatorProps> = ({
             <Card className="p-4 sm:p-5 border-slate-200 bg-white shadow-sm space-y-3">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  <Droplets className="w-4 h-4 text-teal-600" />
-                  <h4 className="text-sm font-bold text-[#0A2540]">
+                  <Droplets className="w-4 h-4 text-[#2F9E59]" />
+                  <h4 className="text-sm font-bold text-[#152D24]">
                     {language === 'mr' ? 'W.A.L.E.S. योग्य फवारणी क्रम (Mixing Order)' : language === 'hi' ? 'W.A.L.E.S. सही मिश्रण क्रम (Mixing Order)' : 'W.A.L.E.S. Sequential Tank-Mix Order'}
                   </h4>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E6F2E5] text-[#0B5137] border border-[#2F9E59]/30">
                   {language === 'mr' ? 'W.A.L.E.S. पद्धत' : language === 'hi' ? 'W.A.L.E.S. विधि' : 'W.A.L.E.S. Standard'}
                 </span>
               </div>
 
               {/* CRITICAL: Manufacturer Product Label Precedence Notice */}
               <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 text-xs flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <AlertTriangle className="w-4 h-4 text-[#E9A23B] shrink-0 mt-0.5" />
                 <p className="font-semibold leading-relaxed text-[11px]">
                   {evaluation.labelPrecedenceNotice[language]}
                 </p>
@@ -570,17 +570,17 @@ export const TankMixCalculator: React.FC<TankMixCalculatorProps> = ({
                 {evaluation.mixingOrder.map((step) => (
                   <div 
                     key={step.stepNumber}
-                    className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1"
+                    className="p-3 rounded-2xl bg-[#F6F8F0] border border-[#DDE8DC] text-xs space-y-1"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-[#0A2540] flex items-center gap-1.5">
-                        <span className="w-5 h-5 rounded-full bg-[#0A2540] text-white flex items-center justify-center text-[10px]">
+                      <span className="font-extrabold text-[#152D24] flex items-center gap-1.5">
+                        <span className="w-5 h-5 rounded-full bg-[#0B5137] text-white flex items-center justify-center text-[10px]">
                           {step.stepNumber}
                         </span>
                         <span>{step.title[language]}</span>
                       </span>
                     </div>
-                    <p className="text-slate-600 leading-relaxed font-medium pl-6">
+                    <p className="text-[#5F7065] leading-relaxed font-medium pl-6">
                       {step.instruction[language]}
                     </p>
                     {step.chemicalNames.length > 0 && (

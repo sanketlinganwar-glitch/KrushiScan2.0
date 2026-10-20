@@ -13,15 +13,15 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ isFullScreen = false
       aria-busy="true"
       className={`w-full ${
         isFullScreen
-          ? 'min-h-screen bg-[#EEF3F8] flex flex-col items-center justify-center p-4'
+          ? 'min-h-screen bg-[#F6F8F0] flex flex-col items-center justify-center p-4'
           : 'space-y-6 animate-fadeIn py-2'
       }`}
     >
       {/* Top Banner / Header Skeleton */}
-      <div className="bg-white rounded-2xl p-5 border border-[#D5DEE8] shadow-xs space-y-4">
+      <div className="bg-white rounded-2xl p-5 border border-[#DDE8DC] shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100/80 animate-pulse flex items-center justify-center text-emerald-700">
+            <div className="w-10 h-10 rounded-xl bg-[#E6F2E5] animate-pulse flex items-center justify-center text-[#2F9E59]">
               <Sprout className="w-5 h-5 animate-spin-slow" />
             </div>
             <div className="space-y-2">
@@ -34,7 +34,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ isFullScreen = false
 
         {/* Pulse Bar Indicator */}
         <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-500 via-teal-400 to-[#0A2540] h-full w-2/5 rounded-full animate-indeterminate" />
+          <div className="bg-gradient-to-r from-[#2F9E59] via-[#21864A] to-[#0B5137] h-full w-2/5 rounded-full animate-indeterminate" />
         </div>
       </div>
 
@@ -43,7 +43,7 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ isFullScreen = false
         {[1, 2, 3].map((cardId) => (
           <div
             key={cardId}
-            className="bg-white rounded-2xl p-5 border border-[#D5DEE8] shadow-xs space-y-4"
+            className="bg-white rounded-2xl p-5 border border-[#DDE8DC] shadow-xs space-y-4"
           >
             <div className="flex items-center justify-between">
               <div className="h-4 w-28 bg-slate-200 rounded-md animate-pulse" />

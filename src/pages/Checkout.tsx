@@ -136,142 +136,142 @@ export const Checkout: React.FC = () => {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate('/store')}
-          className="p-2 rounded-xl bg-white hover:bg-[#EEF3F8] text-[#0A2540] border border-[#D5DEE8] shadow-xs transition"
+          className="p-2 rounded-xl bg-white hover:bg-[#E6F2E5] text-[#152D24] border border-[#DDE8DC] shadow-xs transition"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h2 className="text-2xl font-black text-[#0A2540]">ऑर्डर मागणी नोंदणी (Checkout)</h2>
-          <p className="text-xs text-[#5B6B7D] font-medium">तुमचा पत्ता व पेमेंट पर्याय निवडा</p>
+          <h2 className="text-2xl font-black text-[#152D24]">ऑर्डर मागणी नोंदणी (Checkout)</h2>
+          <p className="text-xs text-[#5F7065] font-medium">तुमचा पत्ता व पेमेंट पर्याय निवडा</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Form: Delivery Address */}
         <div className="lg:col-span-7 space-y-4">
-          <Card variant="white" className="p-5 border-[#D5DEE8] shadow-sm space-y-4">
-            <h4 className="font-bold text-sm text-[#0A2540] flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#3B6EA5]" />
+          <Card variant="white" className="p-5 border-[#DDE8DC] shadow-sm space-y-4">
+            <h4 className="font-bold text-sm text-[#152D24] flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#2F9E59]" />
               <span>१. शेतकरी घरपोच पत्ता (Delivery Address)</span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-[#0A2540] mb-1">पूर्ण नाव</label>
+                <label className="block text-xs font-bold text-[#152D24] mb-1">पूर्ण नाव</label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0A2540] mb-1">मोबाईल नंबर</label>
+                <label className="block text-xs font-bold text-[#152D24] mb-1">मोबाईल नंबर</label>
                 <input
                   type="tel"
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-bold text-[#0A2540] mb-1">गाव / शहर</label>
+                <label className="block text-xs font-bold text-[#152D24] mb-1">गाव / शहर</label>
                 <input
                   type="text"
                   required
                   value={village}
                   onChange={(e) => setVillage(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0A2540] mb-1">जिल्हा</label>
+                <label className="block text-xs font-bold text-[#152D24] mb-1">जिल्हा</label>
                 <input
                   type="text"
                   required
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0A2540] mb-1">पिनकोड</label>
+                <label className="block text-xs font-bold text-[#152D24] mb-1">पिनकोड</label>
                 <input
                   type="text"
                   required
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                 />
               </div>
             </div>
           </Card>
 
           {/* Payment Method */}
-          <Card variant="white" className="p-5 border-[#D5DEE8] shadow-sm space-y-4">
-            <h4 className="font-bold text-sm text-[#0A2540] flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-[#3B6EA5]" />
+          <Card variant="white" className="p-5 border-[#DDE8DC] shadow-sm space-y-4">
+            <h4 className="font-bold text-sm text-[#152D24] flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#2F9E59]" />
               <span>२. पेमेंट पद्धत निवडा (Payment Method)</span>
             </h4>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-3 p-3 rounded-xl bg-[#EEF3F8] border border-[#D5DEE8] cursor-pointer hover:border-[#0A2540] transition shadow-2xs">
+              <label className="flex items-center gap-3 p-3 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] cursor-pointer hover:border-[#0B5137] transition shadow-2xs">
                 <input
                   type="radio"
                   name="payment"
                   checked={paymentMethod === 'cod'}
                   onChange={() => setPaymentMethod('cod')}
-                  className="text-[#0A2540] focus:ring-[#0A2540]"
+                  className="text-[#0B5137] focus:ring-[#0B5137]"
                 />
                 <div>
-                  <span className="text-xs sm:text-sm font-bold text-[#0A2540] block">
+                  <span className="text-xs sm:text-sm font-bold text-[#152D24] block">
                     कॅश ऑन डिलिव्हरी (Cash on Delivery)
                   </span>
-                  <span className="text-[11px] text-[#5B6B7D] font-medium">
+                  <span className="text-[11px] text-[#5F7065] font-medium">
                     माल घरी पोहोचल्यावर रोख पैसे द्या.
                   </span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 p-3 rounded-xl bg-[#EEF3F8] border border-[#D5DEE8] cursor-pointer hover:border-[#0A2540] transition shadow-2xs">
+              <label className="flex items-center gap-3 p-3 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] cursor-pointer hover:border-[#0B5137] transition shadow-2xs">
                 <input
                   type="radio"
                   name="payment"
                   checked={paymentMethod === 'kcc'}
                   onChange={() => setPaymentMethod('kcc')}
-                  className="text-[#0A2540] focus:ring-[#0A2540]"
+                  className="text-[#0B5137] focus:ring-[#0B5137]"
                 />
                 <div>
-                  <span className="text-xs sm:text-sm font-bold text-[#0A2540] block">
+                  <span className="text-xs sm:text-sm font-bold text-[#152D24] block">
                     किसान क्रेडिट कार्ड (KCC Kisan Credit)
                   </span>
-                  <span className="text-[11px] text-[#5B6B7D] font-medium">
+                  <span className="text-[11px] text-[#5F7065] font-medium">
                     शेतकरी कृषी कर्ज कार्ड द्वारे नोंदणी.
                   </span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 p-3 rounded-xl bg-[#EEF3F8] border border-[#D5DEE8] cursor-pointer hover:border-[#0A2540] transition shadow-2xs">
+              <label className="flex items-center gap-3 p-3 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] cursor-pointer hover:border-[#0B5137] transition shadow-2xs">
                 <input
                   type="radio"
                   name="payment"
                   checked={paymentMethod === 'upi'}
                   onChange={() => setPaymentMethod('upi')}
-                  className="text-[#0A2540] focus:ring-[#0A2540]"
+                  className="text-[#0B5137] focus:ring-[#0B5137]"
                 />
                 <div>
-                  <span className="text-xs sm:text-sm font-bold text-[#0A2540] block">
+                  <span className="text-xs sm:text-sm font-bold text-[#152D24] block">
                     UPI / Razorpay / PhonePe / GPay
                   </span>
-                  <span className="text-[11px] text-[#5B6B7D] font-medium">
+                  <span className="text-[11px] text-[#5F7065] font-medium">
                     सुरक्षित ऑनलाइन पेमेंट गेटवे.
                   </span>
                 </div>
@@ -282,38 +282,38 @@ export const Checkout: React.FC = () => {
 
         {/* Right Summary */}
         <div className="lg:col-span-5 space-y-4">
-          <Card variant="white" className="p-5 border-[#D5DEE8] space-y-4">
-            <h4 className="font-bold text-sm text-[#0A2540] border-b border-[#D5DEE8] pb-2">
+          <Card variant="white" className="p-5 border-[#DDE8DC] space-y-4">
+            <h4 className="font-bold text-sm text-[#152D24] border-b border-[#DDE8DC] pb-2">
               मागणी तपशील ({items.length} उत्पादने)
             </h4>
 
             <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1 text-xs">
               {items.map((i) => (
-                <div key={i.product.id} className="flex justify-between items-center text-[#5B6B7D]">
-                  <span className="truncate max-w-[200px] text-[#0A2540] font-medium">
+                <div key={i.product.id} className="flex justify-between items-center text-[#5F7065]">
+                  <span className="truncate max-w-[200px] text-[#152D24] font-medium">
                     {i.product.nameLocal['mr'] || i.product.name} × {i.quantity}
                   </span>
-                  <span className="font-bold text-[#0A2540]">
+                  <span className="font-bold text-[#152D24]">
                     ₹{i.product.price * i.quantity}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="pt-3 border-t border-[#D5DEE8] text-xs space-y-1.5">
-              <div className="flex justify-between text-[#5B6B7D]">
+            <div className="pt-3 border-t border-[#DDE8DC] text-xs space-y-1.5">
+              <div className="flex justify-between text-[#5F7065]">
                 <span>उपएकूण:</span>
                 <span>₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between text-[#5B6B7D]">
+              <div className="flex justify-between text-[#5F7065]">
                 <span>डिलिव्हरी:</span>
-                <span className="text-[#138808] font-bold">
+                <span className="text-[#2F9E59] font-bold">
                   {deliveryCharge === 0 ? 'मोफत (Free)' : `₹${deliveryCharge}`}
                 </span>
               </div>
-              <div className="pt-2 border-t border-[#D5DEE8] flex justify-between text-base font-black text-[#0A2540]">
+              <div className="pt-2 border-t border-[#DDE8DC] flex justify-between text-base font-black text-[#152D24]">
                 <span>एकूण रक्कम:</span>
-                <span className="text-[#0A2540] text-lg font-black">₹{totalAmount.toLocaleString('en-IN')}</span>
+                <span className="text-[#0B5137] text-lg font-black">₹{totalAmount.toLocaleString('en-IN')}</span>
               </div>
             </div>
 

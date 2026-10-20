@@ -3,14 +3,29 @@
 @tailwind utilities;
 
 :root {
-  --color-navy: #0A2540;
-  --color-saffron: #FF9933;
-  --color-india-green: #138808;
-  --color-blue: #3B6EA5;
-  --color-red: #C0392B;
-  --color-page: #EEF3F8;
-  --color-slate: #5B6B7D;
-  --color-line: #D5DEE8;
+  /* Krushi Green Design Tokens */
+  --color-forest-green: #0B5137;
+  --color-leaf-green: #2F9E59;
+  --color-light-green: #E6F2E5;
+  --color-page-bg: #F6F8F0;
+  --color-card-bg: #FFFFFF;
+  --color-primary-text: #152D24;
+  --color-secondary-text: #5F7065;
+  --color-border: #DDE8DC;
+  --color-hover: #073D2A;
+  --color-success: #21864A;
+  --color-warning: #E9A23B;
+  --color-error: #C83E3E;
+
+  /* Backward Compatibility Aliases */
+  --color-navy: #0B5137;
+  --color-saffron: #E9A23B;
+  --color-india-green: #2F9E59;
+  --color-blue: #2F9E59;
+  --color-red: #C83E3E;
+  --color-page: #F6F8F0;
+  --color-slate: #5F7065;
+  --color-line: #DDE8DC;
 }
 
 @layer base {
@@ -21,30 +36,30 @@
   }
 
   body {
-    background-color: #EEF3F8;
-    color: #0A2540;
+    background-color: #F6F8F0;
+    color: #152D24;
     min-height: 100vh;
     overflow-x: hidden;
   }
 }
 
-/* Custom Farmer-friendly scrollbars */
+/* Custom Krushi Green Farmer-friendly scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #EEF3F8;
+  background: #F6F8F0;
 }
 ::-webkit-scrollbar-thumb {
-  background: #3B6EA5;
+  background: #2F9E59;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0A2540;
+  background: #0B5137;
 }
 
-/* Scanner beam animation */
+/* Scanner beam animation in Krushi Leaf Green */
 @keyframes scanline {
   0% {
     top: 0%;
@@ -64,8 +79,8 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, transparent 0%, #ff6600 50%, transparent 100%);
-  box-shadow: 0 0 15px #ff6600, 0 0 25px #ff6600;
+  background: linear-gradient(90deg, transparent 0%, #2F9E59 50%, transparent 100%);
+  box-shadow: 0 0 15px #2F9E59, 0 0 25px rgba(47, 158, 89, 0.6);
   animation: scanline 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate;
 }
 

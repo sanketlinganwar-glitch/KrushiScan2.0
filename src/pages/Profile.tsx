@@ -67,28 +67,28 @@ export const Profile: React.FC = () => {
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-black text-[#0A2540] flex items-center gap-2">
-          <User className="w-6 h-6 text-[#0A2540]" />
+        <h2 className="text-2xl font-black text-[#152D24] flex items-center gap-2">
+          <User className="w-6 h-6 text-[#0B5137]" />
           <span>{t('navProfile')} (Farmer Profile & Settings)</span>
         </h2>
-        <p className="text-xs sm:text-sm text-[#5B6B7D] mt-0.5">
+        <p className="text-xs sm:text-sm text-[#5F7065] mt-0.5">
           तुमची शेतकरी प्रोफाइल, शेती तपशील, भाषा निवड व भूमिका (Role) व्यवस्थापन
         </p>
       </div>
 
       {/* Role Switching & RBAC Demonstration Panel (Prompt requirement) */}
-      <Card variant="white" className="p-5 border-[#D5DEE8] bg-white shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#D5DEE8]">
+      <Card variant="white" className="p-5 border-[#DDE8DC] bg-white shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#DDE8DC]">
           <div>
-            <h3 className="font-extrabold text-sm text-[#0A2540] flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#138808]" />
+            <h3 className="font-extrabold text-sm text-[#152D24] flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#21864A]" />
               <span>प्रणाली भूमिका व परवानग्या (Role & Access Status)</span>
             </h3>
-            <p className="text-xs text-[#5B6B7D]">
+            <p className="text-xs text-[#5F7065]">
               तुमच्या खात्याची पडताळणी केलेली भूमिका व अधिकृत परवानग्या
             </p>
           </div>
-          <span className="text-[10px] px-2.5 py-1 rounded bg-[#0A2540] text-white font-bold self-start sm:self-auto shadow-2xs">
+          <span className="text-[10px] px-2.5 py-1 rounded bg-[#0B5137] text-white font-bold self-start sm:self-auto shadow-2xs">
             चालू भूमिका: {user?.role?.toUpperCase()}
           </span>
         </div>
@@ -100,28 +100,28 @@ export const Profile: React.FC = () => {
               title: 'शेतकरी (Farmer)',
               sub: 'पीक स्कॅन, शेती व्यवस्थापन',
               icon: Sprout,
-              color: 'text-[#138808]',
+              color: 'text-[#21864A]',
             },
             {
               role: 'expert' as UserRole,
               title: 'कृषी शास्त्रज्ञ (Expert)',
               sub: 'शेतकऱ्यांचे प्रश्न व निदान',
               icon: Briefcase,
-              color: 'text-[#3B6EA5]',
+              color: 'text-[#2F9E59]',
             },
             {
               role: 'retailer' as UserRole,
               title: 'कृषी केंद्र (Retailer)',
               sub: 'उत्पादने व साठा व्यवस्थापन',
               icon: Store,
-              color: 'text-[#0A2540]',
+              color: 'text-[#0B5137]',
             },
             {
               role: 'admin' as UserRole,
               title: 'प्रशासक (Admin)',
               sub: 'प्रणाली निरीक्षण व ऑडिट',
               icon: SlidersHorizontal,
-              color: 'text-[#5B6B7D]',
+              color: 'text-[#5F7065]',
             },
           ].map((r) => {
             const Icon = r.icon;
@@ -133,15 +133,15 @@ export const Profile: React.FC = () => {
                 onClick={() => handleRoleChange(r.role)}
                 className={`p-3 rounded-2xl text-left border transition ${
                   isCurrent
-                    ? 'bg-[#0A2540] text-white border-[#0A2540] shadow-sm'
-                    : 'bg-[#EEF3F8] border-[#D5DEE8] hover:bg-white text-[#0A2540]'
+                    ? 'bg-[#0B5137] text-white border-[#0B5137] shadow-sm'
+                    : 'bg-[#E6F2E5] border-[#DDE8DC] hover:bg-white text-[#152D24]'
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isCurrent ? 'text-white' : r.color} mb-1.5`} />
-                <h5 className={`font-bold text-xs leading-tight ${isCurrent ? 'text-white' : 'text-[#0A2540]'}`}>
+                <h5 className={`font-bold text-xs leading-tight ${isCurrent ? 'text-white' : 'text-[#152D24]'}`}>
                   {r.title}
                 </h5>
-                <p className={`text-[10px] mt-0.5 line-clamp-1 ${isCurrent ? 'text-white/80' : 'text-[#5B6B7D]'}`}>
+                <p className={`text-[10px] mt-0.5 line-clamp-1 ${isCurrent ? 'text-white/80' : 'text-[#5F7065]'}`}>
                   {r.sub}
                 </p>
               </button>
@@ -151,22 +151,22 @@ export const Profile: React.FC = () => {
 
         {/* Role-Specific Live Preview Box */}
         {user?.role === 'expert' && (
-          <div className="p-3.5 rounded-2xl bg-[#EEF3F8] border border-[#3B6EA5]/40 text-xs text-[#0A2540] space-y-1">
-            <strong className="text-[#3B6EA5] block font-bold">कृषी शास्त्रज्ञ विशेष कक्ष (Expert Console):</strong>
+          <div className="p-3.5 rounded-2xl bg-[#E6F2E5] border border-[#2F9E59]/40 text-xs text-[#152D24] space-y-1">
+            <strong className="text-[#0B5137] block font-bold">कृषी शास्त्रज्ञ विशेष कक्ष (Expert Console):</strong>
             <span>तुम्हाला विदर्भातील यवतमाळ, अकोला व अमरावती येथील शेतकऱ्यांचे प्रश्न व रोग अहवाल तपासण्याची अधिकृत परवानगी आहे.</span>
           </div>
         )}
 
         {user?.role === 'retailer' && (
-          <div className="p-3.5 rounded-2xl bg-[#EEF3F8] border border-[#0A2540]/30 text-xs text-[#0A2540] space-y-1">
-            <strong className="text-[#0A2540] block font-bold">कृषी सेवा केंद्र कक्ष (Retailer Console):</strong>
+          <div className="p-3.5 rounded-2xl bg-[#E6F2E5] border border-[#0B5137]/30 text-xs text-[#152D24] space-y-1">
+            <strong className="text-[#0B5137] block font-bold">कृषी सेवा केंद्र कक्ष (Retailer Console):</strong>
             <span>तुम्ही बियाणे, जैविक खते व औषधांचा साठा (Inventory) व शेतकऱ्यांच्या मागण्या व्यवस्थापित करू शकता.</span>
           </div>
         )}
 
         {user?.role === 'admin' && (
-          <div className="p-3.5 rounded-2xl bg-[#EEF3F8] border border-[#5B6B7D]/40 text-xs text-[#0A2540] space-y-1">
-            <strong className="text-[#0A2540] block font-bold">प्रशासक नियंत्रण कक्ष (System Admin):</strong>
+          <div className="p-3.5 rounded-2xl bg-[#E6F2E5] border border-[#5F7065]/40 text-xs text-[#152D24] space-y-1">
+            <strong className="text-[#0B5137] block font-bold">प्रशासक नियंत्रण कक्ष (System Admin):</strong>
             <span>सर्व ११ विदर्भ जिल्ह्यांचे APMC दर सिंक, AI मॉडेल अचूकता (९४.२%), व सुरक्षित डेटाबेस ॲक्सेस सक्रिय आहे.</span>
           </div>
         )}
@@ -176,28 +176,28 @@ export const Profile: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Avatar & Language */}
         <div className="lg:col-span-4 space-y-4">
-          <Card variant="white" className="p-6 text-center space-y-3 border-[#D5DEE8] shadow-sm">
+          <Card variant="white" className="p-6 text-center space-y-3 border-[#DDE8DC] shadow-sm">
             <div className="relative w-24 h-24 mx-auto">
               <img
                 src={user?.avatarUrl || 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80'}
                 alt={user?.name || 'Farmer'}
-                className="w-full h-full rounded-full object-cover ring-4 ring-[#138808]/30"
+                className="w-full h-full rounded-full object-cover ring-4 ring-[#2F9E59]/30"
               />
-              <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#138808] text-white flex items-center justify-center border-2 border-white text-xs">
+              <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#21864A] text-white flex items-center justify-center border-2 border-white text-xs">
                 ✓
               </span>
             </div>
 
             <div>
-              <h3 className="font-extrabold text-lg text-[#0A2540]">
+              <h3 className="font-extrabold text-lg text-[#152D24]">
                 {user?.name || 'गजानन पवार'}
               </h3>
-              <p className="text-xs text-[#5B6B7D]">
+              <p className="text-xs text-[#5F7065]">
                 {user?.village}, {user?.district}
               </p>
             </div>
 
-            <div className="pt-2 border-t border-[#D5DEE8] flex items-center justify-center gap-2">
+            <div className="pt-2 border-t border-[#DDE8DC] flex items-center justify-center gap-2">
               <Badge variant="success" size="sm">
                 सक्रिय शेतकरी खाते
               </Badge>
@@ -205,9 +205,9 @@ export const Profile: React.FC = () => {
           </Card>
 
           {/* Global Language Switcher Box */}
-          <Card variant="white" className="p-4 border-[#D5DEE8] bg-white shadow-sm space-y-3">
-            <h4 className="font-bold text-xs text-[#0A2540] uppercase tracking-wide flex items-center gap-2">
-              <Globe className="w-4 h-4 text-[#3B6EA5]" />
+          <Card variant="white" className="p-4 border-[#DDE8DC] bg-white shadow-sm space-y-3">
+            <h4 className="font-bold text-xs text-[#152D24] uppercase tracking-wide flex items-center gap-2">
+              <Globe className="w-4 h-4 text-[#2F9E59]" />
               <span>पसंतीची भाषा (Language)</span>
             </h4>
 
@@ -223,12 +223,12 @@ export const Profile: React.FC = () => {
                   onClick={() => setLanguage(lang.code)}
                   className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-between border ${
                     language === lang.code
-                      ? 'bg-[#0A2540] text-white border-[#0A2540] shadow-sm'
-                      : 'bg-[#EEF3F8] text-[#0A2540] border-[#D5DEE8] hover:bg-white'
+                      ? 'bg-[#0B5137] text-white border-[#0B5137] shadow-sm'
+                      : 'bg-[#E6F2E5] text-[#152D24] border-[#DDE8DC] hover:bg-white'
                   }`}
                 >
                   <span>{lang.label}</span>
-                  {language === lang.code && <CheckCircle2 className="w-4 h-4 text-[#138808]" />}
+                  {language === lang.code && <CheckCircle2 className="w-4 h-4 text-[#E6F2E5]" />}
                 </button>
               ))}
             </div>
@@ -247,13 +247,13 @@ export const Profile: React.FC = () => {
 
         {/* Right Column: Editable Profile Fields */}
         <div className="lg:col-span-8">
-          <Card variant="white" className="p-6 border-[#D5DEE8] space-y-5 shadow-sm">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h4 className="font-black text-base text-slate-900">
+          <Card variant="white" className="p-6 border-[#DDE8DC] space-y-5 shadow-sm">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DDE8DC]">
+              <h4 className="font-black text-base text-[#152D24]">
                 शेतकरी व शेती माहिती संपादन
               </h4>
               {savedSuccess && (
-                <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                <span className="text-xs font-bold text-[#21864A] flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" />
                   माहिती जतन झाली!
                 </span>
@@ -263,7 +263,7 @@ export const Profile: React.FC = () => {
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     शेतकऱ्याचे नाव
                   </label>
                   <input
@@ -271,12 +271,12 @@ export const Profile: React.FC = () => {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-[#F6F8F0] border border-[#DDE8DC] text-[#152D24] rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     मोबाईल नंबर
                   </label>
                   <input
@@ -284,20 +284,20 @@ export const Profile: React.FC = () => {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-[#F6F8F0] border border-[#DDE8DC] text-[#152D24] rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     जिल्हा (District)
                   </label>
                   <select
                     value={district}
                     onChange={(e) => setDistrict(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-2.5 text-xs sm:text-sm font-semibold"
+                    className="w-full bg-[#F6F8F0] border border-[#DDE8DC] text-[#152D24] rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                   >
                     <option value="यवतमाळ (Yavatmal)">यवतमाळ (Yavatmal)</option>
                     <option value="अमरावती (Amravati)">अमरावती (Amravati)</option>
@@ -310,7 +310,7 @@ export const Profile: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     गाव / तालुका
                   </label>
                   <input
@@ -318,12 +318,12 @@ export const Profile: React.FC = () => {
                     required
                     value={village}
                     onChange={(e) => setVillage(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-2.5 text-xs sm:text-sm font-semibold"
+                    className="w-full bg-[#F6F8F0] border border-[#DDE8DC] text-[#152D24] rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     शेती क्षेत्रफळ (एकर)
                   </label>
                   <input
@@ -333,13 +333,13 @@ export const Profile: React.FC = () => {
                     required
                     value={farmSizeAcres}
                     onChange={(e) => setFarmSizeAcres(Number(e.target.value))}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-2.5 text-xs sm:text-sm font-semibold"
+                    className="w-full bg-[#F6F8F0] border border-[#DDE8DC] text-[#152D24] rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-[#152D24] mb-1">
                   शेतातील सक्रिय पिके (स्वल्पविराम देऊन लिहा)
                 </label>
                 <input
@@ -348,7 +348,7 @@ export const Profile: React.FC = () => {
                   value={activeCropsText}
                   onChange={(e) => setActiveCropsText(e.target.value)}
                   placeholder="उदा. कापूस, सोयाबीन, तूर"
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-2.5 text-xs sm:text-sm font-semibold"
+                  className="w-full bg-[#F6F8F0] border border-[#DDE8DC] text-[#152D24] rounded-xl p-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0B5137]"
                 />
               </div>
 
@@ -357,7 +357,7 @@ export const Profile: React.FC = () => {
                   type="submit"
                   variant="primary"
                   leftIcon={<Save className="w-4 h-4" />}
-                  className="font-bold shadow-orange-glow"
+                  className="font-bold"
                 >
                   बदल जतन करा (Save Changes)
                 </Button>

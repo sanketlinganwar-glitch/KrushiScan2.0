@@ -14,7 +14,7 @@ export const Layout: React.FC = () => {
   const [isCookiePreferencesOpen, setIsCookiePreferencesOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#EEF3F8] text-[#0A2540] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F6F8F0] text-[#152D24] flex flex-col font-sans">
       {/* Desktop Sidebar (Fixed left) */}
       <DesktopSidebar />
 

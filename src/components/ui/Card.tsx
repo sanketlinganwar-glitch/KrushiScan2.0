@@ -17,18 +17,18 @@ export const Card: React.FC<CardProps> = ({
   const base = 'rounded-2xl transition-all duration-200';
 
   const variants = {
-    // Pure white card with clean Line #D5DEE8 border and Navy text
-    white: 'bg-white text-[#0A2540] border border-[#D5DEE8] shadow-xs',
-    // Dark mode card #13243A with #EAF0F7 text (Dark mode rule)
-    dark: 'bg-[#13243A] text-[#EAF0F7] border border-[#13243A] shadow-sm',
-    // Outline style with Line border
-    outline: 'bg-white border-2 border-[#D5DEE8] text-[#0A2540] hover:border-[#3B6EA5]',
-    // Subtle green tint card for agricultural / profit highlights
-    greenTint: 'bg-emerald-50/70 text-[#0A2540] border border-[#138808]/30',
-    // Saffron border highlight card (for best market)
-    saffronHighlight: 'bg-white text-[#0A2540] border-2 border-[#FF9933] shadow-md ring-2 ring-[#FF9933]/25',
+    // Pure white card with clean subtle green border #DDE8DC and primary text #152D24
+    white: 'bg-white text-[#152D24] border border-[#DDE8DC] shadow-xs',
+    // Forest Green card #0B5137 with light green text
+    dark: 'bg-[#0B5137] text-white border border-[#073D2A] shadow-sm',
+    // Outline style with subtle green border
+    outline: 'bg-white border-2 border-[#DDE8DC] text-[#152D24] hover:border-[#2F9E59]',
+    // Subtle green tint card for agricultural highlights
+    greenTint: 'bg-[#E6F2E5]/70 text-[#152D24] border border-[#2F9E59]/30',
+    // Leaf Green highlight card
+    saffronHighlight: 'bg-white text-[#152D24] border-2 border-[#2F9E59] shadow-md ring-2 ring-[#2F9E59]/25',
     // Amber/warning tint
-    amberTint: 'bg-amber-50/80 text-[#0A2540] border border-amber-200/80',
+    amberTint: 'bg-amber-50/80 text-[#152D24] border border-[#E9A23B]/40',
   };
 
   const paddings = {
@@ -39,7 +39,7 @@ export const Card: React.FC<CardProps> = ({
   };
 
   const interactiveStyles = interactive
-    ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-500/40 active:translate-y-0'
+    ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-md hover:border-[#2F9E59]/60 active:translate-y-0'
     : '';
 
   return (

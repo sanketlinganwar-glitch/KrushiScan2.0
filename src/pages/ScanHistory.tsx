@@ -207,11 +207,11 @@ export const ScanHistory: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-[#0A2540] flex items-center gap-2">
-            <History className="w-6 h-6 text-[#0A2540]" />
+          <h2 className="text-2xl font-black text-[#152D24] flex items-center gap-2">
+            <History className="w-6 h-6 text-[#2F9E59]" />
             <span>{t('navHistory')} (Crop Scan History)</span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#5B6B7D] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#5F7065] mt-0.5">
             तुमच्या शेतातील पिकांचे मागील सर्व रोग निदान, फोटो व उपाय
           </p>
         </div>
@@ -220,20 +220,20 @@ export const ScanHistory: React.FC = () => {
           variant="primary"
           onClick={() => navigate('/scan')}
           leftIcon={<Camera className="w-4 h-4" />}
-          className="shadow-sm"
+          className="shadow-xs"
         >
           {t('scanButtonLabel')}
         </Button>
       </div>
 
       {/* Tabs: Completed Scans vs Queued Scans */}
-      <div className="flex items-center gap-2 border-b border-[#D5DEE8] pb-1">
+      <div className="flex items-center gap-2 border-b border-[#DDE8DC] pb-1">
         <button
           onClick={() => setActiveTab('completed')}
           className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-1.5 ${
             activeTab === 'completed'
-              ? 'bg-[#0A2540] text-white shadow-xs'
-              : 'text-[#5B6B7D] hover:bg-[#EEF3F8]'
+              ? 'bg-[#0B5137] text-white shadow-xs'
+              : 'text-[#5F7065] hover:bg-[#E6F2E5]'
           }`}
         >
           <History className="w-4 h-4" />
@@ -244,8 +244,8 @@ export const ScanHistory: React.FC = () => {
           onClick={() => setActiveTab('queued')}
           className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-1.5 ${
             activeTab === 'queued'
-              ? 'bg-[#0A2540] text-white shadow-xs'
-              : 'text-[#5B6B7D] hover:bg-[#EEF3F8]'
+              ? 'bg-[#0B5137] text-white shadow-xs'
+              : 'text-[#5F7065] hover:bg-[#E6F2E5]'
           }`}
         >
           <WifiOff className="w-4 h-4 text-amber-500" />
@@ -261,7 +261,7 @@ export const ScanHistory: React.FC = () => {
       {/* Tab 2: Offline Queued Scans View */}
       {activeTab === 'queued' && (
         <div className="space-y-4">
-          <Card variant="white" className="p-4 border-[#D5DEE8] bg-amber-50/40">
+          <Card variant="white" className="p-4 border-[#DDE8DC] bg-amber-50/40">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-2.5">
                 <WifiOff className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
@@ -287,7 +287,7 @@ export const ScanHistory: React.FC = () => {
                   disabled={isSyncingAll}
                   isLoading={isSyncingAll}
                   leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white shrink-0 text-xs font-bold"
+                  className="bg-[#0B5137] hover:bg-[#073D2A] text-white shrink-0 text-xs font-bold"
                 >
                   {language === 'mr' ? 'सर्व सिंक करा' : 'Sync All'}
                 </Button>
@@ -296,14 +296,14 @@ export const ScanHistory: React.FC = () => {
           </Card>
 
           {queuedScans.length === 0 ? (
-            <Card variant="white" className="p-10 text-center border-[#D5DEE8]">
-              <div className="w-14 h-14 rounded-full bg-[#EEF3F8] text-[#5B6B7D] flex items-center justify-center mx-auto mb-3">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+            <Card variant="white" className="p-10 text-center border-[#DDE8DC]">
+              <div className="w-14 h-14 rounded-full bg-[#E6F2E5] text-[#5F7065] flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 className="w-7 h-7 text-[#21864A]" />
               </div>
-              <h4 className="text-base font-bold text-[#0A2540]">
+              <h4 className="text-base font-bold text-[#152D24]">
                 {language === 'mr' ? 'रांगेत कोणतेही प्रलंबित स्कॅन नाहीत' : 'No Pending Scans in Queue'}
               </h4>
-              <p className="text-xs text-[#5B6B7D] mt-1">
+              <p className="text-xs text-[#5F7065] mt-1">
                 {language === 'mr'
                   ? 'सर्व ऑफलाइन स्कॅन विश्लेषित झाले आहेत किंवा रांग रिकामी आहे.'
                   : 'All queued items have been processed or the queue is currently empty.'}
@@ -316,7 +316,7 @@ export const ScanHistory: React.FC = () => {
                   key={item.id}
                   variant="white"
                   padding="none"
-                  className="overflow-hidden border border-[#D5DEE8] flex flex-col justify-between shadow-xs"
+                  className="overflow-hidden border border-[#DDE8DC] flex flex-col justify-between shadow-xs"
                 >
                   <div>
                     <div className="relative aspect-[4/3] bg-black/80">
@@ -346,7 +346,7 @@ export const ScanHistory: React.FC = () => {
 
                       {item.undersideImageDataUrl && (
                         <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-black/70 text-white text-[10px] font-bold flex items-center gap-1">
-                          <Layers className="w-3 h-3 text-emerald-400" />
+                          <Layers className="w-3 h-3 text-[#2F9E59]" />
                           <span>दुहेरी कोन</span>
                         </div>
                       )}
@@ -354,27 +354,27 @@ export const ScanHistory: React.FC = () => {
 
                     <div className="p-4 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black text-[#0A2540]">
+                        <span className="text-xs font-black text-[#152D24]">
                           {item.cropHint || 'कापूस / सामान्य पीक'}
                         </span>
-                        <span className="text-[10px] text-[#5B6B7D]">
+                        <span className="text-[10px] text-[#5F7065]">
                           {item.createdAt.slice(0, 10)}
                         </span>
                       </div>
 
                       {item.errorReason && (
-                        <p className="text-[11px] text-rose-600 bg-rose-50 p-2 rounded-lg border border-rose-200">
+                        <p className="text-[11px] text-[#C83E3E] bg-rose-50 p-2 rounded-lg border border-rose-200">
                           {item.errorReason}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <div className="p-3 bg-[#F8FAFC] border-t border-[#EEF3F8] flex items-center justify-between gap-2">
+                  <div className="p-3 bg-[#F6F8F0] border-t border-[#DDE8DC] flex items-center justify-between gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-xs text-[#C0392B] hover:bg-red-50"
+                      className="text-xs text-[#C83E3E] hover:bg-red-50"
                       onClick={() => setDeleteQueueId(item.id)}
                       leftIcon={<Trash2 className="w-3.5 h-3.5" />}
                     >
@@ -388,7 +388,7 @@ export const ScanHistory: React.FC = () => {
                       disabled={syncingQueueId === item.id || isSyncingAll}
                       isLoading={syncingQueueId === item.id}
                       leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-300" />}
-                      className="text-xs font-bold bg-[#0A2540]"
+                      className="text-xs font-bold bg-[#0B5137] hover:bg-[#073D2A]"
                     >
                       {language === 'mr' ? 'विश्लेषण करा (Sync)' : 'Sync Now'}
                     </Button>
@@ -404,17 +404,17 @@ export const ScanHistory: React.FC = () => {
       {activeTab === 'completed' && (
         <div className="space-y-6">
           {/* Filter and Search Bar */}
-          <Card variant="white" padding="sm" className="bg-white border-[#D5DEE8] shadow-sm">
+          <Card variant="white" padding="sm" className="bg-white border-[#DDE8DC] shadow-xs">
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
               {/* Search Input */}
               <div className="sm:col-span-5 relative">
-                <Search className="w-4 h-4 text-[#5B6B7D] absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-[#5F7065] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="पीक किंवा रोगाचे नाव शोधा..."
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-[#0A2540] placeholder:text-[#5B6B7D] focus:outline-none focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-[#152D24] placeholder:text-[#5F7065] focus:outline-hidden focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                 />
               </div>
 
@@ -423,7 +423,7 @@ export const ScanHistory: React.FC = () => {
                 <select
                   value={cropFilter}
                   onChange={(e) => setCropFilter(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl px-3 py-2 text-xs sm:text-sm text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl px-3 py-2 text-xs sm:text-sm text-[#152D24] focus:outline-hidden focus:ring-2 focus:ring-[#0B5137] shadow-2xs cursor-pointer"
                 >
                   <option value="all">सर्व पिके (All Crops)</option>
                   <option value="कापूस">कापूस (Cotton)</option>
@@ -437,7 +437,7 @@ export const ScanHistory: React.FC = () => {
                 <select
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl px-3 py-2 text-xs sm:text-sm text-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl px-3 py-2 text-xs sm:text-sm text-[#152D24] focus:outline-hidden focus:ring-2 focus:ring-[#0B5137] shadow-2xs cursor-pointer"
                 >
                   <option value="all">सर्व तीव्रता (All)</option>
                   <option value="Critical">गंभीर (Critical)</option>
@@ -451,14 +451,14 @@ export const ScanHistory: React.FC = () => {
 
       {/* Scans List / Cards */}
       {filteredScans.length === 0 ? (
-        <Card variant="white" className="p-10 text-center border-[#D5DEE8]">
-          <div className="w-16 h-16 rounded-full bg-[#EEF3F8] text-[#5B6B7D] flex items-center justify-center mx-auto mb-3">
-            <Camera className="w-8 h-8" />
+        <Card variant="white" className="p-10 text-center border-[#DDE8DC]">
+          <div className="w-16 h-16 rounded-full bg-[#E6F2E5] text-[#5F7065] flex items-center justify-center mx-auto mb-3">
+            <Camera className="w-8 h-8 text-[#2F9E59]" />
           </div>
-          <h4 className="text-base font-bold text-[#0A2540]">
+          <h4 className="text-base font-bold text-[#152D24]">
             कोणतेही स्कॅन सापडले नाही
           </h4>
-          <p className="text-xs text-[#5B6B7D] max-w-sm mx-auto mt-1">
+          <p className="text-xs text-[#5F7065] max-w-sm mx-auto mt-1">
             शोध निकष बदला किंवा तुमच्या पिकाचा नवीन फोटो काढून तपासणी करा.
           </p>
           <div className="mt-4">
@@ -474,11 +474,11 @@ export const ScanHistory: React.FC = () => {
               key={scan.id}
               variant="white"
               padding="none"
-              className="overflow-hidden border border-[#D5DEE8] flex flex-col justify-between group hover:shadow-lg transition"
+              className="overflow-hidden border border-[#DDE8DC] flex flex-col justify-between group hover:shadow-md transition"
             >
               <div>
                 {/* Photo Header */}
-                <div className="relative aspect-[16/10] bg-[#0A2540] overflow-hidden">
+                <div className="relative aspect-[16/10] bg-[#152D24] overflow-hidden">
                   <img
                     src={scan.imageUrl}
                     alt={scan.cropName}
@@ -499,36 +499,36 @@ export const ScanHistory: React.FC = () => {
                       {scan.severity}
                     </Badge>
                   </div>
-                  <div className="absolute bottom-2.5 right-2.5 bg-[#0A2540]/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white font-bold">
-                    <span className="text-[#138808] font-black">{scan.confidence}%</span> AI विश्वास
+                  <div className="absolute bottom-2.5 right-2.5 bg-[#0B5137]/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white font-bold">
+                    <span className="text-[#21864A] font-black">{scan.confidence}%</span> AI विश्वास
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-[#5B6B7D]">
-                    <span className="font-semibold text-[#0A2540] bg-[#EEF3F8] border border-[#D5DEE8] px-2 py-0.5 rounded">
+                  <div className="flex items-center justify-between text-xs text-[#5F7065]">
+                    <span className="font-semibold text-[#152D24] bg-[#E6F2E5] border border-[#DDE8DC] px-2 py-0.5 rounded">
                       {scan.cropName}
                     </span>
                     <span>{scan.scannedAt}</span>
                   </div>
 
-                  <h4 className="font-extrabold text-base text-[#0A2540] leading-tight line-clamp-1">
+                  <h4 className="font-extrabold text-base text-[#152D24] leading-tight line-clamp-1">
                     {scan.localDiseaseName?.[language] || scan.diseaseName}
                   </h4>
 
-                  <p className="text-xs text-[#5B6B7D] line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#5F7065] line-clamp-2 leading-relaxed">
                     {scan.diagnosisExplanation}
                   </p>
                 </div>
               </div>
 
               {/* Bottom Buttons */}
-              <div className="p-4 pt-2 border-t border-[#D5DEE8] flex items-center justify-between gap-2">
+              <div className="p-4 pt-2 border-t border-[#DDE8DC] flex items-center justify-between gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-white text-[#0A2540] border-[#D5DEE8] hover:bg-[#EEF3F8] text-xs"
+                  className="bg-white text-[#152D24] border-[#DDE8DC] hover:bg-[#E6F2E5] text-xs"
                   onClick={() => setSelectedScan(scan)}
                   leftIcon={<Eye className="w-3.5 h-3.5" />}
                 >
@@ -537,7 +537,7 @@ export const ScanHistory: React.FC = () => {
 
                 <button
                   onClick={() => setDeleteId(scan.id)}
-                  className="p-2 text-[#5B6B7D] hover:text-[#C0392B] rounded-lg hover:bg-red-50 transition"
+                  className="p-2 text-[#5F7065] hover:text-[#C83E3E] rounded-lg hover:bg-red-50 transition"
                   title="हटवा"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -564,7 +564,7 @@ export const ScanHistory: React.FC = () => {
         >
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4 items-start">
-              <div className="w-full sm:w-48 aspect-square rounded-2xl overflow-hidden bg-[#EEF3F8] border border-[#D5DEE8] shrink-0">
+              <div className="w-full sm:w-48 aspect-square rounded-2xl overflow-hidden bg-[#E6F2E5] border border-[#DDE8DC] shrink-0">
                 <img
                   src={selectedScan.imageUrl}
                   alt={selectedScan.diseaseName}
@@ -588,39 +588,39 @@ export const ScanHistory: React.FC = () => {
                   <Button
                     variant={isSpeaking ? 'danger' : 'outline'}
                     size="sm"
-                    className="text-xs bg-white text-[#0A2540] border-[#D5DEE8]"
+                    className="text-xs bg-white text-[#152D24] border-[#DDE8DC] hover:bg-[#E6F2E5]"
                     onClick={() => handleSpeak(selectedScan)}
-                    leftIcon={isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-[#138808]" />}
+                    leftIcon={isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-[#2F9E59]" />}
                   >
                     {isSpeaking ? 'थांबवा' : 'ऐका'}
                   </Button>
                 </div>
 
-                <h3 className="font-extrabold text-xl text-[#0A2540]">
+                <h3 className="font-extrabold text-xl text-[#152D24]">
                   {selectedScan.localDiseaseName?.[language] || selectedScan.diseaseName}
                 </h3>
-                <p className="text-xs text-[#5B6B7D] font-semibold italic">
+                <p className="text-xs text-[#5F7065] font-semibold italic">
                   {selectedScan.diseaseName}
                 </p>
 
-                <p className="text-xs text-[#0A2540] leading-relaxed font-medium">
+                <p className="text-xs text-[#152D24] leading-relaxed font-medium">
                   {selectedScan.diagnosisExplanation}
                 </p>
               </div>
             </div>
 
             {/* Treatments */}
-            <div className="pt-2 border-t border-[#D5DEE8]">
-              <h5 className="font-bold text-sm text-[#138808] mb-2">
+            <div className="pt-2 border-t border-[#DDE8DC]">
+              <h5 className="font-bold text-sm text-[#0B5137] mb-2">
                 शिफारस केलेले उपाय:
               </h5>
-              <div className="space-y-2 text-xs text-[#0A2540]">
-                <div className="bg-[#EEF3F8] p-2.5 rounded-xl border border-[#D5DEE8]">
-                  <strong className="text-[#0A2540] font-bold block mb-0.5">रासायनिक फवारणी:</strong>
+              <div className="space-y-2 text-xs text-[#152D24]">
+                <div className="bg-[#F6F8F0] p-2.5 rounded-xl border border-[#DDE8DC]">
+                  <strong className="text-[#152D24] font-bold block mb-0.5">रासायनिक फवारणी:</strong>
                   {selectedScan.recommendedTreatments.chemical.join(', ')}
                 </div>
-                <div className="bg-[#EEF3F8] p-2.5 rounded-xl border border-[#D5DEE8]">
-                  <strong className="text-[#0A2540] font-bold block mb-0.5">जैविक व मशागत:</strong>
+                <div className="bg-[#F6F8F0] p-2.5 rounded-xl border border-[#DDE8DC]">
+                  <strong className="text-[#152D24] font-bold block mb-0.5">जैविक व मशागत:</strong>
                   {selectedScan.recommendedTreatments.biological.concat(selectedScan.recommendedTreatments.cultural).join(', ')}
                 </div>
               </div>

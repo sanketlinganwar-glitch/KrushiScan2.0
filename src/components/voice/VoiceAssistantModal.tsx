@@ -302,21 +302,21 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
       role="dialog"
       aria-modal="true"
       aria-label="कृषी मित्र व्हॉइस सहाय्यक"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#152D24]/60 backdrop-blur-xs animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-xl bg-white border border-[#D5DEE8] text-[#0A2540] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col h-[90vh] sm:h-[85vh] max-h-[720px] overflow-hidden">
+      <div className="relative w-full max-w-xl bg-white border border-[#DDE8DC] text-[#152D24] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col h-[90vh] sm:h-[85vh] max-h-[720px] overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-3.5 bg-[#0A2540] text-white flex items-center justify-between">
+        <div className="px-5 py-3.5 bg-[#0B5137] text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-              <Bot className="w-6 h-6 text-[#FF9933]" />
+              <Bot className="w-6 h-6 text-[#2F9E59]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-extrabold text-base text-white tracking-tight">
-                  कृषी मित्र <span className="text-[#FF9933]">व्हॉइस</span>
+                  कृषी मित्र <span className="text-[#2F9E59]">व्हॉइस</span>
                 </h3>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#138808] text-white font-black uppercase tracking-wider">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#2F9E59] text-white font-black uppercase tracking-wider">
                   विदर्भ AI
                 </span>
               </div>
@@ -332,7 +332,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
               <button
                 type="button"
                 onClick={handleStopSpeaking}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#C0392B] text-white text-xs font-bold shadow-xs hover:bg-red-700 transition animate-pulse"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#C83E3E] text-white text-xs font-bold shadow-xs hover:bg-red-700 transition animate-pulse"
                 title="आवाज थांबवा"
               >
                 <VolumeX className="w-3.5 h-3.5" />
@@ -351,20 +351,20 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
           </div>
         </div>
 
-        {/* Tri-Color Accent Line */}
+        {/* Krushi Green Tri-band Accent Line */}
         <div className="h-1 w-full grid grid-cols-3">
-          <div className="bg-[#FF9933]" />
-          <div className="bg-white" />
-          <div className="bg-[#138808]" />
+          <div className="bg-[#0B5137]" />
+          <div className="bg-[#2F9E59]" />
+          <div className="bg-[#E6F2E5]" />
         </div>
 
         {/* In-Modal Language Switcher Tabs */}
-        <div className="flex items-center justify-between px-4 py-2 bg-[#EEF3F8] border-b border-[#D5DEE8]">
-          <span className="text-xs font-bold text-[#5B6B7D] flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#0A2540]" />
+        <div className="flex items-center justify-between px-4 py-2 bg-[#F6F8F0] border-b border-[#DDE8DC]">
+          <span className="text-xs font-bold text-[#5F7065] flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#0B5137]" />
             भाषा निवडा (Select Language):
           </span>
-          <div className="flex items-center gap-1 bg-white p-0.5 rounded-xl border border-[#D5DEE8]">
+          <div className="flex items-center gap-1 bg-white p-0.5 rounded-xl border border-[#DDE8DC]">
             {(
               [
                 { code: 'mr', label: 'मराठी' },
@@ -381,8 +381,8 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
                 }}
                 className={`px-2.5 py-1 rounded-lg text-xs font-extrabold transition ${
                   activeLang === lang.code
-                    ? 'bg-[#0A2540] text-white shadow-xs'
-                    : 'text-[#5B6B7D] hover:text-[#0A2540]'
+                    ? 'bg-[#0B5137] text-white shadow-xs'
+                    : 'text-[#5F7065] hover:text-[#0B5137]'
                 }`}
               >
                 {lang.label}
@@ -392,33 +392,33 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
         </div>
 
         {/* Chat Messages Log */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#EEF3F8]/30">
+        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F6F8F0]/40">
           {messages.map((m) => (
             <div
               key={m.id}
               className={`flex gap-3 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {m.sender === 'assistant' && (
-                <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white flex items-center justify-center shrink-0 mt-1 shadow-xs">
-                  <Bot className="w-4 h-4 text-[#FF9933]" />
+                <div className="w-8 h-8 rounded-full bg-[#0B5137] text-white flex items-center justify-center shrink-0 mt-1 shadow-xs">
+                  <Bot className="w-4 h-4 text-[#2F9E59]" />
                 </div>
               )}
 
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                   m.sender === 'user'
-                    ? 'bg-[#0A2540] text-white rounded-br-none shadow-xs font-medium'
-                    : 'bg-white text-[#0A2540] rounded-bl-none shadow-xs border border-[#D5DEE8] font-medium'
+                    ? 'bg-[#0B5137] text-white rounded-br-none shadow-xs font-medium'
+                    : 'bg-white text-[#152D24] rounded-bl-none shadow-xs border border-[#DDE8DC] font-medium'
                 }`}
               >
                 <p className="whitespace-pre-wrap">{m.text}</p>
-                <div className="flex items-center justify-between gap-3 mt-2 pt-1 border-t border-[#D5DEE8]/60 text-[10px] text-[#5B6B7D]">
+                <div className="flex items-center justify-between gap-3 mt-2 pt-1 border-t border-[#DDE8DC]/60 text-[10px] text-[#5F7065]">
                   <span>{m.time}</span>
                   {m.sender === 'assistant' && (
                     <button
                       type="button"
                       onClick={() => handleSpeakMessage(m.text)}
-                      className="text-[#138808] hover:text-[#0e6306] font-extrabold flex items-center gap-1 transition"
+                      className="text-[#2F9E59] hover:text-[#21864A] font-extrabold flex items-center gap-1 transition"
                     >
                       <Volume2 className="w-3.5 h-3.5" />
                       <span>ऐका (Play)</span>
@@ -428,8 +428,8 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
               </div>
 
               {m.sender === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-[#138808]/15 border border-[#138808]/30 text-[#138808] flex items-center justify-center shrink-0 mt-1">
-                  <User className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-full bg-[#E6F2E5] border border-[#2F9E59]/30 text-[#0B5137] flex items-center justify-center shrink-0 mt-1 font-bold">
+                  <User className="w-4 h-4 text-[#2F9E59]" />
                 </div>
               )}
             </div>
@@ -438,11 +438,11 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
           {/* Processing / Thinking State */}
           {status === 'processing' && (
             <div className="flex gap-3 justify-start items-center">
-              <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white flex items-center justify-center shrink-0">
-                <Bot className="w-4 h-4 text-[#FF9933]" />
+              <div className="w-8 h-8 rounded-full bg-[#0B5137] text-white flex items-center justify-center shrink-0">
+                <Bot className="w-4 h-4 text-[#2F9E59]" />
               </div>
-              <div className="bg-white border border-[#D5DEE8] rounded-2xl px-4 py-2.5 text-xs text-[#0A2540] flex items-center gap-2 shadow-xs font-semibold">
-                <Loader2 className="w-4 h-4 animate-spin text-[#138808]" />
+              <div className="bg-white border border-[#DDE8DC] rounded-2xl px-4 py-2.5 text-xs text-[#152D24] flex items-center gap-2 shadow-xs font-semibold">
+                <Loader2 className="w-4 h-4 animate-spin text-[#2F9E59]" />
                 <span>
                   {activeLang === 'mr'
                     ? 'शास्त्रोक्त माहिती तपासत आहे... कृपया थांबा...'
@@ -456,9 +456,9 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
 
           {/* Speaking State Banner */}
           {status === 'speaking' && (
-            <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center justify-between font-semibold">
+            <div className="p-2 rounded-xl bg-[#E6F2E5] border border-[#2F9E59]/30 text-xs text-[#0B5137] flex items-center justify-between font-semibold">
               <div className="flex items-center gap-2">
-                <Volume2 className="w-4 h-4 text-[#138808] animate-bounce" />
+                <Volume2 className="w-4 h-4 text-[#2F9E59] animate-bounce" />
                 <span>
                   {activeLang === 'mr'
                     ? 'कृषी मित्र बोलत आहे...'
@@ -470,7 +470,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
               <button
                 type="button"
                 onClick={handleStopSpeaking}
-                className="text-xs text-red-600 hover:underline font-bold"
+                className="text-xs text-[#C83E3E] hover:underline font-bold"
               >
                 थांबवा
               </button>
@@ -481,13 +481,13 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
         </div>
 
         {/* Quick Question Chips */}
-        <div className="px-4 py-2 bg-white border-t border-[#D5DEE8] overflow-x-auto flex gap-2 no-scrollbar">
+        <div className="px-4 py-2 bg-white border-t border-[#DDE8DC] overflow-x-auto flex gap-2 no-scrollbar">
           {(quickQuestions[activeLang] || quickQuestions.mr).map((chip, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => handleSendMessage(chip.q)}
-              className="px-3 py-1.5 rounded-full bg-[#EEF3F8] hover:bg-[#D5DEE8] border border-[#D5DEE8] text-xs font-bold text-[#0A2540] shrink-0 transition"
+              className="px-3 py-1.5 rounded-full bg-[#F6F8F0] hover:bg-[#E6F2E5] border border-[#DDE8DC] text-xs font-bold text-[#152D24] shrink-0 transition"
             >
               {chip.label}
             </button>
@@ -497,7 +497,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
         {/* Error Alert Display */}
         {errorMessage && (
           <div className="mx-4 my-2 p-2.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2 font-medium">
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <AlertCircle className="w-4 h-4 text-[#C83E3E] shrink-0 mt-0.5" />
             <div className="flex-1">
               <span>{errorMessage}</span>
             </div>
@@ -512,7 +512,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
         )}
 
         {/* Input Bar with Editable Transcript & Mic Controls */}
-        <div className="p-3 sm:p-4 bg-white border-t border-[#D5DEE8]">
+        <div className="p-3 sm:p-4 bg-white border-t border-[#DDE8DC]">
           <div className="flex items-center gap-2">
             {/* Primary Microphone Trigger */}
             <button
@@ -521,15 +521,15 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
               aria-label={status === 'listening' ? 'माईक बंद करा' : 'माईक सुरू करा'}
               className={`p-3.5 rounded-2xl flex items-center justify-center transition active:scale-95 border-2 shadow-xs shrink-0 ${
                 status === 'listening'
-                  ? 'bg-[#C0392B] border-[#C0392B] text-white animate-pulse shadow-red-500/30'
-                  : 'bg-white border-[#FF9933] text-[#0A2540] hover:bg-orange-50'
+                  ? 'bg-[#C83E3E] border-[#C83E3E] text-white animate-pulse shadow-red-500/30'
+                  : 'bg-white border-[#2F9E59] text-[#152D24] hover:bg-[#E6F2E5]'
               }`}
               title={status === 'listening' ? 'माईक बंद करा (Stop Listening)' : 'माईक सुरू करून बोला (Speak)'}
             >
               {status === 'listening' ? (
                 <MicOff className="w-5 h-5" />
               ) : (
-                <Mic className="w-5 h-5 text-[#FF9933]" />
+                <Mic className="w-5 h-5 text-[#2F9E59]" />
               )}
             </button>
 
@@ -549,14 +549,14 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
                     ? 'येथे लिहा किंवा माईक दाबून बोला...'
                     : 'Type here or press mic to speak...'
                 }
-                className="w-full bg-[#EEF3F8] border border-[#D5DEE8] text-[#0A2540] rounded-2xl pl-4 pr-9 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0A2540] placeholder:text-[#5B6B7D] font-medium"
+                className="w-full bg-[#F6F8F0] border border-[#DDE8DC] text-[#152D24] rounded-2xl pl-4 pr-9 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B5137] placeholder:text-[#5F7065] font-medium"
               />
               {inputText && (
                 <button
                   type="button"
                   onClick={() => setInputText('')}
                   aria-label="मजकूर पुसा"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5B6B7D] hover:text-[#0A2540]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5F7065] hover:text-[#152D24]"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -569,7 +569,7 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
               onClick={() => handleSendMessage()}
               disabled={!inputText.trim() || status === 'processing'}
               aria-label="प्रश्न विचारा (Send)"
-              className="p-3.5 rounded-2xl bg-[#0A2540] hover:bg-[#071A2E] text-white disabled:opacity-40 disabled:cursor-not-allowed transition shrink-0 active:scale-95"
+              className="p-3.5 rounded-2xl bg-[#0B5137] hover:bg-[#073D2A] text-white disabled:opacity-40 disabled:cursor-not-allowed transition shrink-0 active:scale-95"
             >
               {status === 'processing' ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -580,18 +580,18 @@ export const VoiceAssistantModal: React.FC<VoiceAssistantModalProps> = ({ isOpen
           </div>
 
           {/* Status Note & Mandatory Safety Disclaimer */}
-          <div className="mt-2 text-[10px] text-[#5B6B7D] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
+          <div className="mt-2 text-[10px] text-[#5F7065] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
             <span>
               {status === 'listening' ? (
-                <span className="text-[#C0392B] font-bold flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#C0392B] animate-ping" />
+                <span className="text-[#C83E3E] font-bold flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-[#C83E3E] animate-ping" />
                   आवाज नोंदवला जात आहे... पूर्ण झाल्यावर पाठवा बटण दाबा.
                 </span>
               ) : (
                 <span>टिप: बोलल्यानंतर मजकूर तपासून बदल करू शकता.</span>
               )}
             </span>
-            <span className="text-slate-400">
+            <span className="text-[#5F7065]">
               *AI सल्ला प्राथमिक स्वरूपाचा आहे. प्रत्यक्ष फवारणीपूर्वी तज्ज्ञांचा सल्ला घ्या.
             </span>
           </div>

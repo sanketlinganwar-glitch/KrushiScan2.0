@@ -117,9 +117,9 @@ export const OnlineStatusBanner: React.FC = () => {
   // 2. Online Restored with Pending Scans Prompt Banner
   if (isOnline && queuedItems.length > 0) {
     return (
-      <div className="bg-emerald-600 text-white px-4 py-2.5 text-xs font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-700 sticky top-0 z-40 shadow-md">
+      <div className="bg-[#0B5137] text-white px-4 py-2.5 text-xs font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#073D2A] sticky top-0 z-40 shadow-md">
         <div className="flex items-center gap-2">
-          <Wifi className="w-4 h-4 shrink-0 text-emerald-200" />
+          <Wifi className="w-4 h-4 shrink-0 text-[#2F9E59]" />
           <span>
             {language === 'mr'
               ? `इंटरनेट पूर्ववत झाले आहे! तुमच्याकडे ${queuedItems.length} प्रलंबित स्कॅन रांगेत आहेत.`
@@ -133,7 +133,7 @@ export const OnlineStatusBanner: React.FC = () => {
           <button
             onClick={handleSyncAll}
             disabled={isSyncing}
-            className="px-3 py-1 rounded-xl bg-white text-emerald-800 hover:bg-emerald-50 text-xs font-bold transition flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+            className="px-3 py-1 rounded-xl bg-white text-[#0B5137] hover:bg-[#E6F2E5] text-xs font-bold transition flex items-center gap-1.5 shadow-xs disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             <span>
@@ -149,7 +149,7 @@ export const OnlineStatusBanner: React.FC = () => {
 
           <button
             onClick={() => navigate('/history?tab=queue')}
-            className="px-2.5 py-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold transition flex items-center gap-1"
+            className="px-2.5 py-1 rounded-xl bg-[#2F9E59] hover:bg-[#258249] text-white text-xs font-semibold transition flex items-center gap-1"
           >
             <span>{language === 'mr' ? 'रांग पहा' : 'View Queue'}</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -162,9 +162,9 @@ export const OnlineStatusBanner: React.FC = () => {
   // 3. Sync success toast banner
   if (syncSuccessCount > 0) {
     return (
-      <div className="bg-emerald-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
+      <div className="bg-[#21864A] text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+          <CheckCircle2 className="w-4 h-4 text-[#E6F2E5]" />
           <span>
             {language === 'mr'
               ? `${syncSuccessCount} ऑफलाइन स्कॅन यशस्वीरीत्या विश्लेषित करून इतिहासामध्ये जोडले गेले!`
@@ -173,7 +173,7 @@ export const OnlineStatusBanner: React.FC = () => {
         </div>
         <button
           onClick={() => setSyncSuccessCount(0)}
-          className="text-white hover:text-emerald-200 text-xs underline"
+          className="text-white hover:text-[#E6F2E5] text-xs underline"
         >
           बंद करा (Close)
         </button>

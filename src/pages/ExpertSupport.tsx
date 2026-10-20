@@ -192,33 +192,33 @@ export const ExpertSupport: React.FC = () => {
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Page Header */}
       <div>
-        <h2 className="text-2xl font-black text-[#0A2540] flex items-center gap-2">
-          <Building2 className="w-6 h-6 text-[#0A2540]" />
+        <h2 className="text-2xl font-black text-[#152D24] flex items-center gap-2">
+          <Building2 className="w-6 h-6 text-[#0B5137]" />
           <span>कृषी तज्ज्ञ व KVK साहाय्य (Expert & KVK Support)</span>
         </h2>
-        <p className="text-xs sm:text-sm text-[#5B6B7D] mt-0.5">
+        <p className="text-xs sm:text-sm text-[#5F7065] mt-0.5">
           डॉ. पंजाबराव देशमुख कृषी विद्यापीठ (PDKV), ICAR व विदर्भातील अधिकृत कृषी विज्ञान केंद्रांशी थेट संपर्क
         </p>
       </div>
 
       {/* PDKV ATIC Toll-Free Helpline Spotlight Card */}
-      <Card variant="white" className="p-4 sm:p-5 border-emerald-500/40 bg-gradient-to-r from-emerald-50/60 to-white shadow-xs">
+      <Card variant="white" className="p-4 sm:p-5 border-[#2F9E59]/40 bg-gradient-to-r from-[#E6F2E5]/60 to-white shadow-xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-[#138808] text-white flex items-center justify-center shrink-0 shadow-sm">
+            <div className="w-11 h-11 rounded-2xl bg-[#0B5137] text-white flex items-center justify-center shrink-0 shadow-sm">
               <PhoneCall className="w-6 h-6 animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300">
+                <span className="text-xs font-bold bg-[#E6F2E5] text-[#0B5137] px-2 py-0.5 rounded-full border border-[#2F9E59]/30">
                   अधिकृत मोफत हेल्पलाइन
                 </span>
-                <span className="text-[11px] text-[#5B6B7D]">सकाळी १० ते सायं ५</span>
+                <span className="text-[11px] text-[#5F7065]">सकाळी १० ते सायं ५</span>
               </div>
-              <h3 className="text-lg font-black text-[#0A2540] mt-1">
+              <h3 className="text-lg font-black text-[#152D24] mt-1">
                 डॉ. पंदेकृवि ATIC शेतकरी टोल-फ्री: 1800-233-0724
               </h3>
-              <p className="text-xs text-[#5B6B7D]">
+              <p className="text-xs text-[#5F7065]">
                 डॉ. पंजाबराव देशमुख कृषी विद्यापीठ, अकोला द्वारे विदर्भातील सर्व शेतकऱ्यांसाठी मोफत पीक सल्ला
               </p>
             </div>
@@ -226,7 +226,7 @@ export const ExpertSupport: React.FC = () => {
 
           <a
             href="tel:18002330724"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#138808] hover:bg-emerald-700 text-white font-extrabold text-sm shadow-md transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B5137] hover:bg-[#073D2A] text-white font-extrabold text-sm shadow-md transition-colors"
           >
             <Phone className="w-4 h-4" />
             <span>थेट कॉल करा (Toll-Free)</span>
@@ -235,17 +235,17 @@ export const ExpertSupport: React.FC = () => {
       </Card>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 p-1 bg-[#EEF3F8] rounded-2xl border border-[#D5DEE8]">
+      <div className="flex items-center gap-2 p-1 bg-[#F6F8F0] rounded-2xl border border-[#DDE8DC]">
         <button
           type="button"
           onClick={() => setActiveTab('directory')}
           className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
             activeTab === 'directory'
-              ? 'bg-white text-[#0A2540] shadow-sm'
-              : 'text-[#5B6B7D] hover:text-[#0A2540]'
+              ? 'bg-white text-[#0B5137] shadow-sm'
+              : 'text-[#5F7065] hover:text-[#0B5137]'
           }`}
         >
-          <Building2 className="w-4 h-4 text-[#3B6EA5]" />
+          <Building2 className="w-4 h-4 text-[#2F9E59]" />
           <span>KVK व संशोधन संस्था निर्देशिका ({VIDARBHA_KVK_DIRECTORY.length})</span>
         </button>
 
@@ -254,11 +254,11 @@ export const ExpertSupport: React.FC = () => {
           onClick={() => setActiveTab('whatsapp')}
           className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
             activeTab === 'whatsapp'
-              ? 'bg-white text-[#0A2540] shadow-sm'
-              : 'text-[#5B6B7D] hover:text-[#0A2540]'
+              ? 'bg-white text-[#0B5137] shadow-sm'
+              : 'text-[#5F7065] hover:text-[#0B5137]'
           }`}
         >
-          <MessageCircle className="w-4 h-4 text-emerald-600" />
+          <MessageCircle className="w-4 h-4 text-[#2F9E59]" />
           <span>WhatsApp तज्ज्ञ विचारणा</span>
         </button>
 
@@ -267,11 +267,11 @@ export const ExpertSupport: React.FC = () => {
           onClick={() => setActiveTab('inquiries')}
           className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 ${
             activeTab === 'inquiries'
-              ? 'bg-white text-[#0A2540] shadow-sm'
-              : 'text-[#5B6B7D] hover:text-[#0A2540]'
+              ? 'bg-white text-[#0B5137] shadow-sm'
+              : 'text-[#5F7065] hover:text-[#0B5137]'
           }`}
         >
-          <HelpCircle className="w-4 h-4 text-[#0A2540]" />
+          <HelpCircle className="w-4 h-4 text-[#2F9E59]" />
           <span>ऑनलाइन प्रश्न व उत्तरे ({inquiries.length})</span>
         </button>
       </div>
@@ -280,17 +280,17 @@ export const ExpertSupport: React.FC = () => {
       {activeTab === 'directory' && (
         <div className="space-y-4 animate-in fade-in duration-200">
           {/* Filter Bar: District & Search */}
-          <Card variant="white" className="p-4 border-[#D5DEE8] shadow-xs space-y-3">
+          <Card variant="white" className="p-4 border-[#DDE8DC] shadow-xs space-y-3">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-[#5B6B7D] absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-[#5F7065] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="संस्थेचे नाव, जिल्हा किंवा तालुका शोधा..."
-                  className="w-full bg-[#EEF3F8] border border-[#D5DEE8] rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540]"
+                  className="w-full bg-[#F6F8F0] border border-[#DDE8DC] rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137]"
                 />
                 {searchQuery && (
                   <button
@@ -305,11 +305,11 @@ export const ExpertSupport: React.FC = () => {
 
               {/* District Dropdown Selector */}
               <div className="flex items-center gap-2 shrink-0">
-                <label className="text-xs font-bold text-[#0A2540]">जिल्हा:</label>
+                <label className="text-xs font-bold text-[#152D24]">जिल्हा:</label>
                 <select
                   value={selectedDistrict}
                   onChange={(e) => setSelectedDistrict(e.target.value)}
-                  className="bg-white border border-[#D5DEE8] rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-[#0A2540] focus:ring-2 focus:ring-[#0A2540]"
+                  className="bg-white border border-[#DDE8DC] rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-[#152D24] focus:ring-2 focus:ring-[#0B5137]"
                 >
                   {VIDARBHA_DISTRICTS.map((dist) => (
                     <option key={dist.id} value={dist.id}>
@@ -329,8 +329,8 @@ export const ExpertSupport: React.FC = () => {
                   onClick={() => setSelectedDistrict(dist.id)}
                   className={`px-2.5 py-1 rounded-lg shrink-0 transition font-medium ${
                     selectedDistrict === dist.id
-                      ? 'bg-[#0A2540] text-white font-bold'
-                      : 'bg-[#EEF3F8] text-[#5B6B7D] hover:bg-slate-200'
+                      ? 'bg-[#0B5137] text-white font-bold'
+                      : 'bg-[#F6F8F0] text-[#5F7065] hover:bg-[#E6F2E5]'
                   }`}
                 >
                   {dist.nameMr.split(' ')[0]}
@@ -345,12 +345,12 @@ export const ExpertSupport: React.FC = () => {
               <Card
                 key={inst.id}
                 variant="white"
-                className="p-5 border-[#D5DEE8] shadow-sm flex flex-col justify-between space-y-4 hover:border-[#3B6EA5]/50 transition"
+                className="p-5 border-[#DDE8DC] shadow-sm flex flex-col justify-between space-y-4 hover:border-[#2F9E59]/50 transition"
               >
                 <div className="space-y-3">
                   {/* Top Badges */}
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="px-2 py-0.5 rounded-full bg-[#0A2540] text-white text-[11px] font-bold">
+                    <span className="px-2 py-0.5 rounded-full bg-[#0B5137] text-white text-[11px] font-bold">
                       {inst.districtMr}
                     </span>
                     <Badge variant="success" size="sm" dot>
@@ -360,43 +360,43 @@ export const ExpertSupport: React.FC = () => {
 
                   {/* Institution Name */}
                   <div>
-                    <h4 className="text-base font-extrabold text-[#0A2540] leading-snug">
+                    <h4 className="text-base font-extrabold text-[#152D24] leading-snug">
                       {inst.name.mr}
                     </h4>
-                    <p className="text-xs font-semibold text-[#5B6B7D] mt-0.5">
+                    <p className="text-xs font-semibold text-[#5F7065] mt-0.5">
                       {inst.name.en}
                     </p>
                   </div>
 
                   {/* Host Organization */}
-                  <div className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <p className="font-bold text-[#0A2540] text-[11px]">नियंत्रक संस्था / विद्यापीठ:</p>
-                    <p className="text-xs font-medium text-slate-800">{inst.hostOrganization.mr}</p>
+                  <div className="text-xs text-[#152D24] bg-[#F6F8F0] p-2.5 rounded-xl border border-[#DDE8DC]">
+                    <p className="font-bold text-[#152D24] text-[11px]">नियंत्रक संस्था / विद्यापीठ:</p>
+                    <p className="text-xs font-medium text-[#5F7065]">{inst.hostOrganization.mr}</p>
                   </div>
 
                   {/* Address */}
-                  <div className="flex items-start gap-2 text-xs text-[#5B6B7D]">
-                    <MapPin className="w-4 h-4 text-[#C0392B] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 text-xs text-[#5F7065]">
+                    <MapPin className="w-4 h-4 text-[#C83E3E] shrink-0 mt-0.5" />
                     <p className="leading-relaxed">{inst.address.mr}</p>
                   </div>
 
                   {/* Verified Phone Numbers */}
                   <div className="space-y-1.5 pt-1">
-                    <p className="text-[11px] font-bold text-[#0A2540] uppercase tracking-wide">
+                    <p className="text-[11px] font-bold text-[#152D24] uppercase tracking-wide">
                       सत्यापित संपर्क दूरध्वनी (Verified Telephones):
                     </p>
                     {inst.phoneNumbers.map((phone, idx) => (
                       <div
                         key={idx}
-                        className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl bg-[#EEF3F8] border border-[#D5DEE8]"
+                        className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC]"
                       >
                         <div className="text-xs">
-                          <p className="font-bold text-[#0A2540]">{phone.label}</p>
-                          <p className="font-mono text-slate-700">{phone.formatted}</p>
+                          <p className="font-bold text-[#152D24]">{phone.label}</p>
+                          <p className="font-mono text-[#5F7065]">{phone.formatted}</p>
                         </div>
                         <a
                           href={`tel:${phone.number}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A2540] hover:bg-[#081d32] text-white text-xs font-bold transition shadow-2xs"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0B5137] hover:bg-[#073D2A] text-white text-xs font-bold transition shadow-2xs"
                         >
                           <Phone className="w-3.5 h-3.5" />
                           <span>कॉल करा</span>
@@ -417,19 +417,19 @@ export const ExpertSupport: React.FC = () => {
                   </div>
 
                   {inst.notesMr && (
-                    <p className="text-xs text-[#5B6B7D] italic">
+                    <p className="text-xs text-[#5F7065] italic">
                       {inst.notesMr}
                     </p>
                   )}
                 </div>
 
                 {/* Footer Links & Verification Citation */}
-                <div className="pt-3 border-t border-[#D5DEE8] flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="pt-3 border-t border-[#DDE8DC] flex flex-wrap items-center justify-between gap-2 text-xs">
                   <a
                     href={inst.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[#3B6EA5] font-bold hover:underline"
+                    className="inline-flex items-center gap-1 text-[#2F9E59] font-bold hover:underline"
                   >
                     <span>अधिकृत संकेतस्थळ</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -449,9 +449,9 @@ export const ExpertSupport: React.FC = () => {
           </div>
 
           {verifiedInstitutions.length === 0 && (
-            <Card variant="white" className="p-8 text-center border-[#D5DEE8]">
-              <p className="text-sm font-bold text-[#0A2540]">या जिल्ह्यासाठी किंवा शोधासाठी संस्था सापडली नाही.</p>
-              <p className="text-xs text-[#5B6B7D] mt-1">कृपया फिल्टर साफ करा किंवा 'सर्व जिल्हे' निवडा.</p>
+            <Card variant="white" className="p-8 text-center border-[#DDE8DC]">
+              <p className="text-sm font-bold text-[#152D24]">या जिल्ह्यासाठी किंवा शोधासाठी संस्था सापडली नाही.</p>
+              <p className="text-xs text-[#5F7065] mt-1">कृपया फिल्टर साफ करा किंवा 'सर्व जिल्हे' निवडा.</p>
               <Button
                 variant="outline"
                 size="sm"
@@ -471,24 +471,24 @@ export const ExpertSupport: React.FC = () => {
       {/* TAB 2: Privacy-Safe WhatsApp Diagnostic Consultation */}
       {activeTab === 'whatsapp' && (
         <div className="space-y-4 animate-in fade-in duration-200">
-          <Card variant="white" className="p-5 sm:p-6 border-[#D5DEE8] shadow-sm space-y-5">
+          <Card variant="white" className="p-5 sm:p-6 border-[#DDE8DC] shadow-sm space-y-5">
             <div>
-              <h3 className="text-lg font-bold text-[#0A2540] flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-lg font-bold text-[#152D24] flex items-center gap-2">
+                <MessageCircle className="w-5 h-5 text-[#2F9E59]" />
                 <span>व्हॉट्सॲप द्वारे कृषी सल्ला विचारणा (WhatsApp Consultation)</span>
               </h3>
-              <p className="text-xs text-[#5B6B7D] mt-0.5">
+              <p className="text-xs text-[#5F7065] mt-0.5">
                 आपल्या स्थानिक कृषी सहाय्यक, कृषी सेवा केंद्र किंवा कृषी शास्त्रज्ञांना व्हॉट्सॲपवर सुरक्षितपणे प्रश्न विचारा.
               </p>
             </div>
 
             {/* Privacy & Diagnostic Safeguards Notice */}
-            <div className="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-950 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-sky-900">
-                <ShieldCheck className="w-4 h-4 text-sky-700 shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-[#E6F2E5] border border-[#2F9E59]/30 text-xs text-[#152D24] space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-[#0B5137]">
+                <ShieldCheck className="w-4 h-4 text-[#2F9E59] shrink-0" />
                 <span>गोपनीयता व कृषी सुरक्षा हमी (Privacy & Safety Safeguards)</span>
               </div>
-              <ul className="list-disc list-inside space-y-1 text-slate-700 font-medium">
+              <ul className="list-disc list-inside space-y-1 text-[#5F7065] font-medium">
                 <li>कोणतीही वैयक्तिक माहिती, शेताचे लोकेशन, किंवा फोटो आपोआप पाठवले जात नाहीत.</li>
                 <li>हे AI प्रणालीचे प्राथमिक निरीक्षण असून अधिकृत प्रयोगशाळा चाचणी नाही.</li>
                 <li>'WhatsApp वर उघडा' बटण दाबल्यावर आपल्या फोनमधील WhatsApp ॲप उघडेल; संदेश पाठवण्यापूर्वी आपण तो तपासून बदलू शकता.</li>
@@ -497,14 +497,14 @@ export const ExpertSupport: React.FC = () => {
 
             {/* Step A: Select Recent Scan */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-[#0A2540]">
+              <label className="block text-xs font-bold text-[#152D24]">
                 १. AI रोग निदानाची नोंद जोडा (पर्यायी)
               </label>
               {recentScans.length > 0 ? (
                 <select
                   value={selectedScanId}
                   onChange={(e) => setSelectedScanId(e.target.value)}
-                  className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] font-medium focus:ring-2 focus:ring-[#0A2540]"
+                  className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] font-medium focus:ring-2 focus:ring-[#0B5137]"
                 >
                   <option value="none">-- कोणतेही स्कॅन जोडायचे नाही (केवळ प्रश्न विचारा) --</option>
                   {recentScans.map((scan) => (
@@ -514,7 +514,7 @@ export const ExpertSupport: React.FC = () => {
                   ))}
                 </select>
               ) : (
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+                <div className="p-3 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] text-xs text-[#5F7065]">
                   सध्या कोणतीही मागील स्कॅन नोंद नाही. आपण खाली थेट आपला प्रश्न लिहून सल्ला विचारू शकता.
                 </div>
               )}
@@ -522,7 +522,7 @@ export const ExpertSupport: React.FC = () => {
 
             {/* Step B: Farmer Question */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-[#0A2540]">
+              <label className="block text-xs font-bold text-[#152D24]">
                 २. आपला प्रश्न किंवा शंका लिहा (Farmer Question)
               </label>
               <textarea
@@ -530,33 +530,33 @@ export const ExpertSupport: React.FC = () => {
                 value={farmerWhatsAppQuestion}
                 onChange={(e) => setFarmerWhatsAppQuestion(e.target.value)}
                 placeholder="उदा. पात्या गळत आहेत व पानाच्या मागे पांढरी माशी दिसते आहे. फवारणी कोणती करावी? किती औषध वापरावे?"
-                className="w-full bg-white border border-[#D5DEE8] rounded-xl p-3 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540]"
+                className="w-full bg-white border border-[#DDE8DC] rounded-xl p-3 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137]"
               />
             </div>
 
             {/* Step C: Formatted Message Live Preview */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#0A2540]">
+                <label className="text-xs font-bold text-[#152D24]">
                   ३. व्हॉट्सॲप संदेशाचे पूर्वावलोकन (Live Message Preview)
                 </label>
                 <button
                   type="button"
                   onClick={handleCopyMessage}
-                  className="text-xs text-[#3B6EA5] font-bold hover:underline"
+                  className="text-xs text-[#2F9E59] font-bold hover:underline"
                 >
                   {copiedNotice ? '✓ कॉपी केले!' : 'संदेश मजकूर कॉपी करा'}
                 </button>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-100 border border-slate-300 font-mono text-[11px] sm:text-xs text-slate-800 whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto">
+              <div className="p-3.5 rounded-xl bg-[#F6F8F0] border border-[#DDE8DC] font-mono text-[11px] sm:text-xs text-[#152D24] whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto">
                 {safeWhatsAppMessage}
               </div>
             </div>
 
             {/* Step D: WhatsApp Action Button */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-[#D5DEE8]">
-              <p className="text-[11px] text-slate-500">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-[#DDE8DC]">
+              <p className="text-[11px] text-[#5F7065]">
                 बाहेरील ॲप: 'WhatsApp वर उघडा' दाबल्यास बाह्य WhatsApp ॲप्लिकेशन उघडेल.
               </p>
 
@@ -579,28 +579,28 @@ export const ExpertSupport: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-200">
           {/* Left: Ask a Question Form */}
           <div className="lg:col-span-6 space-y-4">
-            <Card variant="white" className="p-5 border-[#D5DEE8] shadow-sm space-y-4">
-              <h4 className="font-bold text-sm text-[#0A2540] flex items-center gap-2 pb-2 border-b border-[#D5DEE8]">
-                <HelpCircle className="w-4 h-4 text-[#138808]" />
+            <Card variant="white" className="p-5 border-[#DDE8DC] shadow-sm space-y-4">
+              <h4 className="font-bold text-sm text-[#152D24] flex items-center gap-2 pb-2 border-b border-[#DDE8DC]">
+                <HelpCircle className="w-4 h-4 text-[#2F9E59]" />
                 <span>नवीन प्रश्न विचारा (Ask Question)</span>
               </h4>
 
               {submittedSuccess && (
-                <div className="p-3 rounded-xl bg-[#138808]/10 border border-[#138808]/30 text-[#138808] text-xs flex items-center gap-2 font-medium">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#138808]" />
+                <div className="p-3 rounded-xl bg-[#E6F2E5] border border-[#2F9E59]/30 text-[#0B5137] text-xs flex items-center gap-2 font-medium">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#21864A]" />
                   <span>तुमचा प्रश्न कृषी तज्ज्ञांकडे पाठवला आहे. उत्तर २४ तासांत प्राप्त होईल.</span>
                 </div>
               )}
 
               <form onSubmit={handleSubmitInquiry} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-bold text-[#0A2540] mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     पीक निवडा
                   </label>
                   <select
                     value={cropName}
                     onChange={(e) => setCropName(e.target.value)}
-                    className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                    className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                   >
                     <option value="कापूस (Cotton)">कापूस (Cotton)</option>
                     <option value="सोयाबीन (Soybean)">सोयाबीन (Soybean)</option>
@@ -611,13 +611,13 @@ export const ExpertSupport: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#0A2540] mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     समस्येचा प्रकार
                   </label>
                   <select
                     value={issueCategory}
                     onChange={(e) => setIssueCategory(e.target.value)}
-                    className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] shadow-2xs"
+                    className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] shadow-2xs"
                   >
                     <option value="किडीचा प्रादुर्भाव (Pest Problem)">किडीचा प्रादुर्भाव (Pest Problem)</option>
                     <option value="बुरशी किंवा पाने पिवळी पडणे (Fungal/Disease)">बुरशी किंवा पाने पिवळी पडणे (Disease)</option>
@@ -628,7 +628,7 @@ export const ExpertSupport: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#0A2540] mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     लक्षणे व समस्येचे वर्णन करा
                   </label>
                   <textarea
@@ -637,24 +637,24 @@ export const ExpertSupport: React.FC = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="पिकात काय बदल दिसतो आहे? किती दिवसांपासून प्रादुर्भाव आहे? आधी कोणती फवारणी केली आहे का ते लिहा..."
-                    className="w-full bg-white border border-[#D5DEE8] rounded-xl p-2.5 text-xs sm:text-sm text-[#0A2540] focus:ring-2 focus:ring-[#0A2540] placeholder:text-[#5B6B7D] shadow-2xs"
+                    className="w-full bg-white border border-[#DDE8DC] rounded-xl p-2.5 text-xs sm:text-sm text-[#152D24] focus:ring-2 focus:ring-[#0B5137] placeholder:text-[#5F7065] shadow-2xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#0A2540] mb-1">
+                  <label className="block text-xs font-bold text-[#152D24] mb-1">
                     पिकाचा किंवा पानावरील रोगाचा फोटो जोडा (पर्यायी)
                   </label>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
-                    className="w-full text-xs text-[#5B6B7D] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#0A2540] file:text-white hover:file:bg-[#081d32]"
+                    className="w-full text-xs text-[#5F7065] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#0B5137] file:text-white hover:file:bg-[#073D2A]"
                   />
                 </div>
 
                 {attachedImage && (
-                  <div className="w-full h-28 rounded-xl overflow-hidden border border-[#D5DEE8] shadow-xs relative">
+                  <div className="w-full h-28 rounded-xl overflow-hidden border border-[#DDE8DC] shadow-xs relative">
                     <img src={attachedImage} alt="Attachment" className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -681,17 +681,17 @@ export const ExpertSupport: React.FC = () => {
 
           {/* Right: Previous Requests and Expert Answers */}
           <div className="lg:col-span-6 space-y-4">
-            <h4 className="text-sm font-bold text-[#0A2540] uppercase tracking-wide px-1">
+            <h4 className="text-sm font-bold text-[#152D24] uppercase tracking-wide px-1">
               मागील प्रश्न व तज्ज्ञांची उत्तरे ({inquiries.length})
             </h4>
 
             <div className="space-y-4">
               {inquiries.map((inq) => (
-                <Card key={inq.id} variant="white" className="p-4 sm:p-5 border-[#D5DEE8] space-y-3 shadow-sm">
-                  <div className="flex items-start justify-between gap-2 pb-2 border-b border-[#D5DEE8]">
+                <Card key={inq.id} variant="white" className="p-4 sm:p-5 border-[#DDE8DC] space-y-3 shadow-sm">
+                  <div className="flex items-start justify-between gap-2 pb-2 border-b border-[#DDE8DC]">
                     <div>
                       <div className="flex items-center gap-1.5 mb-1">
-                        <span className="text-xs font-bold text-[#0A2540] bg-[#EEF3F8] px-2 py-0.5 rounded border border-[#D5DEE8]">
+                        <span className="text-xs font-bold text-[#152D24] bg-[#F6F8F0] px-2 py-0.5 rounded border border-[#DDE8DC]">
                           {inq.cropName}
                         </span>
                         <Badge
@@ -711,12 +711,12 @@ export const ExpertSupport: React.FC = () => {
                             : 'प्रतिक्षेत (Pending)'}
                         </Badge>
                       </div>
-                      <span className="text-[11px] font-semibold text-[#C0392B]">
+                      <span className="text-[11px] font-semibold text-[#C83E3E]">
                         {inq.issueCategory}
                       </span>
                     </div>
 
-                    <span className="text-[10px] text-[#5B6B7D] shrink-0">
+                    <span className="text-[10px] text-[#5F7065] shrink-0">
                       {inq.submittedAt}
                     </span>
                   </div>
@@ -727,42 +727,42 @@ export const ExpertSupport: React.FC = () => {
                       <img
                         src={inq.imageUrl}
                         alt="Crop issue"
-                        className="w-16 h-16 rounded-xl object-cover shrink-0 border border-[#D5DEE8]"
+                        className="w-16 h-16 rounded-xl object-cover shrink-0 border border-[#DDE8DC]"
                       />
                     )}
-                    <p className="text-xs text-[#0A2540] leading-relaxed font-medium">
+                    <p className="text-xs text-[#152D24] leading-relaxed font-medium">
                       {inq.description}
                     </p>
                   </div>
 
                   {/* Expert Response Box if Available */}
                   {inq.expertResponse ? (
-                    <div className="p-3.5 rounded-2xl bg-[#EEF3F8] border border-[#138808]/40 space-y-2 mt-2">
+                    <div className="p-3.5 rounded-2xl bg-[#E6F2E5] border border-[#2F9E59]/40 space-y-2 mt-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#138808] text-white flex items-center justify-center font-bold text-xs">
+                        <div className="w-7 h-7 rounded-full bg-[#0B5137] text-white flex items-center justify-center font-bold text-xs">
                           <UserCheck className="w-4 h-4" />
                         </div>
                         <div>
-                          <h5 className="font-bold text-xs text-[#0A2540]">
+                          <h5 className="font-bold text-xs text-[#152D24]">
                             {inq.expertResponse.expertName}
                           </h5>
-                          <p className="text-[10px] text-[#5B6B7D]">
+                          <p className="text-[10px] text-[#5F7065]">
                             {inq.expertResponse.expertTitle} • {inq.expertResponse.institution}
                           </p>
                         </div>
                       </div>
 
-                      <p className="text-xs text-[#0A2540] leading-relaxed font-sans font-medium pl-2 border-l-2 border-[#138808]">
+                      <p className="text-xs text-[#152D24] leading-relaxed font-sans font-medium pl-2 border-l-2 border-[#2F9E59]">
                         {inq.expertResponse.recommendation}
                       </p>
 
-                      <span className="text-[10px] text-[#138808] block text-right font-medium">
+                      <span className="text-[10px] text-[#2F9E59] block text-right font-medium">
                         दिनांक: {inq.expertResponse.responseDate}
                       </span>
                     </div>
                   ) : (
-                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div className="p-3 rounded-xl bg-[#E9A23B]/10 border border-[#E9A23B]/30 text-[#152D24] text-xs flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#E9A23B] shrink-0" />
                       <span>कृषी शास्त्रज्ञ तुमच्या प्रश्नाची तपासणी करत आहेत. लवकरच उत्तर दिले जाईल.</span>
                     </div>
                   )}
