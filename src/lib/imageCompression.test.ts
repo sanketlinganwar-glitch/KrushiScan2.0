@@ -2,6 +2,8 @@ import {
   calculateAspectRatioFit,
   formatBytes,
   validateImageFile,
+  validateImageContent,
+  getLocalizedBlankImageError,
   dataUrlToBlob,
   ImageCompressionError,
 } from './imageCompression';
@@ -132,4 +134,38 @@ console.log('🧪 Starting KrushiScan AI Image Compression Verification Suite...
   console.log('✅ Test 9 Passed: dataUrlToBlob correctly creates typed binary Blob with exact byte count.');
 }
 
-console.log('🎉 ALL 9 IMAGE COMPRESSION UNIT TESTS PASSED ACCURATELY!\n');
+// Test 10: validateImageContent rejects empty source
+async function testImageContentValidation() {
+  const emptyRes = await validateImageContent('', 'mr');
+  assert.strictEqual(emptyRes.valid, false);
+  assert.strictEqual(emptyRes.reasonCode, 'EMPTY_FILE');
+  console.log('✅ Test 10 Passed: validateImageContent rejects empty input as EMPTY_FILE.');
+
+  // Test 11: validateImageContent rejects 1x1 transparent GIF
+  const transparentGif = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  const transRes = await validateImageContent(transparentGif, 'mr');
+  assert.strictEqual(transRes.valid, false);
+  assert.strictEqual(transRes.reasonCode, 'TRANSPARENT_BLANK');
+  console.log('✅ Test 11 Passed: validateImageContent detects 1x1 transparent GIF as TRANSPARENT_BLANK.');
+
+  // Test 12: validateImageContent on valid synthetic leaf dataURL
+  const validLeaf = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABkAGQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD//2Q==';
+  const leafRes = await validateImageContent(validLeaf, 'en');
+  assert.strictEqual(leafRes.valid, true);
+  console.log('✅ Test 12 Passed: validateImageContent accepts valid crop leaf image.');
+
+  // Test 13: Standard localized error messages
+  const enMsg = getLocalizedBlankImageError('en');
+  assert.strictEqual(
+    enMsg,
+    'Photo could not be analyzed because the image appears blank or unreadable. Please take a clear photo of the affected leaf in good lighting and try again.'
+  );
+  console.log('✅ Test 13 Passed: getLocalizedBlankImageError matches required domain standard.');
+}
+
+testImageContentValidation().then(() => {
+  console.log('🎉 ALL 13 IMAGE COMPRESSION & VALIDATION UNIT TESTS PASSED ACCURATELY!\n');
+}).catch((err) => {
+  console.error('❌ Test failed:', err);
+  process.exit(1);
+});

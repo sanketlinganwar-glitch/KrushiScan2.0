@@ -1,4 +1,5 @@
 import { ScanResult, SeverityLevel } from '../types';
+import { validateImageContent, getLocalizedBlankImageError } from './imageCompression';
 
 // AI inference runs exclusively server-side via FastAPI (/api/ai/scan) to prevent secret exposure.
 // When offline or unconfigured, the certified PDKV/ICAR Vidarbha pathology engine provides instant diagnostic guidance.
@@ -212,123 +213,104 @@ export async function analyzeCropImage(
   selectedCropHint?: string,
   undersideDataUrl?: string
 ): Promise<ScanResult> {
-  // 1. Try FastAPI Backend Vision Pipeline (http://localhost:8000/api/ai/scan)
+  // 1. Pre-flight client-side image content validation
+  const topValidation = await validateImageContent(imageDataUrl, 'mr');
+  if (!topValidation.valid) {
+    throw new Error(topValidation.error || getLocalizedBlankImageError('mr'));
+  }
+
+  if (undersideDataUrl) {
+    const underValidation = await validateImageContent(undersideDataUrl, 'mr');
+    if (!underValidation.valid) {
+      throw new Error(underValidation.error || getLocalizedBlankImageError('mr'));
+    }
+  }
+
+  // 2. Prepare multipart binary upload
+  const byteString = atob(imageDataUrl.split(',')[1] || imageDataUrl);
+  const mimeString = imageDataUrl.split(',')[0].split(':')[1]?.split(';')[0] || 'image/jpeg';
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  const blob = new Blob([ab], { type: mimeString });
+  const file = new File([blob], 'crop_scan_top.jpg', { type: mimeString });
+
+  const formData = new FormData();
+  formData.append('file', file);
+  if (selectedCropHint) formData.append('crop_hint', selectedCropHint);
+
+  // If an optional underside image is provided, append it for dual-angle Gemini Vision analysis
+  if (undersideDataUrl) {
+    const uByteString = atob(undersideDataUrl.split(',')[1] || undersideDataUrl);
+    const uMimeString = undersideDataUrl.split(',')[0].split(':')[1]?.split(';')[0] || 'image/jpeg';
+    const uAb = new ArrayBuffer(uByteString.length);
+    const uIa = new Uint8Array(uAb);
+    for (let i = 0; i < uByteString.length; i++) {
+      uIa[i] = uByteString.charCodeAt(i);
+    }
+    const uBlob = new Blob([uAb], { type: uMimeString });
+    const uFile = new File([uBlob], 'crop_scan_underside.jpg', { type: uMimeString });
+    formData.append('file_underside', uFile);
+  }
+
+  const backendUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_API_URL) || 'http://localhost:8000';
+  let res: Response;
   try {
-    const byteString = atob(imageDataUrl.split(',')[1] || imageDataUrl);
-    const mimeString = imageDataUrl.split(',')[0].split(':')[1]?.split(';')[0] || 'image/jpeg';
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([ab], { type: mimeString });
-    const file = new File([blob], 'crop_scan_top.jpg', { type: mimeString });
-
-    const formData = new FormData();
-    formData.append('file', file);
-    if (selectedCropHint) formData.append('crop_hint', selectedCropHint);
-
-    // If an optional underside image is provided, append it for dual-angle Gemini Vision analysis
-    if (undersideDataUrl) {
-      const uByteString = atob(undersideDataUrl.split(',')[1] || undersideDataUrl);
-      const uMimeString = undersideDataUrl.split(',')[0].split(':')[1]?.split(';')[0] || 'image/jpeg';
-      const uAb = new ArrayBuffer(uByteString.length);
-      const uIa = new Uint8Array(uAb);
-      for (let i = 0; i < uByteString.length; i++) {
-        uIa[i] = uByteString.charCodeAt(i);
-      }
-      const uBlob = new Blob([uAb], { type: uMimeString });
-      const uFile = new File([uBlob], 'crop_scan_underside.jpg', { type: uMimeString });
-      formData.append('file_underside', uFile);
-    }
-
-    const backendUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_BACKEND_API_URL) || 'http://localhost:8000';
-    const res = await fetch(`${backendUrl}/api/ai/scan`, {
+    res = await fetch(`${backendUrl}/api/ai/scan`, {
       method: 'POST',
       body: formData,
     });
+  } catch (netErr: any) {
+    console.error('Backend scan fetch error:', netErr);
+    throw new Error('सर्व्हरशी संपर्क होऊ शकला नाही. इंटरनेट कनेक्शन तपासा किंवा हा स्कॅन ऑफलाइन रांगेत (Queue Offline) सेव्ह करा.');
+  }
 
-    if (res.ok) {
-      const data = await res.json();
-      return {
-        id: 'scan-' + Date.now(),
-        userId: 'current-user',
-        cropName: data.crop_name || data.cropName || 'कापूस (Cotton)',
-        cropVariety: data.crop_variety || data.cropVariety || 'Standard (PDKV)',
-        imageUrl: data.stored_image_url || imageDataUrl,
-        undersideImageUrl: data.stored_underside_image_url || undersideDataUrl || undefined,
-        anglesScanned: (data.angles_scanned as ('top' | 'underside')[]) || (undersideDataUrl ? ['top', 'underside'] : ['top']),
-        uncertaintyInfo: data.uncertainty_info || undefined,
-        diseaseName: data.disease_name || data.diseaseName || 'Pest Infestation',
-        localDiseaseName: data.local_disease_name || data.localDiseaseName || {
-          mr: data.disease_name || 'रोग',
-          hi: data.disease_name || 'रोग',
-          en: data.disease_name || 'Disease',
-        },
-        severity: data.severity || 'Moderate',
-        confidence: Math.round(data.confidence || 90),
-        diagnosisExplanation: data.diagnosis_explanation || data.diagnosisExplanation || '',
-        symptoms: data.symptoms || [],
-        recommendedTreatments: data.recommended_treatments || data.recommendedTreatments || {
-          cultural: ['शेतात नियमित फेरफटका मारा.'],
-          biological: ['५% निंबोळी अर्क वापरा.'],
-          chemical: ['शिफारशीत कीटकनाशकाची फवारणी करा.'],
-          caution: 'सुरक्षिततेची काळजी घ्या.'
-        },
-        preventionMethods: data.prevention_methods || data.preventionMethods || ['फेरपालट करा.'],
-        followUpPlan: 'फवारणीनंतर ७ दिवसांनी नवीन पानांची पाहणी करा.',
-        scannedAt: new Date().toISOString(),
-        isDemo: false,
-      };
+  if (!res.ok) {
+    let errMessage = 'फोटो स्कॅन अयशस्वी झाला. कृपया पुन्हा प्रयत्न करा.';
+    try {
+      const errData = await res.json();
+      errMessage = errData.detail || errData.message || errMessage;
+    } catch {
+      // response text
     }
-  } catch (backendErr) {
-    console.warn('Backend FastAPI scanner not reachable, using certified PDKV expert baseline:', backendErr);
+    throw new Error(errMessage);
   }
 
-  // Fallback to ICAR/PDKV verified pathology dataset (zero secret exposure)
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  let matched = VIDARBHA_DIAGNOSES[0];
-  if (selectedCropHint) {
-    const hintLower = selectedCropHint.toLowerCase();
-    const found = VIDARBHA_DIAGNOSES.find(d => 
-      d.cropName.toLowerCase().includes(hintLower) ||
-      (hintLower.includes('cotton') && d.cropName.includes('कापूस')) ||
-      (hintLower.includes('soybean') && d.cropName.includes('सोयाबीन')) ||
-      (hintLower.includes('tur') && d.cropName.includes('तूर'))
-    );
-    if (found) matched = found;
-  } else {
-    // Pick based on time seed to keep it consistent yet varied
-    const idx = Math.floor(Math.random() * VIDARBHA_DIAGNOSES.length);
-    matched = VIDARBHA_DIAGNOSES[idx];
+  const data = await res.json();
+  if (data.needs_better_image || data.is_plant === false) {
+    throw new Error(data.error_message || data.rejection_reason || getLocalizedBlankImageError('mr'));
   }
 
-  const scanId = 'scan-' + Date.now();
-  const scanResult: ScanResult = {
-    id: scanId,
+  return {
+    id: 'scan-' + Date.now(),
     userId: 'current-user',
-    cropName: matched.cropName,
-    cropVariety: matched.cropVariety,
-    imageUrl: imageDataUrl,
-    undersideImageUrl: undersideDataUrl || undefined,
-    anglesScanned: undersideDataUrl ? ['top', 'underside'] : ['top'],
-    uncertaintyInfo: undersideDataUrl
-      ? 'दुहेरी कोन तपासणी (पानाचा वरचा पृष्ठभाग + खालची बाजू): पांढरी माशी, तुडतुडे व बुरशीजन्य पुरळ दोन्ही कोनांतून तपासण्यात आले आहेत.'
-      : 'केवळ एका कोनातून (पानाचा वरचा भाग) स्कॅन केले आहे. पानाच्या मागील बाजूचे रसशोषक कीड (पांढरी माशी/थ्रिप्स) तपासण्यासाठी खालचा फोटो जोडणे अधिक अचूक ठरते.',
-    diseaseName: matched.diseaseName,
-    localDiseaseName: matched.localDiseaseName,
-    severity: matched.severity,
-    confidence: matched.confidence,
-    diagnosisExplanation: matched.diagnosisExplanation,
-    symptoms: matched.symptoms,
-    recommendedTreatments: matched.recommendedTreatments,
-    preventionMethods: matched.preventionMethods,
-    followUpPlan: matched.followUpPlan,
+    cropName: data.crop_name || data.cropName || 'कापूस (Cotton)',
+    cropVariety: data.crop_variety || data.cropVariety || 'Standard (PDKV)',
+    imageUrl: data.stored_image_url || imageDataUrl,
+    undersideImageUrl: data.stored_underside_image_url || undersideDataUrl || undefined,
+    anglesScanned: (data.angles_scanned as ('top' | 'underside')[]) || (undersideDataUrl ? ['top', 'underside'] : ['top']),
+    uncertaintyInfo: data.uncertainty_info || undefined,
+    diseaseName: data.disease_name || data.diseaseName || 'Pest Infestation',
+    localDiseaseName: data.local_disease_name || data.localDiseaseName || {
+      mr: data.disease_name || 'रोग',
+      hi: data.disease_name || 'रोग',
+      en: data.disease_name || 'Disease',
+    },
+    severity: data.severity || 'Moderate',
+    confidence: Math.round(data.confidence || 90),
+    diagnosisExplanation: data.diagnosis_explanation || data.diagnosisExplanation || '',
+    symptoms: data.symptoms || [],
+    recommendedTreatments: data.recommended_treatments || data.recommendedTreatments || {
+      cultural: ['शेतात नियमित फेरफटका मारा.'],
+      biological: ['५% निंबोळी अर्क वापरा.'],
+      chemical: ['शिफारशीत कीटकनाशकाची फवारणी करा.'],
+      caution: 'सुरक्षिततेची काळजी घ्या.'
+    },
+    preventionMethods: data.prevention_methods || data.preventionMethods || ['फेरपालट करा.'],
+    followUpPlan: 'फवारणीनंतर ७ दिवसांनी नवीन पानांची पाहणी करा.',
     scannedAt: new Date().toISOString(),
     isDemo: false,
-    symptomBoxes: matched.symptomBoxes,
   };
-
-  return scanResult;
 }

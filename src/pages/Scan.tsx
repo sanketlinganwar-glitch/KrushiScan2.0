@@ -34,6 +34,8 @@ import { LOCAL_STORAGE_KEYS } from '../lib/supabase';
 import { 
   compressCropImage, 
   validateImageFile, 
+  validateImageContent,
+  getLocalizedBlankImageError,
   formatBytes, 
   CompressionResult 
 } from '../lib/imageCompression';
@@ -79,6 +81,18 @@ export const Scan: React.FC = () => {
     };
   }, []);
 
+  // Connect stream to video element whenever camera becomes active
+  useEffect(() => {
+    if (isCameraActive && videoRef.current && streamRef.current) {
+      if (videoRef.current.srcObject !== streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+      }
+      videoRef.current.play().catch((err) => {
+        console.warn('Camera video play interrupted:', err);
+      });
+    }
+  }, [isCameraActive]);
+
   const startCamera = async (slot: 'top' | 'underside' = 'top') => {
     setActiveSlot(slot);
     setCameraError(null);
@@ -88,20 +102,42 @@ export const Scan: React.FC = () => {
         throw new Error('Camera API not available in this browser environment');
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-        audio: false,
-      });
+      // Try preferred rear environment camera, fallback to default video device
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false,
+        });
+      } catch (constraintErr) {
+        console.warn('Ideal environment camera constraint failed, falling back to default camera:', constraintErr);
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+      }
 
       streamRef.current = stream;
+      setIsCameraActive(true);
+
+      // If video element is already mounted, attach immediately
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        videoRef.current.play().catch((playErr) => {
+          console.warn('Initial video play warning:', playErr);
+        });
       }
-      setIsCameraActive(true);
     } catch (err: any) {
       console.warn('Camera error:', err);
-      setCameraError('कॅमेरा सुरू करता आला नाही. कृपया खालील "गॅलरीतून फोटो निवडा" किंवा नमुना फोटो वापरा.');
+      let message = 'कॅमेरा सुरू करता आला नाही. कृपया खालील "गॅलरीतून फोटो निवडा" किंवा नमुना फोटो वापरा.';
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+        message = 'कॅमेरा परवानगी नाकारली गेली आहे. कृपया ब्राउझर सेटिंग्जमध्ये जाऊन KrushiScan साठी कॅमेरा सुरू करण्याची परवानगी द्या.';
+      } else if (!window.isSecureContext) {
+        message = 'कॅमेऱ्यासाठी सुरक्षित HTTPS कनेक्शन आवश्यक आहे. कृपया HTTPS वर वेबसाइट उघडा.';
+      } else if (err?.name === 'NotFoundError' || err?.name === 'DevicesNotFoundError') {
+        message = 'या डिव्हाइसवर कोणताही सक्रिय कॅमेरा आढळला नाही. कृपया गॅलरीतून फोटो निवडा.';
+      }
+      setCameraError(message);
       setIsCameraActive(false);
     }
   };
@@ -111,44 +147,88 @@ export const Scan: React.FC = () => {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
     setIsCameraActive(false);
   };
 
   const capturePhoto = async () => {
     if (!videoRef.current) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = videoRef.current.videoWidth || 640;
-    canvas.height = videoRef.current.videoHeight || 480;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const rawDataUrl = canvas.toDataURL('image/jpeg', 0.90);
-      stopCamera();
 
-      // Optimize camera capture to guarantee max 1280px standard diagnostic format
-      setIsCompressing(true);
-      try {
-        const compressed = await compressCropImage(rawDataUrl, {
-          maxDimension: 1280,
-          quality: 0.82,
-        });
-        if (activeSlot === 'top') {
-          setImageSrc(compressed.dataUrl);
-          setCompressionStats(compressed);
-        } else {
-          setUndersideImageSrc(compressed.dataUrl);
-          setUndersideCompressionStats(compressed);
-        }
-      } catch (err) {
-        console.warn('Camera photo compression fallback:', err);
-        if (activeSlot === 'top') {
-          setImageSrc(rawDataUrl);
-        } else {
-          setUndersideImageSrc(rawDataUrl);
-        }
-      } finally {
-        setIsCompressing(false);
+    // Validate video element readiness before drawing
+    if (
+      videoRef.current.readyState < 2 ||
+      videoRef.current.videoWidth === 0 ||
+      videoRef.current.videoHeight === 0
+    ) {
+      setCameraError(
+        language === 'en'
+          ? 'Photo capture failed. Please allow camera access and try again.'
+          : language === 'hi'
+          ? 'फोटो कैप्चर विफल रहा। कृपया कैमरा एक्सेस की अनुमति दें और पुनः प्रयास करें।'
+          : 'फोटो काढणे अयशस्वी झाले. कृपया कॅमेरा परवानगी तपासा आणि पुन्हा प्रयत्न करा.'
+      );
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      setCameraError(
+        language === 'en'
+          ? 'Could not initialize camera canvas context.'
+          : 'कॅनव्हास सुरू करता आला नाही. कृपया पुन्हा प्रयत्न करा.'
+      );
+      return;
+    }
+
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const rawDataUrl = canvas.toDataURL('image/jpeg', 0.90);
+
+    // Validate captured content BEFORE accepting it
+    const validation = await validateImageContent(rawDataUrl, language as 'mr' | 'hi' | 'en');
+    if (!validation.valid) {
+      setCameraError(validation.error || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
+      stopCamera();
+      return;
+    }
+
+    stopCamera();
+
+    // Optimize camera capture to guarantee max 1280px standard diagnostic format
+    setIsCompressing(true);
+    try {
+      const compressed = await compressCropImage(rawDataUrl, {
+        maxDimension: 1280,
+        quality: 0.82,
+      });
+
+      // Verify compressed output is not blank
+      const compValidation = await validateImageContent(compressed.dataUrl, language as 'mr' | 'hi' | 'en');
+      if (!compValidation.valid) {
+        setUploadError(compValidation.error || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
+        return;
       }
+
+      if (activeSlot === 'top') {
+        setImageSrc(compressed.dataUrl);
+        setCompressionStats(compressed);
+      } else {
+        setUndersideImageSrc(compressed.dataUrl);
+        setUndersideCompressionStats(compressed);
+      }
+    } catch (err) {
+      console.warn('Camera photo compression fallback:', err);
+      if (activeSlot === 'top') {
+        setImageSrc(rawDataUrl);
+      } else {
+        setUndersideImageSrc(rawDataUrl);
+      }
+    } finally {
+      setIsCompressing(false);
     }
   };
 
@@ -169,10 +249,18 @@ export const Scan: React.FC = () => {
     setUploadError(null);
     setCameraError(null);
 
-    // Validate MIME type and file integrity
+    // 1. Validate MIME type and file integrity
     const validation = validateImageFile(file);
     if (!validation.valid) {
       setUploadError(validation.error || 'असमर्थित फोटो प्रकार.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // 2. Validate pixel content (not blank, black, white, transparent, uniform)
+    const contentCheck = await validateImageContent(file, language as 'mr' | 'hi' | 'en');
+    if (!contentCheck.valid) {
+      setUploadError(contentCheck.error || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
@@ -183,6 +271,14 @@ export const Scan: React.FC = () => {
         maxDimension: 1280,
         quality: 0.82,
       });
+
+      // Verify compressed output is also valid
+      const compValidation = await validateImageContent(compressed.dataUrl, language as 'mr' | 'hi' | 'en');
+      if (!compValidation.valid) {
+        setUploadError(compValidation.error || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
+        return;
+      }
+
       if (activeSlot === 'top') {
         setImageSrc(compressed.dataUrl);
         setCompressionStats(compressed);
@@ -193,10 +289,14 @@ export const Scan: React.FC = () => {
       stopCamera();
     } catch (err: any) {
       console.warn('Client-side compression fallback:', err);
-      // Fallback to FileReader if offscreen canvas decoding fails
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const raw = event.target?.result as string;
+        const rawCheck = await validateImageContent(raw, language as 'mr' | 'hi' | 'en');
+        if (!rawCheck.valid) {
+          setUploadError(rawCheck.error || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
+          return;
+        }
         if (activeSlot === 'top') {
           setImageSrc(raw);
         } else {
@@ -262,6 +362,24 @@ export const Scan: React.FC = () => {
 
   const handleAnalyze = async () => {
     if (!imageSrc) return;
+    setUploadError(null);
+    setCameraError(null);
+
+    // Safeguard: Pre-flight content check before dispatching to backend
+    const topCheck = await validateImageContent(imageSrc, language as 'mr' | 'hi' | 'en');
+    if (!topCheck.valid) {
+      setUploadError(topCheck.error || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
+      return;
+    }
+
+    if (undersideImageSrc) {
+      const underCheck = await validateImageContent(undersideImageSrc, language as 'mr' | 'hi' | 'en');
+      if (!underCheck.valid) {
+        setUploadError(underCheck.error || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
+        return;
+      }
+    }
+
     setIsAnalyzing(true);
     setResult(null);
 
@@ -299,8 +417,9 @@ export const Scan: React.FC = () => {
       } catch {
         // ignore
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Scan error:', err);
+      setUploadError(err?.message || getLocalizedBlankImageError(language as 'mr' | 'hi' | 'en'));
     } finally {
       setIsAnalyzing(false);
     }
@@ -424,7 +543,13 @@ export const Scan: React.FC = () => {
           {isCameraActive ? (
             <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#073D2A] flex items-center justify-center overflow-hidden">
               <video
-                ref={videoRef}
+                ref={(node) => {
+                  (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = node;
+                  if (node && streamRef.current && node.srcObject !== streamRef.current) {
+                    node.srcObject = streamRef.current;
+                    node.play().catch((err) => console.warn('Video auto-play interrupted:', err));
+                  }
+                }}
                 autoPlay
                 playsInline
                 muted

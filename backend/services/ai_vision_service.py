@@ -131,7 +131,7 @@ async def analyze_crop_image(
     Otherwise, evaluates through the verified PDKV/ICAR Vidarbha agricultural diagnostic system.
     Supports dual-angle analysis (top surface + underside of the leaf).
     """
-    if len(image_bytes) < 5000:
+    if not image_bytes or len(image_bytes) < 100:
         return {
             "needs_better_image": True,
             "error_message": "फोटो अत्यंत अस्पष्ट किंवा लहान आकाराचा आहे. कृपया सूर्यप्रकाशात रोगट भाग स्पष्ट दिसेल असा फोटो काढा."
@@ -147,10 +147,16 @@ async def analyze_crop_image(
                 underside_bytes=underside_bytes,
                 underside_mime=underside_mime
             )
+        except HTTPException:
+            raise
         except Exception as e:
-            logger.warning(f"Gemini API inference failed or rate-limited, engaging ICAR/PDKV expert engine: {e}")
+            logger.error(f"Gemini API inference failed: {e}")
+            raise HTTPException(
+                status_code=503,
+                detail=f"AI Vision diagnosis service is currently experiencing technical difficulty ({str(e)[:120]}). Please try again in a few moments or consult your local KVK expert."
+            )
 
-    # Fallback to ICAR/PDKV diagnostic knowledge engine
+    # When no API key is configured (local offline test environment)
     return _diagnose_with_agri_knowledge_engine(crop_hint, has_underside=bool(underside_bytes))
 
 async def _call_gemini_vision(
@@ -163,6 +169,7 @@ async def _call_gemini_vision(
     """
     Calls the real Gemini Multimodal Model with a structured agricultural prompt.
     When an underside leaf image is available, sends both images to inspect lower canopy pests.
+    Validates that the image actually contains an agricultural crop or plant before returning a diagnosis.
     """
     b64_img = base64.b64encode(image_bytes).decode("utf-8")
     api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{settings.GEMINI_MODEL}:generateContent?key={settings.GEMINI_API_KEY}"
@@ -170,11 +177,18 @@ async def _call_gemini_vision(
     system_instruction = (
         "You are an expert Indian agricultural plant pathologist specializing in Vidarbha, Maharashtra crops "
         "(Cotton/कापूस, Soybean/सोयाबीन, Pigeonpea/तूर, Gram/हरभरा, Wheat/गहू). "
-        "Analyze the provided plant photo(s) carefully. Identify any pest, fungal, viral, or bacterial disease. "
+        "Analyze the provided plant photo(s) carefully.\n"
+        "CRITICAL REQUIREMENT 1 (NON-PLANT DETECTION): First determine if the image actually contains a plant, leaf, crop, fruit, flower, or agricultural pest. "
+        "If the photo shows a human, animal, car, electronic device, furniture, empty room, or any non-crop object, "
+        'you MUST set "is_plant": false and set "rejection_reason" explaining in Marathi and English that no plant was detected. '
+        "Do NOT guess or fabricate a crop disease for non-plant photos.\n"
+        "CRITICAL REQUIREMENT 2 (DISEASE PATHOLOGY): If it is a plant, set \"is_plant\": true. Identify any pest, fungal, viral, or bacterial disease. "
         "Follow recommendations from Dr. Panjabrao Deshmukh Krishi Vidyapeeth (PDKV Akola) and ICAR. "
         "Do not invent fabricated numerical values. If uncertainty exists, explicitly state the visual diagnosis limitations. "
         "Output ONLY a valid JSON object strictly matching this schema:\n"
         "{\n"
+        '  "is_plant": true or false,\n'
+        '  "rejection_reason": "Explanation if not a plant, else empty string",\n'
         '  "crop_name": "Crop name in English and Marathi",\n'
         '  "crop_variety": "Estimated variety or Standard",\n'
         '  "disease_name": "Scientific disease/pest name",\n'
@@ -249,7 +263,23 @@ async def _call_gemini_vision(
             raise RuntimeError("No candidate response returned from vision model.")
             
         part_text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "{}")
-        parsed = json.loads(part_text)
+        # Clean markdown code block wraps if model enclosed in ```json
+        cleaned_json = part_text.strip()
+        if cleaned_json.startswith("```json"):
+            cleaned_json = cleaned_json[7:]
+        if cleaned_json.startswith("```"):
+            cleaned_json = cleaned_json[3:]
+        if cleaned_json.endswith("```"):
+            cleaned_json = cleaned_json[:-3]
+        parsed = json.loads(cleaned_json.strip())
+
+        # Enforce non-plant rejection
+        if parsed.get("is_plant") is False:
+            rejection_msg = parsed.get("rejection_reason") or "कोणतेही पीक किंवा पान आढळले नाही. कृपया पिकाच्या पानाचा स्पष्ट फोटो काढून पुन्हा प्रयत्न करा. (No agricultural crop or leaf detected in this photo. Please photograph a crop leaf.)"
+            logger.info(f"Gemini Vision rejected non-plant image: {rejection_msg}")
+            raise HTTPException(status_code=400, detail=rejection_msg)
+
+        parsed["is_plant"] = True
         parsed["model_used"] = f"Google {settings.GEMINI_MODEL} Vision"
         parsed["is_live_ai"] = True
         parsed["angles_analyzed"] = ["top", "underside"] if underside_bytes else ["top"]
