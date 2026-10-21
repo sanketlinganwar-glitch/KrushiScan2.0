@@ -28,8 +28,11 @@ jobs:
           pip install pytest httpx
 
       - name: Run backend pytest test suite
+        env:
+          PYTHONPATH: .
+          DATA_GOV_IN_API_KEY: 'test-mock-ci-key'
         run: |
-          pytest backend/tests -v
+          python -m pytest backend/tests -v
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4

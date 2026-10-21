@@ -2,6 +2,7 @@ import pytest
 import time
 from unittest.mock import patch, MagicMock
 import httpx
+from backend.config import settings
 from backend.services.mandi_service import (
     parse_agmarknet_records,
     fetch_mandi_prices,
@@ -11,6 +12,15 @@ from backend.services.mandi_service import (
     resolve_commodity_msp,
     _mandi_cache
 )
+
+@pytest.fixture(autouse=True)
+def ensure_mock_mandi_api_key():
+    """Ensure DATA_GOV_IN_API_KEY is configured for unit tests so upstream mock flows are exercised."""
+    original_key = settings.DATA_GOV_IN_API_KEY
+    if not settings.DATA_GOV_IN_API_KEY:
+        settings.DATA_GOV_IN_API_KEY = "test-mock-agmarknet-key"
+    yield
+    settings.DATA_GOV_IN_API_KEY = original_key
 
 def test_resolve_commodity_msp():
     assert resolve_commodity_msp("Cotton (कापूस)") == 7521.0
